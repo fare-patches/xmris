@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: garden.c,v 4.6 1994/01/06 10:20:24 nathan stable $ */
+/* RCS $Id: garden.c,v 4.6 1994/01/06 10:20:24 nathan Stable $ */
 /*{{{  includes*/
 #include "xmred.h"
 #include <X11/IntrinsicP.h>

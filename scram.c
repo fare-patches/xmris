@@ -1,5 +1,5 @@
 /* Copyright (C) 1992 Nathan Sidwell */
-/* RCS $Id: scram.c,v 4.7 1993/11/09 16:27:47 nathan stable $ */
+/* RCS $Id: scram.c,v 4.7 1993/11/09 16:27:47 nathan Stable $ */
 /*{{{  about me*/
 /* a simple program to compress the monochrome, mask & color sprites
  * together into one set of planes. This is done by color separation

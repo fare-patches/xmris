@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: makemris.c,v 4.18 1994/01/25 18:33:03 nathan stable $ */
+/* RCS $Id: makemris.c,v 4.18 1994/01/25 18:33:03 nathan Stable $ */
 /*{{{  includes*/
 #include "xmris.h"
 #include "defmris.h"

@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: control.c,v 4.15 1993/12/10 11:52:23 nathan stable $ */
+/* RCS $Id: control.c,v 4.15 1993/12/10 11:52:23 nathan Stable $ */
 /*{{{  includes*/
 #include "xmred.h"
 #include <X11/StringDefs.h>

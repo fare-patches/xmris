@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: xmris.c,v 4.17 1994/01/28 10:11:53 nathan stable $ */
+/* RCS $Id: xmris.c,v 4.18 1994/02/16 11:30:37 nathan Stable $ */
 /*{{{  the problem with recursive function definitions*/
 /*
  * In order to keep a single control loop, I use animate functions,
@@ -133,6 +133,10 @@ ARGSEP  Cardinal  *num_params
   KeySym    keysym;
 
   keysym = XKeycodeToKeysym(display.display, event->xkey.keycode, 0);
+#ifdef DEBUGEVENTLOOP
+  fprintf(stderr, "action_keypress(0x%lx) keysym=%0xlx\n",
+      (long)XtWindow(widget), (long)keysym);
+#endif /* DEBUGEVENTLOOP */
   global.key = keysym;
   if(global.state != MODE_KEY_DEF)
     for(ix = KEYS; ix--;)
@@ -166,6 +170,10 @@ ARGSEP  Cardinal  *num_params
   KeySym    keysym;
 
   keysym = XKeycodeToKeysym(display.display, event->xkey.keycode, 0);
+#ifdef DEBUGEVENTLOOP
+  fprintf(stderr, "action_keyrelease(0x%lx) keysym=%0xlx\n",
+      (long)XtWindow(widget), (long)keysym);
+#endif /* DEBUGEVENTLOOP */
   if(global.state != MODE_KEY_DEF)
     for(ix = KEYS; ix--;)
       if(keysym == data.keysyms[ix])
@@ -186,7 +194,7 @@ ARGSEP  Cardinal  *num_params
 )
 {
 #ifdef DEBUGEVENTLOOP
-  fprintf(stderr, "action_map(0x%lx)\n", XtWindow(widget));
+  fprintf(stderr, "action_map(0x%lx)\n", (long)XtWindow(widget));
 #endif /* DEBUGEVENTLOOP */
   display.mapped = 1;
   if(map_start)
@@ -205,7 +213,7 @@ ARGSEP  Cardinal  *num_params
 )
 {
 #ifdef DEBUGEVENTLOOP
-  fprintf(stderr, "action_pause(0x%lx)\n", XtWindow(widget));
+  fprintf(stderr, "action_pause(0x%lx)\n", (long)XtWindow(widget));
 #endif /* DEBUGEVENTLOOP */
   global.pause = global.state < 6;
   return;
@@ -221,7 +229,7 @@ ARGSEP  Cardinal  *num_params
 )
 {
 #ifdef DEBUGEVENTLOOP
-  fprintf(stderr, "action_unmap(0x%lx)\n", XtWindow(widget));
+  fprintf(stderr, "action_unmap(0x%lx)\n", (long)XtWindow(widget));
 #endif /* DEBUGEVENTLOOP */
   display.mapped = 0;
   global.pause = global.state < 6;
@@ -1273,8 +1281,8 @@ ARGSEP  char    **argv
       XtParseTranslationTable(toplevel_translations));
   XtRealizeWidget(display.toplevel);
 #ifdef DEBUGEVENTLOOP
-  printf("Toplevel is 0x%lx\n", XtWindow(display.toplevel));
-  printf("Garden is 0x%lx\n", XtWindow(display.garden));
+  printf("Toplevel is 0x%lx\n", (long)XtWindow(display.toplevel));
+  printf("Garden is 0x%lx\n", (long)XtWindow(display.garden));
 #endif /* DEBUGEVENTLOOP */
   display.window = XtWindow(display.garden);
   timer_open();

@@ -1,5 +1,5 @@
 /* Copyright (C) 1993 Nathan Sidwell */
-/* RCS $Id: PixmapList.h,v 4.4 1993/12/14 16:55:52 nathan stable $ */
+/* RCS $Id: PixmapList.h,v 4.4 1993/12/14 16:55:52 nathan Stable $ */
 
 #ifndef Mred_PixmapList_h
 #define Mred_PixmapList_h

@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: scoring.c,v 4.10 1994/01/06 10:20:24 nathan stable $ */
+/* RCS $Id: scoring.c,v 4.11 1994/02/16 11:30:37 nathan Stable $ */
 /*{{{  file locking problems*/
 /*
  * USELOCKFILE file locking as suggested by
@@ -250,7 +250,7 @@ ARGSEP  uid_t     uid
 #else
   if(stream)
     /*{{{  get lock on the file*/
-    while(locking_file(stream))
+    while(lock_file(stream))
       {
 	if(errno == EINTR)
 	  continue;
@@ -293,7 +293,7 @@ FUNCARG((stream),
     }
 #else
   rewind(stream);
-  unlocking_file(stream);
+  unlock_file(stream);
   fclose(stream);
 #endif /* USELOCKFILE */
   return;

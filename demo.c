@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: demo.c,v 4.14 1994/01/25 18:33:03 nathan stable $ */
+/* RCS $Id: demo.c,v 4.14 1994/01/25 18:33:03 nathan Stable $ */
 #include "xmris.h"
 #define SCORING_LEN 22
 /*{{{  static*/

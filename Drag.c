@@ -1,5 +1,5 @@
 /* Copyright (C) 1993 Nathan Sidwell */
-/* RCS $Id: Drag.c,v 4.13 1993/11/01 16:23:50 nathan stable $ */
+/* RCS $Id: Drag.c,v 4.13 1993/11/01 16:23:50 nathan Stable $ */
 /* the drag widget is an override shell to be popped up
  * and follow the pointer until released.
  * A pixmap is displayed in the widget.

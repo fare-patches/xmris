@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: makecom.c,v 4.23 1994/02/08 18:52:34 nathan stable $ */
+/* RCS $Id: makecom.c,v 4.24 1994/02/16 11:30:37 nathan Stable $ */
 /* common make stuff for xmris and xmred, 
  * included from makemris and makemred
  */
@@ -78,13 +78,26 @@ ARGSEP  XtPointer *data
 {
   static XColor result;
   Status    status;
+  Colormap  colormap;
   
   if(to->size < sizeof(XColor))
     {
       to->size = sizeof(XColor);
       return False;
     }
-  status = XParseColor(display, *(Colormap *)args[1].addr,
+  if(args && *num_args > 1)
+    colormap = *(Colormap *)args[1].addr;
+  else
+    {
+      Screen    *screen;
+      
+      if(args && *num_args)
+	screen = *(Screen **)args[0].addr;
+      else
+	screen = DefaultScreenOfDisplay(display);
+      colormap = DefaultColormapOfScreen(screen);
+    }
+  status = XParseColor(display, colormap,
       (char CONST *)from->addr, to->addr ? (XColor *)to->addr : &result);
   if(status)
     {

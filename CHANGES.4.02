@@ -1,0 +1,12 @@
+XMRIS V4.02 changes from 4.01
+
+typos in scoring.c fixed about locking_file
+
+AllTarget removed from Imakefile, as its broke on too many systems
+
+Imakefile checks some required macros, and makes them up if
+they're not defined
+
+Keys displayed for DEBUGEVENTLOOP
+
+protected convert_string2color from NULL argument list

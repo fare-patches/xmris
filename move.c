@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: move.c,v 4.3 1993/10/25 12:02:18 nathan stable $ */
+/* RCS $Id: move.c,v 4.3 1993/10/25 12:02:18 nathan Stable $ */
 #include "xmris.h"
 /*{{{  prototypes*/
 static VOIDFUNC connect_hole PROTOARG((CELL *));

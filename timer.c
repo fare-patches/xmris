@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: timer.c,v 4.7 1994/01/31 17:40:36 nathan stable $ */
+/* RCS $Id: timer.c,v 4.7 1994/01/31 17:40:36 nathan Stable $ */
 /*{{{  the problem with real time under unix*/
 /*
  * Getting accurate, stable timing is difficult. An auto repeating

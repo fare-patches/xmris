@@ -1,5 +1,5 @@
 /* Copyright (C) 1993 Nathan Sidwell */
-/* RCS $Id: xmred.h,v 4.27 1994/01/06 10:20:24 nathan stable $ */
+/* RCS $Id: xmred.h,v 4.27 1994/01/06 10:20:24 nathan Stable $ */
 #define XMRED 1
 #define BUTTONS         5
 #include "common.h"

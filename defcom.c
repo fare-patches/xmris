@@ -1,7 +1,7 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
 /* additional sprites by Stefan Gustavson <stefang@isy.liu.se> */
 /* common define file for xmris and xmred, included from defmris or defmred */
-/* RCS $Id: defcom.c,v 4.25 1994/02/08 18:52:34 nathan stable $ */
+/* RCS $Id: defcom.c,v 4.25 1994/02/08 18:52:34 nathan Stable $ */
 /*{{{  some sprite info*/
 /* you can add your own sprites, if you like, but you have to be careful
  * to make sure that they look ok with both -swap and -noswap, and also

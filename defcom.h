@@ -1,6 +1,6 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
 /* this file is common to xmris and xmred, included from def*.h */
-/* RCS $Id: defcom.h,v 4.5 1994/01/25 18:33:03 nathan stable $ */
+/* RCS $Id: defcom.h,v 4.5 1994/01/25 18:33:03 nathan Stable $ */
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
 #define XtRGender       "Gender"

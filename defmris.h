@@ -1,6 +1,6 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
 /* definition header file for xmris */
-/* RCS $Id: defmris.h,v 4.2 1994/01/25 18:33:03 nathan stable $ */
+/* RCS $Id: defmris.h,v 4.2 1994/01/25 18:33:03 nathan Stable $ */
 #include "defcom.h"
 #define XtRKeySym "KeySym"
 extern COORD CONST she_hold[16];

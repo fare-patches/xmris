@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: xmred.c,v 4.11 1994/01/06 10:20:24 nathan stable $ */
+/* RCS $Id: xmred.c,v 4.11 1994/01/06 10:20:24 nathan Stable $ */
 /*{{{  include*/
 #include "xmred.h"
 #ifdef SCROLLBARBUGFIX

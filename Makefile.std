@@ -275,14 +275,14 @@ PICFLAGS = -fPIC
 # start of Imakefile
 
 # Copyright (C) 1993 Nathan Sidwell
-# RCS $Id: Imakefile,v 4.50 1994/02/08 18:52:34 nathan stable $
+# RCS $Id: Imakefile,v 4.51 1994/02/16 11:30:37 nathan Stable $
 
 # specify if this is a transputer target
 # #define transputerbuild 1
 
 # For full details of the switches herein, read the README file
-# Imake file for xmris V4.01 31 January 1994
-VERSION = 4.01
+# Imake file for xmris V4.02 15 February 1994
+VERSION = 4.02
 
 # compiler options
 #
@@ -369,7 +369,7 @@ MRISHDRS = xmris.h defmris.h
 MREDHDRS = xmred.h defmred.h
 COMMONSRCS = defcom.c makecom.c
 GARDENS = alphabet.gdn digits.gdn puzzle.gdn xmred.gdn
-FILES = CHANGES CHANGES.4.01 README COPYRIGHT Imakefile \
+FILES = CHANGES CHANGES.4.01 CHANGES.4.02 README COPYRIGHT Imakefile \
 	xmris.man xmred.man Xmris-ad.src
 MRISSRCS = apple.c defmris.c demo.c draw.c makemris.c \
 	monster.c move.c player.c scoring.c timer.c xmris.c
@@ -453,9 +453,11 @@ ALLFILES = $(FILES) $(GARDENS) $(COMMONHDRS) $(MRISHDRS) $(MREDHDRS) \
 all :: initialize
 	@#keep gnumake happy
 
-all:: xmris xmred
+all :: xmris xmred
+	@#keep gnumake happy
 
-all:: README.xmris README.xmred Xmris.ad
+all :: README.xmris README.xmred Xmris.ad
+	@#keep gnumake happy
 
 # rules to make sure the initialize thing is done
 clean :: initialize
