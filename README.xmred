@@ -12,8 +12,8 @@ SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
      xxxxmmmmrrrreeeedddd [-option ...] [-toolkitoption ...]
 
 DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
-     Xmred is a tool for creating and editing  alternate  gardens
-     for xmris.  Hopefully its user interface is intuitive enough
+     Mr Ed is a tool for creating and editing  alternate  gardens
+     for Mr Is.  Hopefully its user interface is intuitive enough
      that most of this manual page need not be read by  a  casual
      user.
 
@@ -73,7 +73,7 @@ XMRED(6)                 Games and Demos                 XMRED(6)
 
           explicit  apple  locations  are placed. To select which
           set is being controlled, press on the relevant quadrant
-          of  the  icon.  One of these sets is used when xmris is
+          of  the  icon.  One of these sets is used when Mr Is is
           used with the +random option. You can place apples any-
           where there isn't a path, even in an unstable location,
           which will immediately fall. Placing an explicit  apple
@@ -81,7 +81,7 @@ XMRED(6)                 Games and Demos                 XMRED(6)
 
      RRRRaaaannnnddddoooommmm
           This controls where apples may be placed  randomly,  if
-          xmris  is  started with the -random option. Apples will
+          Mr  Is  is started with the -random option. Apples will
           only be placed on the  specified  locations,  or  where
           ever  an  explicit  apple  could be located. Unless you
           specify otherwise, random apples may  be  located  any-
@@ -159,7 +159,7 @@ XMRED(6)                 Games and Demos                 XMRED(6)
      on this area will perform the option currently bound to that
      button. You will notice the totals change when you do this.
 
-     Xmred will use colour sprites, if the visual permits it (has
+     Mr Ed will use colour sprites, if the visual permits it (has
      a  colour  map  size of more than 15, and you haven't forced
      monochrome). All the colours bar black and  white  are  user
      definable.  There  are  four  sets, one for each of the four
@@ -177,7 +177,7 @@ XMRED(6)                 Games and Demos                 XMRED(6)
      names.
 
 OOOOPPPPTTTTIIIIOOOONNNNSSSS
-     Xmred accepts the standard X Toolkit  options,  as  well  as
+     Mr Ed accepts the standard X Toolkit  options,  as  well  as
      these.
 
      ----hhhheeeellllpppp
@@ -225,18 +225,18 @@ XMRED(6)                 Games and Demos                 XMRED(6)
      ----mmmmrrrriiiissss
      ----mmmmssssiiiitttt
      ----ggggeeeennnnddddeeeerrrr _g_e_n_d_e_r
-          Xmred has two sets of sprites. Mris selects the classic
+          Mr Ed has two sets of sprites. Mris selects the classic
           sprites,  while  msit  selects a more modern set. Valid
           genders are  'he',  'she',  'female',  'male',  'msit',
           'mris', 'boy', 'girl'.
 
      ----ddddeeeepppptttthhhh _d_e_p_t_h
-          Xmred will use the default depth of the screen. You may
+          Mr Ed will use the default depth of the screen. You may
           wish to override that by using this option. Selecting a
           different depth may affect the visual selected.
 
      ----vvvviiiissssuuuuaaaallll _v_i_s_u_a_l-_c_l_a_s_s
-          Xmred will pick the default visual, but you  can  over-
+          Mr Ed will pick the default visual, but you  can  over-
           ride  that  by  specifying  a  particular visual class.
           Valid   visuals   are   'PseudoColor',   'DirectColor',
           'TrueColor',   'StaticColor',  'GrayScale',  and  'Sta-
@@ -246,8 +246,8 @@ XMRED(6)                 Games and Demos                 XMRED(6)
           to limitations of the server or display.
 
      ----pppprrrriiiivvvvaaaatttteeee
-          This forces xmred to allocate  a  private  colour  map.
-          Normally xmred will share the default colour map of the
+          This forces Mr Ed to allocate  a  private  colour  map.
+          Normally Mr Ed will share the default colour map of the
           selected visual, but if that does not have enough  free
           colour cells then some colours will have to be shared.
 
@@ -287,10 +287,10 @@ XMRED(6)                 Games and Demos                 XMRED(6)
           black and white.
 
 RRRREEEESSSSOOOOUUUURRRRCCCCEEEESSSS
-     Xmred uses the X toolkit application resource mechanism  for
+     Mr Ed uses the X toolkit application resource mechanism  for
      setting up the environment. Application resource items start
-     with 'Xmris', so that xmred will pick up your  defaults  for
-     xmris.  The  resource  name  can  be  derived from the given
+     with 'Xmris', so that Mr Ed will pick up your  defaults  for
+     Mr  Is.  The  resource  name  can  be derived from the given
      resource class by decapitalizing it. For  example  'cherryS-
      talk'  is the resource name for the class 'cherryStalk'. The
      following classes are used (choices in '{}' and defaults  in
@@ -340,8 +340,8 @@ XMRED(6)                 Games and Demos                 XMRED(6)
 CCCCOOOOLLLLOOOOUUUURRRR RRRREEEESSSSOOOOUUUURRRRCCCCEEEESSSS
      There are many colour name defaults. For a full  description
      see  the  xmris(6)  manual  page,  but note that not all the
-     colors are used for xmred. Provided that you  specified  the
-     colour  resources  for xmris loosely enough, xmred will pick
+     colors are used for Mr Ed. Provided that you  specified  the
+     colour  resources  for Mr Is loosely enough, Mr Ed will pick
      up the same overrides. The foreground  color  for  the  Icon
      widgets  is copied from the apple faint color on color visu-
      als (this is important for the noswap color scheme).
@@ -358,14 +358,14 @@ WWWWIIIIDDDDGGGGEEEETTTT RRRREEEESSSSOOOOUUUUR
      There is an additional composite resource  for  children  of
      composite  widgets  (Paned and SimpleMenu), called 'attach'.
      This allows you to change the ordering of  sibling  widgets.
-     Xmred  uses  this resource to determine the correct order to
+     Mr  Ed  uses this resource to determine the correct order to
      create the sibling widgets. For instance, to get the control
      panel  on  the left of the garden widget, use the constraint
      '*one.garden.attach:panel'.  In addition,  the  widgets  are
      created  in  such an order that Form constraints 'fromHoriz'
      and 'fromVert' can be specified in any order.
 
-     There are four new widgets used for xmred,  'Icon',  'Drag',
+     There are four new widgets used for Mr Ed,  'Icon',  'Drag',
      'Garden' and 'PixmapList'.
 
      The Icon widget is a subclass of Simple. It displays a  pix-
@@ -441,12 +441,12 @@ FFFFIIIILLLLEEEESSSS
      ............////aaaapppppppp----ddddeeeeffffaaaauuuullllttttssss////XXXXmmmmrrrriiiissss....aaaadddd
      ............////aaaapppppppp----ddddeeeeffffaaaauuuullllttttssss////XXXXmmmmrrrriiiissss----ccccoooolllloooorrrr....aaaadddd
           You can place you favourite key bindings and  stuff  in
-          an  application resource file, and xmred will use them,
+          an  application resource file, and Mr Ed will use them,
           rather than its compiled defaults.  See X for  informa-
           tion about how these are searched.
 
      ............////aaaapppppppp----ddddeeeeffffaaaauuuullllttttssss////xxxxmmmmrrrriiiissss////<<<<ggggaaaarrrrddddeeeennnnssss>>>>
-          Search path for loadable gardens used by xmris.
+          Search path for loadable gardens used by Mr Is.
 
 SSSSEEEEEEEE AAAALLLLSSSSOOOO
      xxxxmmmmrrrriiiissss(6)
@@ -474,7 +474,7 @@ XMRED(6)                 Games and Demos                 XMRED(6)
 BBBBUUUUGGGGSSSS
      The visual class name conversion is performed by a  standard
      toolkit  routine.  It  accepts  only  American spelling, the
-     English spelling of
+     English spelling of 'grey' and 'colour' are not allowed.
 
      The Drag widget should perhaps just be  a  shell,  having  a
      single child of Icon, to do the rendering.
@@ -487,10 +487,10 @@ CCCCOOOOPPPPYYYYRRRRIIIIGGGGHHHHTTTT
      Copyright (C) 1993 Nathan Sidwell.
 
 AAAAUUUUTTTTHHHHOOOORRRR
-     Nathan Sidwell <nathan@pact.srf.ac.uk>
+     Nathan            Sidwell            <nathan@pact.srf.ac.uk>
+     <http://www.pact.srf.ac.uk/~nathan/>
 
      Additional sprites by Stefan Gustavson <stefang@isy.liu.se>
-
 
 
 

@@ -3,14 +3,15 @@
 #endif
 
 XCOMM Copyright (C) 1993 Nathan Sidwell
-XCOMM RCS $Id: Imakefile,v 4.51 1994/02/16 11:30:37 nathan Stable $
+XCOMM RCS $Id: Imakefile,v 4.57 1995/12/22 11:32:07 nathan Exp $
 
 XCOMM specify if this is a transputer target
 XCOMM #define transputerbuild 1
 
 XCOMM For full details of the switches herein, read the README file
-XCOMM Imake file for xmris V4.02 15 February 1994
-VERSION = 4.02
+XCOMM Imake file for xmris V4.04 23 July 1995
+VERSION = 4.04
+APP = xmris
 
 /* Imake compatibility */
 #ifndef MakeDir
@@ -19,8 +20,12 @@ VERSION = 4.02
 
 #ifndef InstallManPageAliases
 #define InstallManPageAliases(name,dir,target) \
-install.man :: \@@\
-	ln -s ./name.$(MANSUFFIX) $(DESTDIR)dir/target.$(MANSUFFIX) \@@
+install.man :: @@\
+	ln -s ./name.$(MANSUFFIX) $(DESTDIR)dir/target.$(MANSUFFIX) @@
+#endif
+
+#ifndef NullParameter
+#define NullParameter
 #endif
 
 /* to inhibit app defaults installation */
@@ -31,14 +36,19 @@ XCOMM
 #if HasGcc
 EXTRACCOPTIONS = -Wall -Wpointer-arith -Wwrite-strings -Wtraditional
 #endif /* HasGcc */
+#if defined(LinuxArchitecture)
+#define STATICDEBUG -static
+#else
+#define STATICDEBUG
+#endif
 XCOMM Is it a knr compiler which _doesn't_ have void?
 KNR = 
 XCOMM KNR = -DSTRICTKNR
 XCOMM do you trust the code?
-NDEBUG =
+XCOMM NDEBUG =
 XCOMM NDEBUG = -DNDEBUG
 XCOMM Allow debugging?
-CDEBUGFLAGS = -g
+XCOMM CDEBUGFLAGS = -g STATICDEBUG
 XCOMM debug event loop?
 XCOMM CDEBUGFLAGS += -DDEBUGEVENTLOOP
 #ifdef HPArchitecture
@@ -60,9 +70,9 @@ XCOMM
 /* You must specify a fixed width font that exists. */
 /* #define thefont "-*-courier-*-r-*-*-18-*-*-*-m-*-*-*" */
 XCOMM where is the high score file?
-SCORE = $(LOCAL)/lib/xmris
-XCOMM SCORE = $(DESTDIR)$(LIBDIR)/xmris
-/* to install default gardens not in app_defaults/xmris
+XCOMM SCORE = $(LOCAL)/lib/$(APP)
+SCORE = $(LIBDIR)/$(APP)
+/* to install default gardens not in app_defaults/$(APP)
 /* #define InstallDefaultGardens $(SCORE)/gardens */
 
 XCOMM The following defines are needed for some implementations and/or sites.
@@ -98,9 +108,9 @@ XCOMM (the personal score files go in users' home dirs.)
 XCOMM INSTSCOREFLAGS = -m 777
 XCOMM INSTMRISFLAGS = $(INSTPGMFLAGS)
 XCOMM If you're not installing in the default locations
-DESTDIR = 
-THEBINDIR = $(LOCAL)/bin
-THEMANDIR = $(LOCAL)/man/man6
+XCOMM DESTDIR = 
+XCOMM THEBINDIR = $(LOCAL)/bin
+XCOMM THEMANDIR = $(LOCAL)/man/man6
 #endif /* transputerbuild */
 
 #ifndef thefont
@@ -112,7 +122,7 @@ FONT = thefont
 
 #ifndef InstallDefaultGardens
 #ifdef InstallAppDefFiles
-#define InstallDefaultGardens $(DESTDIR)/$(XAPPLOADDIR)/xmris
+#define InstallDefaultGardens $(DESTDIR)/$(XAPPLOADDIR)/$(APP)
 #endif
 #endif
 
@@ -145,11 +155,11 @@ XCOMM ICDEBUGFLAGS = -g
 
 XCOMM default args for RCS ci and co
 XCOMM override from the command line to do other things
-CIFLAGS =
-COFLAGS =
+CIFLAGS = -u
+COFLAGS = -l
 RCSFLAGS =
 
-DEFINES = $(EXTRACCOPTIONS) -DFONT_NAME='$(FONT)' $(NDEBUG) \ 
+DEFINES = $(EXTRACCOPTIONS) -DFONT_NAME='$(FONT)' $(NDEBUG) \
 	-DSCORE_DIR='"$(SCORE)"' $(LOCK) $(TIME) $(KNR) -DSCROLLBARBUGFIX
 LOCAL_LIBRARIES = $(XAWLIB) $(XTOOLLIB) $(XMULIB) $(XLIB) $(MATHSLIB)
 DEPLIBS = $(DEPXLIB)
@@ -160,88 +170,93 @@ MRISHDRS = xmris.h defmris.h
 MREDHDRS = xmred.h defmred.h
 COMMONSRCS = defcom.c makecom.c
 GARDENS = alphabet.gdn digits.gdn puzzle.gdn xmred.gdn
-FILES = CHANGES CHANGES.4.01 CHANGES.4.02 README COPYRIGHT Imakefile \
+FILES = CHANGES CHANGES.4.01 CHANGES.4.02 CHANGES.4.03 CHANGES.4.04 \
+	README COPYRIGHT Imakefile \
 	xmris.man xmred.man Xmris-ad.src
-MRISSRCS = apple.c defmris.c demo.c draw.c makemris.c \ 
+MRISSRCS = apple.c defmris.c demo.c draw.c makemris.c \
 	monster.c move.c player.c scoring.c timer.c xmris.c
-MRISOBJS = $(MRISSRCS:%.c=%.object)
+MRISOBJS = $(MRISSRCS:.c=.object)
 SCRAMSRCS = scram.c
-SCRAMOBJS = $(SCRAMSRCS:%.c=%.o)
+SCRAMOBJS = $(SCRAMSRCS:.c=.o)
 WIDGETSRCS = Drag.c Icon.c PixmapList.c
-WIDGETOBJS = $(WIDGETSRCS:%.c=%.object)
-WIDGETHDRS = $(WIDGETSRCS:%.c=%.h)
-MREDSRCS = all.c control.c defmred.c dialogs.c garden.c makemred.c \ 
+WIDGETOBJS = $(WIDGETSRCS:.c=.object)
+WIDGETHDRS = $(WIDGETSRCS:.c=.h)
+MREDSRCS = all.c control.c defmred.c dialogs.c garden.c makemred.c \
 	menubar.c xmred.c
-MREDOBJS = $(MREDSRCS:%.c=%.object)
+MREDOBJS = $(MREDSRCS:.c=.object)
 XCOMM name all the sprites -- these are root names
-APPLE = bitmaps/apple/apldcy bitmaps/apple/aplnorm \ 
-	bitmaps/apple/aplrock bitmaps/apple/aplrot \ 
-	bitmaps/apple/aplspl bitmaps/apple/gstnorm \ 
-	bitmaps/apple/gstrock bitmaps/apple/aplsmall \ 
-	bitmaps/apple/bigedge bitmaps/apple/smledge
-BOARD = bitmaps/board/cherry bitmaps/board/digits \ 
-	bitmaps/board/seat bitmaps/board/ball
-CHOMP = bitmaps/chomp/hchmpc bitmaps/chomp/hchmpo \ 
-	bitmaps/chomp/schmpc bitmaps/chomp/schmpo
-DRONE = bitmaps/drone/hdronw1 bitmaps/drone/hdronw2 \ 
-	bitmaps/drone/hdronf \ 
-	bitmaps/drone/sdronw1 bitmaps/drone/sdronw2 \ 
-	bitmaps/drone/sdronf
-ICON = bitmaps/icon/solidi bitmaps/icon/shelli \ 
-	bitmaps/icon/solidm bitmaps/icon/shellm \ 
-	bitmaps/icon/solidr bitmaps/icon/shellr \ 
-	bitmaps/icon/solids bitmaps/icon/shells \ 
-	bitmaps/icon/solidt bitmaps/icon/shellt
-MUNCH = bitmaps/munch/hmnchw1 bitmaps/munch/hmnchw2 \ 
-	bitmaps/munch/hmnchf \ 
-	bitmaps/munch/smnchw1 bitmaps/munch/smnchw2 \ 
-	bitmaps/munch/smnchf
-NORMAL = bitmaps/normal/hnormw1 bitmaps/normal/hnormw2 \ 
-	bitmaps/normal/hnormf bitmaps/normal/hden \ 
-	bitmaps/normal/snormw1 bitmaps/normal/snormw2 \ 
-	bitmaps/normal/snormf bitmaps/normal/sden
-PLAYER = bitmaps/player/hplyrf \ 
-	bitmaps/player/hplyrh1 bitmaps/player/hplyrh2 \ 
-	bitmaps/player/hplyrp1 bitmaps/player/hplyrp2 \ 
-	bitmaps/player/hplyrs1 bitmaps/player/hplyrs2 \ 
-	bitmaps/player/hplyrw1 bitmaps/player/hplyrw2 \ 
-	bitmaps/player/splyrf \ 
-	bitmaps/player/splyrp1 bitmaps/player/splyrp2 \ 
-	bitmaps/player/splyrs1 bitmaps/player/splyrs2 \ 
-	bitmaps/player/splyrw1 bitmaps/player/splyrw2 \ 
-	bitmaps/player/splyrd1 bitmaps/player/splyrd2 \ 
-	bitmaps/player/splyrh1 bitmaps/player/splyrh2
-PRIZE = bitmaps/prize/cake bitmaps/prize/spanner \ 
-	bitmaps/prize/brolly bitmaps/prize/mushrm bitmaps/prize/clock \ 
-	bitmaps/prize/gem1 bitmaps/prize/gem2 bitmaps/prize/gem3
-XTRA = bitmaps/xtra/hxtraf bitmaps/xtra/hxtraw1 bitmaps/xtra/hxtraw2 \ 
-	bitmaps/xtra/sxtraf bitmaps/xtra/sxtraw1 bitmaps/xtra/sxtraw2 \ 
-	bitmaps/xtra/xtrbold bitmaps/xtra/xtrfaint
-EDIT = bitmaps/edit/bigearw bitmaps/edit/bigsarw \ 
-	bitmaps/edit/smlearw bitmaps/edit/smlsarw bitmaps/edit/path \ 
-	bitmaps/edit/red bitmaps/edit/green bitmaps/edit/blue \ 
-	bitmaps/edit/include bitmaps/edit/iconi bitmaps/edit/boardi \ 
-	bitmaps/edit/warnon bitmaps/edit/warnoff
-BITMAPS = bitmaps/bitmaps/edge bitmaps/bitmaps/fill0 \ 
-	bitmaps/bitmaps/fill1 bitmaps/bitmaps/fill2 \ 
-	bitmaps/bitmaps/fill3 bitmaps/bitmaps/rect \ 
-	bitmaps/bitmaps/oblong bitmaps/bitmaps/mris \ 
-	bitmaps/bitmaps/msit bitmaps/bitmaps/mred \
-	bitmaps/bitmaps/ghosting
-ALLFILES = $(FILES) $(GARDENS) $(COMMONHDRS) $(MRISHDRS) $(MREDHDRS) \ 
-	$(COMMONSRCS) $(MRISSRCS) $(SCRAMSRCS) $(MREDSRCS) \ 
-	$(WIDGETSRCS) $(WIDGETHDRS) \ 
-	$(APPLE:%=%.bw) $(APPLE:%=%.rgb) $(BOARD:%=%.bw) $(BOARD:%=%.rgb) \ 
-	$(CHOMP:%=%.bw) $(CHOMP:%=%.rgb) $(DRONE:%=%.bw) $(DRONE:%=%.rgb) \ 
-	$(ICON:%=%.bw) $(ICON:%=%.rgb) $(MUNCH:%=%.bw) $(MUNCH:%=%.rgb) \ 
-	$(NORMAL:%=%.bw) $(NORMAL:%=%.rgb) $(PLAYER:%=%.bw) $(PLAYER:%=%.rgb) \ 
-	$(PRIZE:%=%.bw) $(PRIZE:%=%.rgb) $(XTRA:%=%.bw) $(XTRA:%=%.rgb) \ 
-	$(EDIT:%=%.bw) $(EDIT:%=%.rgb) $(BITMAPS:%=%.h)
+APPLE = bitmaps/apple/apldcy.r bitmaps/apple/aplnorm.r \
+	bitmaps/apple/aplrock.r bitmaps/apple/aplrot.r \
+	bitmaps/apple/aplspl.r bitmaps/apple/gstnorm.r \
+	bitmaps/apple/gstrock.r bitmaps/apple/aplsmall.r \
+	bitmaps/apple/bigedge.r bitmaps/apple/smledge.r
+BOARD = bitmaps/board/cherry.r bitmaps/board/digits.r \
+	bitmaps/board/seat.r bitmaps/board/ball.r
+CHOMP = bitmaps/chomp/hchmpc.r bitmaps/chomp/hchmpo.r \
+	bitmaps/chomp/schmpc.r bitmaps/chomp/schmpo.r
+DRONE = bitmaps/drone/hdronw1.r bitmaps/drone/hdronw2.r \
+	bitmaps/drone/hdronf.r \
+	bitmaps/drone/sdronw1.r bitmaps/drone/sdronw2.r \
+	bitmaps/drone/sdronf.r
+ICON = bitmaps/icon/solidi.r bitmaps/icon/shelli.r \
+	bitmaps/icon/solidm.r bitmaps/icon/shellm.r \
+	bitmaps/icon/solidr.r bitmaps/icon/shellr.r \
+	bitmaps/icon/solids.r bitmaps/icon/shells.r \
+	bitmaps/icon/solidt.r bitmaps/icon/shellt.r
+MUNCH = bitmaps/munch/hmnchw1.r bitmaps/munch/hmnchw2.r \
+	bitmaps/munch/hmnchf.r \
+	bitmaps/munch/smnchw1.r bitmaps/munch/smnchw2.r \
+	bitmaps/munch/smnchf.r
+NORMAL = bitmaps/normal/hnormw1.r bitmaps/normal/hnormw2.r \
+	bitmaps/normal/hnormf.r bitmaps/normal/hden.r \
+	bitmaps/normal/snormw1.r bitmaps/normal/snormw2.r \
+	bitmaps/normal/snormf.r bitmaps/normal/sden.r
+PLAYER = bitmaps/player/hplyrf.r \
+	bitmaps/player/hplyrh1.r bitmaps/player/hplyrh2.r \
+	bitmaps/player/hplyrp1.r bitmaps/player/hplyrp2.r \
+	bitmaps/player/hplyrs1.r bitmaps/player/hplyrs2.r \
+	bitmaps/player/hplyrw1.r bitmaps/player/hplyrw2.r \
+	bitmaps/player/splyrf.r \
+	bitmaps/player/splyrp1.r bitmaps/player/splyrp2.r \
+	bitmaps/player/splyrs1.r bitmaps/player/splyrs2.r \
+	bitmaps/player/splyrw1.r bitmaps/player/splyrw2.r \
+	bitmaps/player/splyrd1.r bitmaps/player/splyrd2.r \
+	bitmaps/player/splyrh1.r bitmaps/player/splyrh2.r
+PRIZE = bitmaps/prize/cake.r bitmaps/prize/spanner.r \
+	bitmaps/prize/brolly.r bitmaps/prize/mushrm.r bitmaps/prize/clock.r \
+	bitmaps/prize/gem1.r bitmaps/prize/gem2.r bitmaps/prize/gem3.r
+XTRA = bitmaps/xtra/hxtraf.r bitmaps/xtra/hxtraw1.r bitmaps/xtra/hxtraw2.r \
+	bitmaps/xtra/sxtraf.r bitmaps/xtra/sxtraw1.r bitmaps/xtra/sxtraw2.r \
+	bitmaps/xtra/xtrbold.r bitmaps/xtra/xtrfaint.r
+EDIT = bitmaps/edit/bigearw.r bitmaps/edit/bigsarw.r \
+	bitmaps/edit/smlearw.r bitmaps/edit/smlsarw.r bitmaps/edit/path.r \
+	bitmaps/edit/red.r bitmaps/edit/green.r bitmaps/edit/blue.r \
+	bitmaps/edit/include.r bitmaps/edit/iconi.r bitmaps/edit/boardi.r \
+	bitmaps/edit/warnon.r bitmaps/edit/warnoff.r
+BITMAPS = bitmaps/bitmaps/edge.r bitmaps/bitmaps/fill0.r \
+	bitmaps/bitmaps/fill1.r bitmaps/bitmaps/fill2.r \
+	bitmaps/bitmaps/fill3.r bitmaps/bitmaps/rect.r \
+	bitmaps/bitmaps/oblong.r bitmaps/bitmaps/mris.r \
+	bitmaps/bitmaps/msit.r bitmaps/bitmaps/mred.r \
+	bitmaps/bitmaps/ghosting.r
+ALLFILES = $(FILES) $(GARDENS) $(COMMONHDRS) $(MRISHDRS) $(MREDHDRS) \
+	$(COMMONSRCS) $(MRISSRCS) $(SCRAMSRCS) $(MREDSRCS) \
+	$(WIDGETSRCS) $(WIDGETHDRS) \
+	$(APPLE:.r=.bw) $(APPLE:.r=.rgb) $(BOARD:.r=.bw) $(BOARD:.r=.rgb) \
+	$(CHOMP:.r=.bw) $(CHOMP:.r=.rgb) $(DRONE:.r=.bw) $(DRONE:.r=.rgb) \
+	$(ICON:.r=.bw) $(ICON:.r=.rgb) $(MUNCH:.r=.bw) $(MUNCH:.r=.rgb) \
+	$(NORMAL:.r=.bw) $(NORMAL:.r=.rgb) $(PLAYER:.r=.bw) $(PLAYER:.r=.rgb) \
+	$(PRIZE:.r=.bw) $(PRIZE:.r=.rgb) $(XTRA:.r=.bw) $(XTRA:.r=.rgb) \
+	$(EDIT:.r=.bw) $(EDIT:.r=.rgb) $(BITMAPS:.r=.h)
 
 XCOMM using alltarget can cause gnumake to try and make a target called all.
 XCOMM the reason is the All Target macro has no rules, so gnumake tries
 XCOMM to find an implicit one. Other makes just give up.
 all :: initialize
+	@echo "NOTE:You might get lots of warnings about discarding const from"
+	@echo "NOTE:pointer target type. Ignore these. It's because the X header"
+	@echo "NOTE:files aren't const correct. Fiddle with XrmOptionDescRec in"
+	@echo "NOTE:Xresource.h and String in Intrinsic.h by adding an _Xconst."
 	@#keep gnumake happy
 
 #if transputerbuild
@@ -258,8 +273,10 @@ all :: README.xmris README.xmred Xmris.ad
 
 XCOMM rules to make sure the initialize thing is done
 clean :: initialize
+	@#keep gnumake happy
 
 install :: initialize
+	@#keep gnumake happy
 
 XCOMM xmris build
 #if transputerbuild
@@ -267,7 +284,7 @@ xmris.btl : xmris.lku
 	$(ICOLLECT) -t xmris.lku
 
 xmris.lku : $(MRISOBJS)
-	$(ILINK) $(TRANSPUTER) $(MRISOBJS) $(ILINKOPT) -o xmris.lku \ 
+	$(ILINK) $(TRANSPUTER) $(MRISOBJS) $(ILINKOPT) -o xmris.lku \
 	  $(IXLIBS) $(ILIBS)
 
 clean ::
@@ -291,7 +308,7 @@ xmred.btl : xmred.lku
 	$(ICOLLECT) -t xmred.lku
 
 xmred.lku : $(MREDOBJS)
-	$(ILINK) $(TRANSPUTER) $(MREDOBJS) $(ILINKOPT) -o xmred.lku \ 
+	$(ILINK) $(TRANSPUTER) $(MREDOBJS) $(ILINKOPT) -o xmred.lku \
 	  $(IXLIBS) $(ILIBS)
 
 clean ::
@@ -331,27 +348,27 @@ install ::
 	MakeDir($(SCORE))
 	@#not all $(INSTALL) have a -d flag, have to do it explicitly
 	@echo installing $(INSTSCOREFLAGS) $(SCORE)
-	@set -- $(INSTSCOREFLAGS) ; \ 
-	while [ $$# -ne 0 ] ; \ 
-	do \ 
-	case "$$1" in \ 
-	"-o") shift ; chown $$1 $(SCORE) ; echo owner is $$1 ;; \ 
-	"-m") shift ; chmod $$1 $(SCORE) ;; \ 
-	"-g") shift ; chgrp $$1 $(SCORE) ; echo group is $$1 ;; \ 
-	*) echo unknown option '$$1' ;; \ 
-	esac ; \ 
-	shift ; \ 
+	@set -- $(INSTSCOREFLAGS) ; \
+	while [ $$# -ne 0 ] ; \
+	do \
+	case "$$1" in \
+	"-o") shift ; chown $$1 $(SCORE) ; echo owner is $$1 ;; \
+	"-m") shift ; chmod $$1 $(SCORE) ;; \
+	"-g") shift ; chgrp $$1 $(SCORE) ; echo group is $$1 ;; \
+	*) echo unknown option '$$1' ;; \
+	esac ; \
+	shift ; \
 	done
 
 #ifdef InstallDefaultGardens
 XCOMM install default gardens
 install :: $(GARDENS)
 	MakeDir(InstallDefaultGardens)
-	@set dummy $(GARDENS) ; shift ; \ 
-	while [ $$# != 0 ] ; \ 
-	do \ 
-	  (set -x ; $(INSTALL) -c $(INSTAPPFLAGS) $$1 InstallDefaultGardens/$$1) ; \ 
-	  shift ; \ 
+	@set dummy $(GARDENS) ; shift ; \
+	while [ $$# != 0 ] ; \
+	do \
+	  (set -x ; $(INSTALL) -c $(INSTAPPFLAGS) $$1 InstallDefaultGardens/$$1) ; \
+	  shift ; \
 	done
 #endif /* InstallDefaultGardens */
 
@@ -372,51 +389,95 @@ XCOMM where we are and then tarring the files in here with the directory
 XCOMM prefix tacked on. But we don't know the directory name we're in so
 XCOMM we have to determine that, and if it is already what we want, then
 XCOMM don't make a link
-tar : checkout README.xmris README.xmred
-	@if [ ! -f Makefile.std ] ; then \ 
-	  echo No Makefile.std, winging it ; \ 
-	  cp Makefile Makefile.std ; \ 
-	elif [ `ls -t Makefile Makefile.std | \ 
-	    sed '2,$$d'` = Makefile ] ; then \ 
-	  echo Warning:Makefile.std is older than Makefile ; \ 
+tar : $(ALLFILES) README.xmris README.xmred
+	@if [ ! -f Makefile.std ] ; then \
+	  echo No Makefile.std, winging it ; \
+	  cp Makefile Makefile.std ; \
+	elif [ `ls -t Makefile Makefile.std | \
+	    sed '2,$$d'` = Makefile ] ; then \
+	  echo Warning:Makefile.std is older than Makefile ; \
 	fi
-	@echo Tarring \& feathering into xmris.$(VERSION).tar.gz
-	@DIR=`pwd | sed "s+/.*/++"` ; \ 
-	  if [ "$$DIR" != "xmris.$(VERSION)" ] ; then \ 
-	    $(RM) ../xmris.$(VERSION) ; $(LN) ./$$DIR ../xmris.$(VERSION) ; \ 
-	  fi ; \ 
-	  (cd .. ;  tar cf - `set README.xmris README.xmred Makefile.std \ 
-	      $(ALLFILES) ; \ 
-	    while [ $$# -ne 0 ] ; \ 
-	    do echo xmris.$(VERSION)/$$1 ; shift ; \ 
-	    done`) | \ 
-	  gzip -f > xmris.$(VERSION).tar.gz ; \ 
-	  if [ "$$DIR" != "xmris.$(VERSION)" ]; then \ 
-	    $(RM) ../xmris.$(VERSION) ; \ 
-	  fi
+	@echo Tarring \& feathering into $(APP).$(VERSION).tgz
+	@DIR=`pwd | sed "s+/.*/++"` ; rm="" ; \
+	if [ ! -x ../$(APP).$(VERSION) ] ; then \
+	  rm="$(RM) ../$(APP).$(VERSION)" ; \
+	  $(LN) ./$$DIR ../$(APP).$(VERSION) ; \
+	fi ; \
+	(cd .. ;  tar cf - `set README.xmris README.xmred Makefile.std \
+	    $(ALLFILES) ; \
+	  while [ $$# -ne 0 ] ; \
+	  do echo $(APP).$(VERSION)/$$1 ; shift ; \
+	  done`) | \
+	gzip -f > $(APP).$(VERSION).tgz ; \
+	$$rm
 
-XCOMM checkpoint the RCS files
-checkpoint.all : checkout
-	@ARGS='$(CIFLAGS)' ; \ 
-	echo Checkpointing all files with $${ARGS:-'no options'}
-	@ci $(CIFLAGS) $(ALLFILES)
+XCOMM checkin all the checked out files
+XCOMM you can use MSG to set the checkin message
+checkin : $(ALLFILES)
+	@ARGS='$(CIFLAGS)' ; \
+	echo Checking in locked files with $${ARGS:-'no options'}
+	@ARGS='$(MSG)' ; \
+	FILELIST=`set $(ALLFILES) ; \
+	  (while [ $$# -ne 0 ] ; \
+	  do if [ -w $$1 ] ; then echo $$1 ; fi ; \
+	    shift ; \
+	  done) | sort` ; \
+	if [ -z "$$FILELIST" ] ; then \
+	  echo Nothing to do, all up to date ; \
+	elif [ 0$${ARGS:+1} -ne 0 ] ; then \
+	  echo Label \''$(MSG)'\' ; \
+	  ci $(CIFLAGS) -m"$(MSG)" $$FILELIST ; \
+	else \
+	  ci $(CIFLAGS) $$FILELIST ; \
+	fi ; \
 
-checkpoint : initialize
-	@ARGS='$(CIFLAGS)' ; \ 
-	echo Checkpointing locked files with $${ARGS:-'no options'}
-	@ci $(CIFLAGS) `set $(ALLFILES) ; \ 
-	  while [ $$# -ne 0 ] ; \ 
-	  do if [ -w $$1 ] ; then echo $$1 ; fi ; \ 
-	    shift ; \ 
+XCOMM checkout all the files, with COFLAGS args
+checkout :
+	@ARGS='$(COFLAGS)' ; \
+	echo Checking out all files with $${ARGS:-'no options'}
+	@co $(COFLAGS) `set $(ALLFILES) ; \
+	  while [ $$# -ne 0 ] ; \
+	  do if [ ! -w $$1 ] ; then echo $$1 ; fi ; \
+	    shift ; \
 	  done`
 
-rcs : checkout
-	@ARGS='$(RCSFLAGS)' ; \ 
+rcs : checkin
+	@ARGS='$(RCSFLAGS)' ; \
 	echo RCSing all files with $${ARGS:-'no options'}
-	@rcs $(RCSFLAGS) $(ALLFILES)
+	rcs $(RCSFLAGS) $(ALLFILES)
 
-checkout : initialize $(ALLFILES)
-	@#keep gnumake happy
+XCOMM upload a tar file into this directory
+upload :
+	@arc=$(APP).$(VERSION).tgz ; \
+	if [ ! -r $$arc ] ; then \
+	  arc=$(APP).tgz ; \
+	fi ; \
+	echo Uploading from tar file $$arc ; \
+	echo Locking files about to be uploaded ; \
+	for file in `gunzip -c $$arc | tar tf -` ; \
+	do \
+	  base=`echo $$file | sed 's+^[^/]*/++'` ; \
+	  if [ ! -w $$base ] ; then \
+	    if [ -r `echo ./$$base | sed 's+/[^/]*$$++'`/RCS/`echo $$base | sed 's+.*/++'`,v ] ; then \
+	      co -l $$base ; \
+	    fi ; \
+	  fi ; \
+	done ; \
+	echo Commencing upload from $$arc ; \
+	DIR=`pwd | sed "s+/.*/++"` ; rm="" ; \
+	if [ ! -x ../$(APP).$(VERSION) ] ; then \
+	  rm="$(RM) ../$(APP).$(VERSION)" ; \
+	  $(LN) ./$$DIR ../$(APP).$(VERSION) ; \
+	fi ; \
+	(cd .. ; gunzip -c $(APP).$(VERSION)/$$arc | tar xvf -) ; \
+	$$rm ; \
+	echo Chmoding files which were uploaded ; \
+	for file in `gunzip -c $$arc | tar tf -` ; \
+	do \
+	  chmod +w `echo $$file | sed 's+^[^/]*/++'` ; \
+	done ; \
+	echo Upload from $$arc complete ; \
+	echo Don\'t for get to check them all in now
 
 Makefile.std :: initialize
 	cp Makefile Makefile.std
@@ -477,63 +538,64 @@ SINGLEDEPEND(makemred,object,c)
 SINGLEDEPEND(menubar,object,c)
 SINGLEDEPEND(xmred,object,c)
 XCOMM sprite rules
-SPRITEMARKERS = bitmaps/apple/sprites bitmaps/board/sprites \ 
-	bitmaps/icon/sprites bitmaps/player/sprites bitmaps/normal/sprites \ 
-	bitmaps/munch/sprites bitmaps/xtra/sprites bitmaps/drone/sprites \ 
-	bitmaps/chomp/sprites bitmaps/prize/sprites bitmaps/edit/sprites \ 
+SPRITEMARKERS = bitmaps/apple/sprites bitmaps/board/sprites \
+	bitmaps/icon/sprites bitmaps/player/sprites bitmaps/normal/sprites \
+	bitmaps/munch/sprites bitmaps/xtra/sprites bitmaps/drone/sprites \
+	bitmaps/chomp/sprites bitmaps/prize/sprites bitmaps/edit/sprites \
 	bitmaps/bitmaps/sprites
 clean ::
-	$(RM) $(APPLE:%=%.h)
-	$(RM) $(BOARD:%=%.h)
-	$(RM) $(CHOMP:%=%.h)
-	$(RM) $(DRONE:%=%.h)
-	$(RM) $(ICON:%=%.h)
-	$(RM) $(MUNCH:%=%.h)
-	$(RM) $(NORMAL:%=%.h)
-	$(RM) $(PLAYER:%=%.h)
-	$(RM) $(PRIZE:%=%.h)
-	$(RM) $(XTRA:%=%.h)
-	$(RM) $(EDIT:%=%.h)
+	$(RM) $(APPLE:.r=.h)
+	$(RM) $(BOARD:.r=.h)
+	$(RM) $(CHOMP:.r=.h)
+	$(RM) $(DRONE:.r=.h)
+	$(RM) $(ICON:.r=.h)
+	$(RM) $(MUNCH:.r=.h)
+	$(RM) $(NORMAL:.r=.h)
+	$(RM) $(PLAYER:.r=.h)
+	$(RM) $(PRIZE:.r=.h)
+	$(RM) $(XTRA:.r=.h)
+	$(RM) $(EDIT:.r=.h)
 	$(RM) bitmaps/sprites $(SPRITEMARKERS)
 
 XCOMM makes the sprites from the rgb and bw images
+
 bitmaps/sprites : $(SPRITEMARKERS)
 	touch $@
 
-bitmaps/apple/sprites : $(APPLE:%=%.h)
+bitmaps/apple/sprites : $(APPLE:.r=.h)
 	touch $@
 
-bitmaps/board/sprites : $(BOARD:%=%.h)
+bitmaps/board/sprites : $(BOARD:.r=.h)
 	touch $@
 
-bitmaps/chomp/sprites : $(CHOMP:%=%.h)
+bitmaps/chomp/sprites : $(CHOMP:.r=.h)
 	touch $@
 
-bitmaps/drone/sprites : $(DRONE:%=%.h)
+bitmaps/drone/sprites : $(DRONE:.r=.h)
 	touch $@
 
-bitmaps/icon/sprites : $(ICON:%=%.h)
+bitmaps/icon/sprites : $(ICON:.r=.h)
 	touch $@
 
-bitmaps/munch/sprites : $(MUNCH:%=%.h)
+bitmaps/munch/sprites : $(MUNCH:.r=.h)
 	touch $@
 
-bitmaps/normal/sprites : $(NORMAL:%=%.h)
+bitmaps/normal/sprites : $(NORMAL:.r=.h)
 	touch $@
 
-bitmaps/player/sprites : $(PLAYER:%=%.h)
+bitmaps/player/sprites : $(PLAYER:.r=.h)
 	touch $@
 
-bitmaps/prize/sprites : $(PRIZE:%=%.h)
+bitmaps/prize/sprites : $(PRIZE:.r=.h)
 	touch $@
 
-bitmaps/xtra/sprites : $(XTRA:%=%.h)
+bitmaps/xtra/sprites : $(XTRA:.r=.h)
 	touch $@
 
-bitmaps/edit/sprites : $(EDIT:%=%.h)
+bitmaps/edit/sprites : $(EDIT:.r=.h)
 	touch $@
 
-bitmaps/bitmaps/sprites : $(BITMAPS:%=%.h)
+bitmaps/bitmaps/sprites : $(BITMAPS:.r=.h)
 	touch $@
 
 XCOMM sprite building rule, again clever make stuff is incompatible 
@@ -939,24 +1001,18 @@ COLOR_BACKGROUND COLOR_FOREGROUND,)
 .FAILED :
 	@echo "Bummer!"
 
-CHECKSUBST = a.b
 XCOMM initialize rule is done before all makes. Not all makes
 XCOMM have a .INIT implicit rule, so I don't use that
 initialize :
 	@echo Checking a few things
-	@if [ $(CHECKSUBST:%.b=%.c) = a.b ] ; then \
-	  echo This make does not understand % substitutions. ; \
-	  echo It will lose big time. ; \
-	  exit 1 ; \
+	@if [ `ls -t Makefile Imakefile | sed '2,$$d'` = Imakefile ] ; then \
+	  echo Warning:Makefile is older than Imakefile ; \
 	fi
-	@if [ `ls -t Makefile Imakefile | sed '2,$$d'` = Imakefile ] ; then \ 
-	  echo Warning:Makefile is older than Imakefile ; \ 
+	@if [ ! -d `echo '$(SCORE)' | sed 's=/[^/]*$$=='` ] ; then \
+	  echo The parent of $(SCORE) does not exist ; \
 	fi
-	@if [ ! -d `echo '$(SCORE)' | sed 's=/[^/]*$$=='` ] ; then \ 
-	  echo The parent of $(SCORE) does not exist ; \ 
-	fi
-	@if [ $(FONT) = "" ] ; then true ; \ 
-	elif echo $(FONT) | grep -c -- '-m-.*-.*-.*$$' > /dev/null ; then \ 
+	@if [ $(FONT) = "" ] ; then true ; \
+	elif echo $(FONT) | grep -c -- '-m-.*-.*-.*$$' > /dev/null ; then \
 	  if [ "$(XLSFONTS)" = "" -o "$(DISPLAY)" = "" ] ; then \
 	    XLSFONTS="" ; \
 	  elif [ -x $(XLSFONTS) ] ; then \
@@ -970,11 +1026,11 @@ initialize :
 	  fi ; \
 	  if [ "$$XLSFONTS" = "" ] ; then \
 	    true ; \
-	  elif [ `$$xlsfonts -o -fn "$(FONT)" 2> /dev/null | wc -l` -eq 0 ] ; then \ 
-	    echo Warning:Font $(FONT) not found ; \ 
-	  fi ; \ 
-	else \ 
-	  echo Warning:Font $(FONT) is not fixed width ; \ 
+	  elif [ `$$xlsfonts -o -fn "$(FONT)" 2> /dev/null | wc -l` -eq 0 ] ; then \
+	    echo Warning:Font $(FONT) not found ; \
+	  fi ; \
+	else \
+	  echo Warning:Font $(FONT) is not fixed width ; \
 	fi
 	@echo "Geronimo!"
 
@@ -982,9 +1038,9 @@ XCOMM default rule looks for an RCS file to check out
 XCOMM not required for gmake, as that already has a rule for it
 .DEFAULT :
 	@if echo $@ | grep -cv '^/' > /dev/null && \
-	  [ -f `echo ./$@ | sed 's+^\(.*/\)\([^/]*\)$$+\1RCS/\2,v+'` ] ; then \ 
-	    co $(COFLAGS) $@ ; \ 
+	  [ -f `echo ./$@ | sed 's+^\(.*/\)\([^/]*\)$$+\1RCS/\2,v+'` ] ; then \
+	    co $(COFLAGS) $@ ; \
 	else \
-	  echo Cannot make $@ and cannot find one made. ; \ 
-	  exit 1 ; \ 
+	  echo Cannot make $@ and cannot find one made. ; \
+	  exit 1 ; \
 	fi

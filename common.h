@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: common.h,v 4.27 1994/01/31 17:40:36 nathan Stable $ */
+/* RCS $Id: common.h,v 4.29 1995/12/14 13:53:27 nathan Exp $ */
 /* common header stuff for xmris and xmred
  * included from xmris.h or xmred.h
  */
@@ -419,5 +419,5 @@ EXTERN SPRITE sprites[SPRITES];
 EXTERN SPRITE fills[FILLS];
 extern unsigned CONST backgrounds[][2];
 EXTERN XColor colors[COLORS];
-extern unsigned char CONST *lettering[];
+extern unsigned char CONST **lettering;
 /*}}}*/

@@ -1,5 +1,5 @@
 /* Copyright (C) 1993 Nathan Sidwell */
-/* RCS $Id: ansiknr.h,v 4.5 1994/01/25 18:33:03 nathan Stable $ */
+/* RCS $Id: ansiknr.h,v 4.6 1995/12/14 13:53:27 nathan Exp $ */
 /* macros to make both ANSI & K&R compilers happy */
 /* uses FUNCPROTO like Xfuncproto.h does, so you can tailor things */
 /*{{{  prototypes*/
@@ -11,6 +11,8 @@
 # define FUNCARGVOID ()
 # define ARGSEP ,
 # define VOIDARG void
+# define FLOATARG float
+# define FLOATFUNC float
 #else
 # define PROTOARG(list) ()
 # if STRICTKNR /* most knr compilers now understand void */
@@ -24,6 +26,8 @@
 # define FUNCARGVOID ()
 # define ARGSEP  ;
 # define VOIDARG 
+# define FLOATARG double
+# define FLOATFUNC double
 #endif
 /*}}}*/
 /*{{{  varargs prototypes*/
@@ -59,7 +63,7 @@
 # define VOLATILE /* blank */
 #endif
 /*}}}*/
-#if __STDC__
+#if __STDC__ || FUNCPROTO & 2
 # include <stdarg.h>
 #else /* !__STDC__ */
 # include <varargs.h>

@@ -1,0 +1,18 @@
+XMRIS V4.04 changes from 4.02
+
+Imakefile tidied up more. It now unpacks out of the box into the X11/bin dir
+and the stuff.
+
+Doesn't enable debugging by default.
+
+Tidied up some CONST stuff which was causing Linux to fail on compile.
+
+Added a STATICDEBUG check to force static linking on debug, if
+the architecture demands that.
+
+Fixed a bug in the timing code, which caused xmris to seize up on
+heavily loaded systems (thanks to Greg Hassan <gwhassan@cs.buffalo.edu>
+for checking it worked).
+
+Cursor made invisible on xmris window. Can be made visible
+with "Xmris*cursorName" resource.

@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: all.c,v 4.17 1994/01/06 10:20:24 nathan Stable $ */
+/* RCS $Id: all.c,v 4.18 1995/12/14 13:53:27 nathan Exp $ */
 /*{{{  includes*/
 #include "xmred.h"
 #include <X11/StringDefs.h>
@@ -637,8 +637,8 @@ FUNCARG((stream),
  * returns the error string, or NULL
  */
 {
-  extern int CONST sys_nerr;
-  extern char CONST *sys_errlist[];
+  extern int sys_nerr;
+  extern char *sys_errlist[];
   
   int   error;
   

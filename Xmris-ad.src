@@ -1,5 +1,5 @@
 ! Copyright (C) 1993 Nathan Sidwell
-! RCS $Id: Xmris-ad.src,v 4.10 1993/12/14 16:47:00 nathan Stable $
+! RCS $Id: Xmris-ad.src,v 4.11 1995/12/14 13:53:27 nathan Exp $
 
 ! These are some of the resources you can fiddle with for xmris
 ! The defaults are shown in the man page.
@@ -47,6 +47,7 @@ Ctrl<Key>g:set-dialog-button(disagree)\n\
 *mred*dialog*continue.label:Continue
 *mred*dialog*retry.label:Retry
 *mred*dialog*cancel.label:Cancel
+*mred*dialog*clear.label:Clear
 *mred*dialog*abort.label:Abort
 *mred*dialog*default.label:Default
 *mred*altered.title:Altered

@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: xmred.c,v 4.11 1994/01/06 10:20:24 nathan Stable $ */
+/* RCS $Id: xmred.c,v 4.12 1995/12/14 13:53:27 nathan Exp $ */
 /*{{{  include*/
 #include "xmred.h"
 #ifdef SCROLLBARBUGFIX
@@ -55,11 +55,11 @@ ARGSEP  unsigned  digits   /* field width to convert into */
 extern int main
 FUNCARG((argc, argv),
 	int     argc
-ARGSEP  char    **argv
+ARGSEP  char CONST **argv
 )
 {
   myname = *argv ? *argv : "xmred";
-  open_toolkit((Cardinal)argc, argv);
+  open_toolkit((Cardinal)argc, (String *)argv);
   /*{{{  help?*/
   if(data.help)
     {

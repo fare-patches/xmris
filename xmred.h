@@ -1,5 +1,5 @@
 /* Copyright (C) 1993 Nathan Sidwell */
-/* RCS $Id: xmred.h,v 4.27 1994/01/06 10:20:24 nathan Stable $ */
+/* RCS $Id: xmred.h,v 4.28 1995/12/14 13:53:27 nathan Exp $ */
 #define XMRED 1
 #define BUTTONS         5
 #include "common.h"
@@ -171,5 +171,6 @@ extern VOIDFUNC save_garden PROTOARG((VOIDARG));
 /*}}}*/
 /*{{{  xmred*/
 extern size_t itoa PROTOARG((char *, unsigned long, unsigned));
+extern int main PROTOARG((int, char CONST **));
 /*}}}*/
 /*}}}*/

@@ -1,8 +1,9 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: makecom.c,v 4.24 1994/02/16 11:30:37 nathan Stable $ */
+/* RCS $Id: makecom.c,v 4.27 1995/12/21 15:55:04 nathan Exp $ */
 /* common make stuff for xmris and xmred, 
  * included from makemris and makemred
  */
+
 /*{{{  interesting color stuff*/
 /*
  * color is spelt as it is, 'cos its just too complicated spelling it as
@@ -566,6 +567,33 @@ FUNCARG((widget),
 #ifndef XMRED
   display.back = XCreatePixmap(display.display, root,
       WINDOW_WIDTH, WINDOW_HEIGHT, depth);
+  {
+    Cursor  cursor;
+    String  cursor_name;
+    
+    cursor_name = NULL;
+    XtVaGetValues(widget, XtNcursor, (XtArgVal)&cursor,
+#ifdef XtNcursorName
+	XtNcursorName, (XtArgVal)&cursor_name,
+#endif
+	(String)NULL);
+    if(cursor == None && !cursor_name)
+      {
+	Pixmap  blank;
+	XColor  color;
+	char    data;
+	
+	data = 0;
+	blank = XCreatePixmapFromBitmapData(display.display, root, 
+	    &data, 1, 1, (long)0, (long)0, 1);
+	color.pixel = display.black;
+	XQueryColor(display.display, display.colormap, &color);
+	cursor = XCreatePixmapCursor(display.display, blank, blank,
+	    &color, &color, 0, 0);
+	XFreePixmap(display.display, blank);
+	XtVaSetValues(widget, XtNcursor, (XtArgVal)cursor, (String)NULL);
+      }
+  }
 #endif /* XMRED */
   /*{{{  create graphics contexts*/
   {
@@ -573,7 +601,7 @@ FUNCARG((widget),
     CONTEXT   *cptr;
     unsigned  count;
 	
-    gcv.font       = data.font;
+    gcv.font = data.font;
     gcv.graphics_exposures = False;
     gcv.line_width = 1;
     gcv.cap_style = CapNotLast;
@@ -1093,7 +1121,7 @@ ARGSEP  CommandOptionDesc CONST *options
 		{
 		  if(ix < *argcp - 1)
 		    { 
-		      *(char **)((char *)&data + ptr->offset) =
+		      *(char CONST **)((char *)&data + ptr->offset) =
 			  argv[ix + 1];
 		      ix++;
 		    }
@@ -1157,8 +1185,6 @@ FUNCVARARG((text, VARARGDEF),
   VARARGSET(args, text);
   vfprintf(stderr, text, args);
   fputc('\n', stderr);
-/*  destroy_widget();
-  close_toolkit();*/
   exit(1);
   return;
 }

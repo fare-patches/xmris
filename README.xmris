@@ -14,7 +14,7 @@ SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
      xxxxmmmmssssiiiitttt [-option ...] [-toolkitoption ...]
 
 DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
-     Xmris is a version of the Mr Do video arcade game for the  X
+     Mr Is is a version of the Mr Do video arcade game for the  X
      Window System.
 
      You control a gnome, who can walk  around  a  garden,  along
@@ -60,7 +60,7 @@ DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
 
 
 
-X Version 11      Last change: 20 December 1993                 1
+X Version 11      Last change: 12 December 1995                 1
 
 
 
@@ -126,7 +126,7 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
 
 
 
-X Version 11      Last change: 20 December 1993                 2
+X Version 11      Last change: 12 December 1995                 2
 
 
 
@@ -165,12 +165,12 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
      binding by pressing the one you want. Pressing the throw key
      will  keep the binding for that particular key (remember the
      throw key may change half way  through  this  process).  You
-     cannot map one key onto two functions, xmris will wait until
+     cannot map one key onto two functions, Mr Is will wait until
      you give an unambiguous set of keys. Key bindings  set  this
-     way  will be forgotten when xmris terminates. To permanently
+     way  will be forgotten when Mr Is terminates. To permanently
      set the key bindings, you will have to the the X resources.
 
-     Xmris will use colour sprites, if the visual permits it (has
+     Mr Is will use colour sprites, if the visual permits it (has
      a  colour  map  size of more than 15, and you haven't forced
      monochrome). All the colours bar black and  white  are  user
      definable.  There  are  four  sets, one for each of the four
@@ -188,11 +188,11 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
      names.
 
 OOOOPPPPTTTTIIIIOOOONNNNSSSS
-     Xmris accepts the standard X Toolkit  options,  as  well  as
+     Mr Is accepts the standard X Toolkit  options,  as  well  as
 
 
 
-X Version 11      Last change: 20 December 1993                 3
+X Version 11      Last change: 12 December 1995                 3
 
 
 
@@ -235,7 +235,7 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
 
      ----rrrraaaannnnddddoooommmm
      ++++rrrraaaannnnddddoooommmm
-          Xmris has two methods for placing the apples. They will
+          Mr Is has two methods for placing the apples. They will
           either  be  placed  according  to  one  of four sets of
           explicit apple positions, or  placed  randomly  on  any
           permitted  location  (though  trying  not to place them
@@ -246,19 +246,19 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
      ----mmmmrrrriiiissss
      ----mmmmssssiiiitttt
      ----ggggeeeennnnddddeeeerrrr _g_e_n_d_e_r
-          Xmris can also be run as xmsit. The two sexes have dif-
+          Mr Is can also be run as xmsit. The two sexes have dif-
           ferent  sprites.   Mris  selects  the  classic sprites,
           while msit selects a more modern set.   The  gender  of
           the  game is taken from the program name (mris or msit)
           but may be overridden  by  these  two  switches.  Valid
           genders  are  'he',  'she',  'female',  'male', 'msit',
-          'mris', 'boy', 'girl'.  The game  is  known  as  xmris,
-          because the arcade game was masculine.
+          'mris', 'boy', 'girl'.  The game is known as xmris (eks
+          mister iz), because the arcade game was masculine.
 
 
 
 
-X Version 11      Last change: 20 December 1993                 4
+X Version 11      Last change: 12 December 1995                 4
 
 
 
@@ -275,7 +275,7 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
           particularly inaccurate alarms,  and  this  option  may
           improve  things, by not using the system's timer signal
           at all. Some alarms go off before the  requested  time.
-          Xmris  will  detect this, and insert a busy wait in the
+          Mr  Is  will detect this, and insert a busy wait in the
           remaining time. A warning will be  displayed  as  well.
           Note  that this is different to forcing busywaiting, as
           the timer signal is still being used  for  the  initial
@@ -296,7 +296,7 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
      ----ggggaaaarrrrddddeeeennnnssss _g_a_r_d_e_n-_f_i_l_e
           Specify a garden definition file. This  allows  you  to
           alter  the initial garden layouts. The file is searched
-          for in the current directory, and the  xmris  subdirec-
+          for in the current directory, and the Mr  Is  subdirec-
           tory of app-defaults. These are explained below.
 
      ----ssssccccoooorrrreeeessss
@@ -317,14 +317,14 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
      ----rrrreeeemmmmoooovvvveeee _n_a_m_e
           Allows the game's owner to remove someone's scores. The
           option  will only work when the real and effective user
-          ids are the same. (ie a setuid xmris has  been  run  by
+          ids are the same. (ie a setuid Mr Is has  been  run  by
           its  owner). After updating the files, the score tables
           are listed, and the game does not start. An  X  display
           will  still need to be opened, to read the X resources,
 
 
 
-X Version 11      Last change: 20 December 1993                 5
+X Version 11      Last change: 12 December 1995                 5
 
 
 
@@ -378,7 +378,7 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
           ambiguous  (eg  1/1/1),  a  stored format is used and a
           warning is given. The following are  valid  unambiguous
           dates,  '11jun93'  (dmy),  '14/3/93' (dmy), 'april6:93'
-          (mdy), and '0-16-8' (ymd).
+          (mdy), and '0-16-8' (ydm).
 
      ----ffffoooorrrrmmmmaaaatttt _f_o_r_m_a_t
           Allows the game's owner to set the date format which is
@@ -390,7 +390,7 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
 
 
 
-X Version 11      Last change: 20 December 1993                 6
+X Version 11      Last change: 12 December 1995                 6
 
 
 
@@ -402,12 +402,12 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
 
 
      ----ddddeeeepppptttthhhh _d_e_p_t_h
-          Xmris will use the default depth of the screen. You may
+          Mr Is will use the default depth of the screen. You may
           wish to override that by using this option. Selecting a
           different depth may affect the visual selected.
 
      ----vvvviiiissssuuuuaaaallll _v_i_s_u_a_l-_c_l_a_s_s
-          Xmris will  pick  the  default  visual  for  the  depth
+          Mr Is will  pick  the  default  visual  for  the  depth
           chosen,  but you can override that by specifying a par-
           ticular visual class. Valid visuals are  'PseudoColor',
           'DirectColor', 'TrueColor', 'StaticColor', 'GrayScale',
@@ -417,8 +417,8 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
           too, due to limitations of the server or display.
 
      ----pppprrrriiiivvvvaaaatttteeee
-          This forces xmris to allocate  a  private  colour  map.
-          Normally xmris will share the default colour map of the
+          This forces Mr Is to allocate  a  private  colour  map.
+          Normally Mr Is will share the default colour map of the
           selected visual, but if that does not have enough  free
           colour cells then some colours will have to be shared.
 
@@ -456,7 +456,7 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
 
 
 
-X Version 11      Last change: 20 December 1993                 7
+X Version 11      Last change: 12 December 1995                 7
 
 
 
@@ -471,7 +471,7 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
           pseudo colour visuals.
 
 AAAAPPPPPPPPLLLLIIIICCCCAAAATTTTIIIIOOOONNNN RRRREEEESSSSOOOOUUUURRRRCCCCEEEESSSS
-     Xmris uses the X toolkit application resource mechanism  for
+     Mr Is uses the X toolkit application resource mechanism  for
      setting up the environment. Application resource items start
      with 'Xmris'. The resource name  can  be  derived  from  the
      given  resource  class  by  decapitalizing  it.  For example
@@ -522,7 +522,7 @@ AAAAPPPPPPPPLLLLIIIICCCCAAAATTTTIIIIOOOONNNN R
 
 
 
-X Version 11      Last change: 20 December 1993                 8
+X Version 11      Last change: 12 December 1995                 8
 
 
 
@@ -561,6 +561,10 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
 
      In addition, you have the normal resources such as '*Font'.
 
+     Normally the cursor is invisible in the Mr  Is  window.  You
+     can   force   a   cursor   to   be   shown  by  setting  the
+     "Xmris*cursorName" resource to a named cursor.
+
 CCCCOOOOLLLLOOOOUUUURRRR RRRREEEESSSSOOOOUUUURRRRCCCCEEEESSSS
      There are many colour name defaults. You  can  specify  dif-
      ferent  ones  for  the  four combinations of gender and swap
@@ -581,14 +585,10 @@ CCCCOOOOLLLLOOOOUUUURRRR RRRREEEESSSSOOOOUUUUR
      unswapped colour scheme, this gives comic like sprites. This
      edge is not included for the swap  colour  scheme,  and  the
      sprite's  colours go right up to the sprite's edge.  Most of
-     the sprites will be surrounded by a halo of  the  background
-     colour,  so  that  they don't blend in with each other, when
-     crossing.  Another thing to watch out is contrast  compensa-
-     tion.    Because   of   eye  physiology,  colours  can  look
 
 
 
-X Version 11      Last change: 20 December 1993                 9
+X Version 11      Last change: 12 December 1995                 9
 
 
 
@@ -599,7 +599,11 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
 
 
 
-     different, depending on the surrounding colours,  and  light
+     the sprites will be surrounded by a halo of  the  background
+     colour,  so  that  they don't blend in with each other, when
+     crossing.  Another thing to watch out is contrast  compensa-
+     tion.   Because  of  eye  physiology,  colours can look dif-
+     ferent, depending on  the  surrounding  colours,  and  light
      colours  look  brighter  on dark backgrounds than they do on
      light ones. A particular case of the former is  if  pink  is
      used  for the player's face. On white backgrounds pink looks
@@ -650,11 +654,7 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
 
 
 
-
-
-
-
-X Version 11      Last change: 20 December 1993                10
+X Version 11      Last change: 12 December 1995                10
 
 
 
@@ -720,7 +720,7 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
 
 
 
-X Version 11      Last change: 20 December 1993                11
+X Version 11      Last change: 12 December 1995                11
 
 
 
@@ -778,7 +778,7 @@ GGGGAAAARRRRDDDDEEEENNNNSSSS
      include  file  is  specified by '#include "_f_i_l_e_n_a_m_e"', where
      filename is the name of the included file. Relative  include
      files  are  searched for relative to the including file, or,
-     if that fails, in the  xmris  subdirectory  of  app-defaults
+     if that fails, in the Mr  Is  subdirectory  of  app-defaults
      directory   (this   will   usually   be   '/usr/lib/X11/app-
      defaults/xmris'). In If  the  filename  is  null,  then  the
      internal gardens will be included. Comments are delimited by
@@ -786,7 +786,7 @@ GGGGAAAARRRRDDDDEEEENNNNSSSS
 
 
 
-X Version 11      Last change: 20 December 1993                12
+X Version 11      Last change: 12 December 1995                12
 
 
 
@@ -852,7 +852,7 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
 
 
 
-X Version 11      Last change: 20 December 1993                13
+X Version 11      Last change: 12 December 1995                13
 
 
 
@@ -887,38 +887,38 @@ FFFFIIIILLLLEEEESSSS
      ............////xxxxmmmmrrrriiiissss....ssssccccoooorrrreeee
           The high score file. The directory is system dependent,
           and  may  be changed by application resource or option.
-          This file must either  exist  and  be  writable  to  by
-          xmris,  or the directory containing it must be writable
-          by xmris. This can be done by chmoding the  score  file
-          or  directory,  or  by setuiding xmris appropriately. A
-          non-setuid xmris will chmod the score file  to  666  if
-          creating it.
+          This file must either exist and be writable  to  by  Mr
+          Is,  or the directory containing it must be writable by
+          Mr Is. This can be done by chmoding the score  file  or
+          directory,  or by setuiding Mr Is appropriately. A non-
+          setuid Mr Is will chmod the score file to 666 if creat-
+          ing it.
 
      ............////xxxxmmmmrrrriiiissss....lllloooocccckkkk
           In some systems, where lockf  or  flock  doesn't  work,
           this temporary file is used to perform the locking. The
-          directory containing it must be writable by xmris. This
+          directory containing it must be writable by Mr Is. This
           can  be done by chmoding the directory, or by setuiding
-          xmris appropriately.
+          Mr Is appropriately.
 
      ............////xxxxmmmmrrrriiiissss----<<<<nnnnaaaammmmeeee>>>>
      ~~~~////....xxxxmmmmrrrriiiissss....ssssccccoooorrrreeee
           One of these files is used to store the  personal  best
-          scores.   Xmris first looks for the personal score file
+          scores.   Mr Is first looks for the personal score file
           in the score directory and then in the home  directory.
-          If  a  personal  score  file  cannot  be  found,  xmris
+          If  a  personal  score  file  cannot  be  found,  Mr Is
           attempts to create one. If the file  is  found  in  the
-          user's home directory, xmris attempts to move it to the
-          score directory. Xmris will attempt to create the  per-
+          user's home directory, Mr Is attempts to move it to the
+          score directory. Mr Is will attempt to create the  per-
           sonal  files  in the score directory. If this cannot be
           done, the personal score file is  placed  in  the  home
           directory.  In  order to create the personal score file
-          in the score directory, xmris will  have  to  have  the
+          in the score directory, Mr Is will  have  to  have  the
           correct  access rights, as with the lock file. A setuid
 
 
 
-X Version 11      Last change: 20 December 1993                14
+X Version 11      Last change: 12 December 1995                14
 
 
 
@@ -929,14 +929,14 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
 
 
 
-          xmris will  juggle  the  effective  uid  correctly  for
+          Mr Is will  juggle  the  effective  uid  correctly  for
           accessing  both the score directory and the users' home
           directories.
 
      ~~~~////....XXXXddddeeeeffffaaaauuuullllttttssss
      ............////aaaapppppppp----ddddeeeeffffaaaauuuullllttttssss////XXXXmmmmrrrriiiissss....aaaadddd
           You can place you favourite key bindings and  stuff  in
-          an  application resource file, and xmris will use them,
+          an  application resource file, and Mr Is will use them,
           rather than its compiled defaults.  See X for  informa-
           tion about how these are searched.
 
@@ -969,7 +969,7 @@ EEEERRRRRRRROOOORRRRSSSS
      an  X  error  8  on  request  1:0  occurs when realizing the
      widget.
 
-     Some systems' timer returns too soon.  Xmris  detects  this,
+     Some systems' timer returns too soon. Mr  Is  detects  this,
      and  then  starts  performing  a  busywait at the end of the
      timer period. A warning is also  printed.  If  this  is  the
      case,  it  may  be  better  to  force  busywaiting  with the
@@ -984,7 +984,7 @@ BBBBUUUUGGGGSSSS
 
 
 
-X Version 11      Last change: 20 December 1993                15
+X Version 11      Last change: 12 December 1995                15
 
 
 
@@ -995,10 +995,10 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
 
 
 
-     Xmris can be addictive, so  don't  blame  me  if  your  work
+     Mr Is can be addictive, so  don't  blame  me  if  your  work
      suffers.
 
-     Xmris does not check that the key definitions in the  appli-
+     Mr Is does not check that the key definitions in the  appli-
      cation  resources  do  not conflict with each other. Neither
      are the colours checked, to see  that  things  are  actually
      visible.
@@ -1021,7 +1021,7 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
      between receiving one interrupt and starting the  next  one.
      You  don't want to get the interrupt to restart itself (even
      though  this  is  possible),  as  you  then  get  very  rude
-     behaviour  if  your  main  loop is a bit too slow, (xmris on
+     behaviour  if  your  main  loop is a bit too slow, (Mr Is on
      speed). Some timers round downwards,  returning  before  the
      requested  time.  This  has  to be detected, and a busy wait
      inserted.
@@ -1031,10 +1031,11 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
      English spelling of
 
 CCCCOOOOPPPPYYYYRRRRIIIIGGGGHHHHTTTT
-     Copyright (C) 1993, 1992 Nathan Sidwell.
+     Copyright (C) 1995, 1994, 1993, 1992 Nathan Sidwell.
 
 AAAAUUUUTTTTHHHHOOOORRRR
-     Nathan Sidwell <nathan@pact.srf.ac.uk>
+     Nathan            Sidwell            <nathan@pact.srf.ac.uk>
+     <http://www.pact.srf.ac.uk/~nathan/>
 
      Additional sprites by Stefan Gustavson <stefang@isy.liu.se>
 
@@ -1049,8 +1050,7 @@ AAAAUUUUTTTTHHHHOOOORRRR
 
 
 
-
-X Version 11      Last change: 20 December 1993                16
+X Version 11      Last change: 12 December 1995                16
 
 
 

@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: xmris.c,v 4.18 1994/02/16 11:30:37 nathan Stable $ */
+/* RCS $Id: xmris.c,v 4.19 1995/12/14 13:53:27 nathan Exp $ */
 /*{{{  the problem with recursive function definitions*/
 /*
  * In order to keep a single control loop, I use animate functions,
@@ -1231,7 +1231,7 @@ ARGSEP  unsigned  digits   /* field width to convert into */
 extern int main
 FUNCARG((argc, argv),
 	int     argc
-ARGSEP  char    **argv
+ARGSEP  char CONST **argv
 )
 {
   PROTOANIMATE((*animate));
@@ -1244,7 +1244,7 @@ ARGSEP  char    **argv
     set_euid(real_uid);
   current_uid = real_uid;
 #endif /* TRANSPUTER */
-  open_toolkit(argc, argv);
+  open_toolkit(argc, (String *)argv);
   init_scores();
   /*{{{  help?*/
   if(data.help)

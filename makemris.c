@@ -1,10 +1,11 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: makemris.c,v 4.18 1994/01/25 18:33:03 nathan Stable $ */
+/* RCS $Id: makemris.c,v 4.20 1995/12/21 15:55:04 nathan Exp $ */
 /*{{{  includes*/
 #include "xmris.h"
 #include "defmris.h"
 #include <X11/Xaw/Form.h>
 #include <X11/Xaw/Paned.h>
+#include <X11/Xaw/Simple.h>
 #include "makecom.c"
 /*}}}*/
 /*{{{  tables*/
@@ -77,10 +78,10 @@ extern VOIDFUNC create_widget FUNCARGVOID
  */
 {
   display.form = XtVaCreateManagedWidget("form", formWidgetClass,
-      display.toplevel, XtNdefaultDistance, (XtArgVal)0, NULL);
+      display.toplevel, XtNdefaultDistance, (XtArgVal)0, (String)NULL);
   display.garden = XtVaCreateManagedWidget(&names[data.gender != False][1],
-      coreWidgetClass, display.form, XtNwidth, (XtArgVal)WINDOW_WIDTH,
-      XtNheight, (XtArgVal)WINDOW_HEIGHT, NULL);
+      simpleWidgetClass, display.form, XtNwidth, (XtArgVal)WINDOW_WIDTH,
+      XtNheight, (XtArgVal)WINDOW_HEIGHT, (String)NULL);
   create_resources(display.garden);
   assert(!(VEL_X_FAST * FAST_STEPS * 2 % VEL_X));
   assert(!(VEL_Y_FAST * FAST_STEPS * 2 % VEL_Y));
@@ -280,8 +281,9 @@ ARGSEP  String  *argv
 	  for(ptr = options; *(char CONST **)ptr; ptr++)
 	    /* EMPTY */;
 	  display.toplevel = XtAppInitialize(&display.context, "Xmris",
-	      options, (Cardinal)(ptr - options), &argc, argv,
-	      (char **)NULL, toplevel_args, XtNumber(toplevel_args));
+	      options, (Cardinal)(ptr - options),
+	      (Cardinal *)&argc, (String *)argv,
+	      (String *)NULL, toplevel_args, XtNumber(toplevel_args));
 	}
       if(argc > 1)
 	/*{{{  error*/
@@ -307,7 +309,7 @@ ARGSEP  String  *argv
 	/*{{{  some more setup*/
 	{
 	  XtResource CONST *ptr;
-	  char      *dir;
+	  char CONST *dir;
 	  
 	  XtAppSetTypeConverter(display.context, XtRString, XtRKeySym,
 	      convert_string2keysym, (XtConvertArgRec *)NULL, 0, XtCacheNone,

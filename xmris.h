@@ -1,14 +1,14 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: xmris.h,v 4.18 1994/01/06 10:20:24 nathan Stable $ */
+/* RCS $Id: xmris.h,v 4.20 1995/12/22 11:56:52 nathan Exp $ */
 #include "common.h"
-#define COPYRIGHT "Copyright (C) 1994-1992 Nathan Sidwell"
+#define COPYRIGHT "Copyright (C) 1995-1992 Nathan Sidwell"
 /*{{{  function pointers*/
 /* see xmris.c for explanation */
 #define PROTOVOID(name) VOIDFUNC (name) NESTEDPROTOARG((VOIDARG))
 #define PROTOANIMATE(name) PROTOVOID(*name NESTEDPROTOARG((PROTOVOID(*))))
 #if __STDC__ || FUNCPROTO & 1
 #define FUNCANIMATE(name, arg) \
-    PROTOVOID(*name NESTEDPROTOARG((PROTOVOID(*arg))))
+    PROTOVOID(*name (PROTOVOID(*arg)))
 #else
 #define FUNCANIMATE(name, arg) PROTOVOID(*name(arg)) PROTOVOID(*arg);
 #endif
@@ -579,6 +579,6 @@ extern VOIDFUNC calc_distances PROTOARG((VOIDARG));
 extern VOIDFUNC calc_extra_home PROTOARG((unsigned));
 extern unsigned chaotic PROTOARG((VOIDARG));
 extern size_t itoa PROTOARG((char *, unsigned long, unsigned));
-extern int main PROTOARG((int, char **));
+extern int main PROTOARG((int, char CONST **));
 /*}}}*/
 /*}}}*/

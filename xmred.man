@@ -1,5 +1,5 @@
 . Copyright (C) 1993 Nathan Sidwell
-. RCS $Id: xmred.man,v 4.5 1993/12/20 12:35:37 nathan Stable $
+. RCS $Id: xmred.man,v 4.6 1995/12/14 13:53:27 nathan Exp $
 .TH XMRED 6 "20 December 1993" "X Version 11"
 .IX xmred#(n) "" "\fLxmred\fP(n)"
 .SH NAME
@@ -10,7 +10,7 @@ xmred - garden editor for xmris
 .IX xmred#(n) "" "\fLxmred\fP(n) \(em video game editor"
 .SH DESCRIPTION
 .PP
-Xmred is a tool for creating and editing alternate gardens for xmris.
+Mr Ed is a tool for creating and editing alternate gardens for Mr Is.
 Hopefully its user interface is intuitive enough that most of this manual
 page need not be read by a casual user.
 .PP
@@ -48,13 +48,13 @@ The six options are,
 .B Apple
 This selects where apples from one of the four sets of explicit apple
 locations are placed. To select which set is being controlled, press on the
-relevant quadrant of the icon. One of these sets is used when xmris is used
+relevant quadrant of the icon. One of these sets is used when Mr Is is used
 with the +random option. You can place apples anywhere there isn't a path,
 even in an unstable location, which will immediately fall. Placing an explicit
 apple on a path, will fill the path.
 .TP
 .B Random
-This controls where apples may be placed randomly, if xmris is started with
+This controls where apples may be placed randomly, if Mr Is is started with
 the -random option. Apples will only be placed on the specified locations, or
 where ever an explicit apple could be located. Unless you specify otherwise,
 random apples may be located anywhere there isn't a path, even unstable
@@ -109,7 +109,7 @@ garden. Clicking or dragging a mouse button on this area will perform the
 option currently bound to that button. You will notice the totals change when
 you do this.
 .PP
-Xmred will use colour sprites, if the visual permits it (has a colour map
+Mr Ed will use colour sprites, if the visual permits it (has a colour map
 size of more than 15, and you haven't forced monochrome). All the colours
 bar black and white are user definable. There are four sets, one for
 each of the four combinations of gender and swap flag. The
@@ -123,7 +123,7 @@ A warning message is sent to stderr, if a colour allocation fails. The
 -colours argument shows how these are allocated, and -help -colours can
 be used to get the colour resource names.
 .SH OPTIONS
-Xmred accepts the standard X Toolkit options, as well as these.
+Mr Ed accepts the standard X Toolkit options, as well as these.
 .br
 .ne 3
 .TP
@@ -172,21 +172,21 @@ option, '-bw', is already nabbed by the toolkit as borderwidth.)
 .TP
 .B \-gender \fIgender\fP
 .PD
-Xmred has two sets of sprites. Mris selects the classic sprites,
+Mr Ed has two sets of sprites. Mris selects the classic sprites,
 while msit selects a more modern set. Valid genders
 are 'he', 'she', 'female', 'male', 'msit', 'mris', 'boy', 'girl'.
 .br
 .ne 3
 .TP
 .B \-depth \fIdepth\fP
-Xmred will use the default depth of the screen. You may wish to override
+Mr Ed will use the default depth of the screen. You may wish to override
 that by using this option. Selecting a different depth may affect the
 visual selected.
 .br
 .ne 3
 .TP
 .B \-visual \fIvisual-class\fP
-Xmred will pick the default visual, but you can override
+Mr Ed will pick the default visual, but you can override
 that by specifying a particular visual class. Valid visuals
 are 'PseudoColor', 'DirectColor', 'TrueColor', 'StaticColor', 'GrayScale',
 and 'StaticGray'. To see which one is picked, you can use the -colours
@@ -196,7 +196,7 @@ a private colour map too, due to limitations of the server or display.
 .ne 3
 .TP
 .B \-private
-This forces xmred to allocate a private colour map. Normally xmred will
+This forces Mr Ed to allocate a private colour map. Normally Mr Ed will
 share the default colour map of the selected visual, but if that does not
 have enough free colour cells then some colours will have to be shared.
 .br
@@ -224,9 +224,9 @@ on dynamic visuals. Note that
 -distinct 0 is different from -mono, even though both will only use black and
 white.
 .SH RESOURCES
-Xmred uses the X toolkit application resource mechanism for setting up
-the environment. Application resource items start with 'Xmris', so that xmred
-will pick up your defaults for xmris. The
+Mr Ed uses the X toolkit application resource mechanism for setting up
+the environment. Application resource items start with 'Xmris', so that Mr Ed
+will pick up your defaults for Mr Is. The
 resource name can be derived from the given resource class by
 decapitalizing it. For example 'cherryStalk' is the resource name for the
 class 'cherryStalk'. The following classes are used (choices in '{}' and
@@ -273,8 +273,8 @@ Set the number of distinct colours allocated from the colour map.
 In addition, you have the normal resources such as '*Font'.
 .SH COLOUR RESOURCES
 There are many colour name defaults. For a full description see the xmris(6)
-manual page, but note that not all the colors are used for xmred. Provided
-that you specified the colour resources for xmris loosely enough, xmred
+manual page, but note that not all the colors are used for Mr Ed. Provided
+that you specified the colour resources for Mr Is loosely enough, Mr Ed
 will pick up the same overrides. The foreground color for the Icon widgets
 is copied from the apple faint color on color visuals (this is important
 for the noswap color scheme).
@@ -288,14 +288,14 @@ be an integer in the correct range.
 .PP
 There is an additional composite resource for children of composite widgets
 (Paned and SimpleMenu), called 'attach'. This allows you to change the
-ordering of sibling widgets. Xmred uses this resource to determine the correct
+ordering of sibling widgets. Mr Ed uses this resource to determine the correct
 order to create the sibling widgets. For instance, to get the control panel on
 the left of the garden widget, use the constraint '*one.garden.attach:panel'.
 In addition, the widgets are created in such
 an order that Form constraints 'fromHoriz' and 'fromVert' can be
 specified in any order.
 .PP
-There are four new widgets used for xmred, 'Icon', 'Drag', 'Garden'
+There are four new widgets used for Mr Ed, 'Icon', 'Drag', 'Garden'
 and 'PixmapList'.
 .PP
 The Icon widget is a subclass of Simple. It displays a pixmap and allows
@@ -372,13 +372,13 @@ option.
 .B .../app-defaults/Xmris-color.ad
 .PD
 You can place you favourite key bindings and stuff in an application
-resource file, and xmred will use them, rather than its compiled defaults.
+resource file, and Mr Ed will use them, rather than its compiled defaults.
 See X for information about how these are searched.
 .br
 .ne 3
 .TP
 .B .../app-defaults/xmris/<gardens>
-Search path for loadable gardens used by xmris.
+Search path for loadable gardens used by Mr Is.
 .SH SEE ALSO
 .BR xmris (6)
 .SH ERRORS
@@ -388,8 +388,8 @@ to locate the offending garden and lines.
 .SH BUGS
 .PP
 The visual class name conversion is performed by a standard toolkit
-routine. It accepts only American spelling, the English spelling of
-'grey' and 'colour' are not allowed.
+routine. It accepts only American spelling, the English spelling of 'grey'
+and 'colour' are not allowed.
 .PP
 The Drag widget should perhaps just be a shell, having a single child
 of Icon, to do the rendering.
@@ -400,6 +400,6 @@ the insert function.
 .SH COPYRIGHT
 Copyright (C) 1993 Nathan Sidwell.
 .SH AUTHOR
-Nathan Sidwell <nathan@pact.srf.ac.uk>
+Nathan Sidwell <nathan@pact.srf.ac.uk> <http://www.pact.srf.ac.uk/~nathan/>
 
 Additional sprites by Stefan Gustavson <stefang@isy.liu.se>

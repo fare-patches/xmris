@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: scoring.c,v 4.11 1994/02/16 11:30:37 nathan Stable $ */
+/* RCS $Id: scoring.c,v 4.14 1995/12/21 15:55:04 nathan Exp $ */
 /*{{{  file locking problems*/
 /*
  * USELOCKFILE file locking as suggested by
@@ -37,12 +37,12 @@
 #endif /* TRANSPUTER */
 /*}}}*/
 /*{{{  file locking*/
-#ifdef SYSV
-#define lock_file(stream) lockf(fileno(stream), F_LOCK, 0L)
-#define unlock_file(stream) lockf(fileno(stream), F_ULOCK, 0L)
-#else
+#ifndef SYSV
 #define lock_file(stream) flock(fileno(stream), LOCK_EX)
 #define unlock_file(stream) flock(fileno(stream), LOCK_UN)
+#else
+#define lock_file(stream) lockf(fileno(stream), F_LOCK, 0L)
+#define unlock_file(stream) lockf(fileno(stream), F_ULOCK, 0L)
 #endif /* SYSV */
 /*}}}*/
 /*{{{  static*/
@@ -259,7 +259,7 @@ ARGSEP  uid_t     uid
 #endif /* USELOCKFILE */
 #ifndef TRANSPUTER
   if(stream && flag & 4 && effective_uid == real_uid)
-    fchmod(fileno(stream), 0666);
+    chmod(name, 0666); /* not everyone has fchmod */
   if(current_uid != real_uid)
     set_euid((current_uid = real_uid));
 #endif /* TRANSPUTER */
@@ -425,7 +425,12 @@ extern VOIDFUNC init_scores FUNCARGVOID
       strncpy(scoring.mine.name, user, NAME_LEN);
     scoring.mine.name[NAME_LEN] = 0;
     if(reallife)
-      alternate = strdup(reallife);
+      {
+	/* not everyone has strdup */
+	alternate = malloc(strlen(reallife) + 1);
+	if(alternate)
+	  strcpy(alternate, reallife);
+      }
     if(data.username == False)
       scoring.alternate = alternate;
   }
@@ -849,7 +854,7 @@ FUNCARG((insert),
     int       values[3];
     int       date[3];
     unsigned  ix;
-    char      *ptr;
+    char CONST *ptr;
     int       error;
     char      format[4];
     int       rel;
@@ -937,15 +942,18 @@ FUNCARG((insert),
 		char CONST * CONST *mptr;
 		
 		while(isalpha(ptr[length]))
-		  {
-		    if(isupper(ptr[length]))
-		      ptr[length] = lowercase(ptr[length]);
-		    length++;
-		  }
-		*ptr = uppercase(*ptr);
+		  length++;
 		for(mptr = months; *mptr; mptr++)
-		  if(length <= strlen(*mptr) && !strncmp(*mptr, ptr, length))
-		    break;
+		  if(length <= strlen(*mptr))
+		    {
+		      size_t  ix;
+		      
+		      for(ix = 0; ix != length; ix++)
+			if(tolower((*mptr)[ix]) != tolower(ptr[length]))
+			  break;
+		      if(ix == length)
+			break;
+		    }
 		if(*mptr)
 		  {
 		    type = 1;

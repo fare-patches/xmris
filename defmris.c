@@ -1,10 +1,10 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: defmris.c,v 4.4 1993/12/10 11:52:23 nathan Stable $ */
+/* RCS $Id: defmris.c,v 4.6 1995/12/14 13:53:27 nathan Exp $ */
 #define EXTERN
 #include "xmris.h"
 #include "defmris.h"
 #include "defcom.c"
-/*{{{  extern unsigned char letter_mris[] =*/
+/*{{{  unsigned char letter_mris[] =*/
 unsigned char letter_mris[] =
 {
   LETTERPOS(1, 3),
@@ -17,7 +17,7 @@ unsigned char letter_mris[] =
   LETTEREND
 };
 /*}}}*/
-/*{{{  extern unsigned char letter_msit[] =*/
+/*{{{  unsigned char letter_msit[] =*/
 unsigned char letter_msit[] =
 {
   LETTERPOS(1, 3),
@@ -28,8 +28,8 @@ unsigned char letter_msit[] =
   LETTEREND
 };
 /*}}}*/
-/*{{{  extern unsigned char letter_the[] =*/
-unsigned char letter_the[] =
+/*{{{  static unsigned char letter_the[] =*/
+static unsigned char letter_the[] =
 {
   LETTERPOS(2, 7),
   LETTERPATH(0, 2), LETTERPATH(2, 1), LETTERPATH(3, 3), LETTERPATH(1, 2),
@@ -39,8 +39,8 @@ unsigned char letter_the[] =
   LETTEREND
 };
 /*}}}*/
-/*{{{  extern unsigned char letter_game[] =*/
-unsigned char letter_game[] =
+/*{{{  static unsigned char letter_game[] =*/
+static unsigned char letter_game[] =
 {
   LETTERPOS(2, 9),
   LETTERPATH(2, 2), LETTERPATH(1, 2), LETTERPATH(3, 2), LETTERPATH(0, 1),
@@ -205,8 +205,8 @@ TITLE title_text[] =
     {NULL}
   };
 /*}}}*/
-/*{{{  unsigned char CONST *lettering[] =*/
-unsigned char CONST *lettering[] =
+/*{{{  unsigned char CONST *lettering_game[] =*/
+unsigned char CONST *lettering_game[] =
 {
   letter_mris,
   letter_the,
@@ -214,3 +214,4 @@ unsigned char CONST *lettering[] =
   NULL
 };
 /*}}}*/
+unsigned char CONST **lettering = lettering_game;

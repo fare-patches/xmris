@@ -1,6 +1,6 @@
-. Copyright (C) 1993, 1992 Nathan Sidwell
-. RCS $Id: xmris.man,v 4.16 1994/02/08 18:52:34 nathan Exp $
-.TH XMRIS 6 "20 December 1993" "X Version 11"
+. Copyright (C) 1995, 1994, 1993, 1992 Nathan Sidwell
+. RCS $Id: xmris.man,v 4.17 1995/12/14 13:53:27 nathan Exp $
+.TH XMRIS 6 "12 December 1995" "X Version 11"
 .IX xmris#(n) "" "\fLxmris\fP(n)"
 .SH NAME
 xmris - video game for X
@@ -13,7 +13,7 @@ xmris - video game for X
 .IX xmris#(n) "" "\fLxmris\fP(n) \(em video game"
 .SH DESCRIPTION
 .PP
-Xmris is a version of the Mr Do video arcade game for the X Window
+Mr Is is a version of the Mr Do video arcade game for the X Window
 System.
 .PP
 You control a gnome, who can walk around a garden, along paths already
@@ -129,12 +129,12 @@ The keys can be changed by using the keyboard key. Each logical key name
 is prompted for, and you can select a new key binding by pressing the
 one you want. Pressing the throw key will keep the binding for that
 particular key (remember the throw key may change half way through this
-process). You cannot map one key onto two functions, xmris will
+process). You cannot map one key onto two functions, Mr Is will
 wait until you give an unambiguous set of keys. Key bindings set this
-way will be forgotten when xmris terminates. To permanently set the
+way will be forgotten when Mr Is terminates. To permanently set the
 key bindings, you will have to the the X resources.
 .PP
-Xmris will use colour sprites, if the visual permits it (has a colour map
+Mr Is will use colour sprites, if the visual permits it (has a colour map
 size of more than 15, and you haven't forced monochrome). All the colours
 bar black and white are user definable. There are four sets, one for
 each of the four combinations of gender and swap flag. The
@@ -148,7 +148,7 @@ A warning message is sent to stderr, if a colour allocation fails. The
 -colours argument shows how these are allocated, and -help -colours can
 be used to get the colour resource names.
 .SH OPTIONS
-Xmris accepts the standard X Toolkit options, as well as these.
+Mr Is accepts the standard X Toolkit options, as well as these.
 .br
 .ne 3
 .TP
@@ -195,7 +195,7 @@ option, '-bw', is already nabbed by the toolkit as borderwidth.)
 .TP
 .B \+random
 .PD
-Xmris has two methods for placing the apples. They will either be placed
+Mr Is has two methods for placing the apples. They will either be placed
 according to one of four sets of explicit apple positions, or placed randomly
 on any permitted location (though trying not to place them adjacently). These
 two options override the default set by the resources, -random places them
@@ -210,12 +210,12 @@ randomly, and +random uses one of the four sets.
 .TP
 .B \-gender \fIgender\fP
 .PD
-Xmris can also be run as xmsit. The two sexes have different sprites.
+Mr Is can also be run as xmsit. The two sexes have different sprites.
 Mris selects the classic sprites, while msit selects a more modern set.
 The gender of the game is taken from the program name (mris or msit)
 but may be overridden by these two switches. Valid genders
 are 'he', 'she', 'female', 'male', 'msit', 'mris', 'boy', 'girl'.
-The game is known as xmris, because the arcade game was masculine.
+The game is known as xmris (eks mister iz), because the arcade game was masculine.
 .br
 .ne 3
 .TP
@@ -224,7 +224,7 @@ Forces the game timing to be done by busy waiting, rather than with an
 alarm timeout. Some systems have particularly inaccurate alarms, and
 this option may improve things, by not using the system's timer signal at
 all. Some alarms go off before the requested
-time. Xmris will detect this, and insert a busy wait in the remaining
+time. Mr Is will detect this, and insert a busy wait in the remaining
 time. A warning will be displayed as well.
 Note that this is different to forcing busywaiting, as the timer signal
 is still being used for the initial part of the frame delay.
@@ -252,7 +252,7 @@ name, then it will be changed to the new name.
 .B \-gardens \fIgarden-file\fP
 Specify a garden definition file. This allows you to alter the initial
 garden layouts. The file is searched for in the current directory, and
-the xmris subdirectory of app-defaults. These are explained below.
+the Mr Is subdirectory of app-defaults. These are explained below.
 .br
 .ne 3
 .TP
@@ -279,7 +279,7 @@ to use the -dir option too.
 .B \-remove \fIname\fP
 Allows the game's owner to remove someone's scores. The option will only
 work when the real and effective user ids are the same. (ie
-a setuid xmris has been run by its owner). After updating the files,
+a setuid Mr Is has been run by its owner). After updating the files,
 the score tables are listed, and the game does not start. An X display
 will still need to be opened, to read the X resources, which may override
 the default score directory. The +display option may be used to prevent
@@ -319,7 +319,7 @@ the full year name (eg 1993), or just the last two digits, those in the
 range 00 to 89 are in the 21st century, and those from 90 to 99 are the
 20th century. If the date is ambiguous (eg 1/1/1), a stored format is used
 and a warning is given. The following are valid unambiguous dates, '11jun93'
-(dmy), '14/3/93' (dmy), 'april6:93' (mdy), and '0-16-8' (ymd).
+(dmy), '14/3/93' (dmy), 'april6:93' (mdy), and '0-16-8' (ydm).
 .br
 .ne 3
 .TP
@@ -332,14 +332,14 @@ string containing one each of 'D', 'M' and 'Y'.
 .ne 3
 .TP
 .B \-depth \fIdepth\fP
-Xmris will use the default depth of the screen. You may wish to override
+Mr Is will use the default depth of the screen. You may wish to override
 that by using this option. Selecting a different depth may affect the
 visual selected.
 .br
 .ne 3
 .TP
 .B \-visual \fIvisual-class\fP
-Xmris will pick the default visual for the depth chosen, but you can override
+Mr Is will pick the default visual for the depth chosen, but you can override
 that by specifying a particular visual class. Valid visuals
 are 'PseudoColor', 'DirectColor', 'TrueColor', 'StaticColor', 'GrayScale',
 and 'StaticGray'. To see which one is picked, you can use the -colours
@@ -349,7 +349,7 @@ a private colour map too, due to limitations of the server or display.
 .ne 3
 .TP
 .B \-private
-This forces xmris to allocate a private colour map. Normally xmris will
+This forces Mr Is to allocate a private colour map. Normally Mr Is will
 share the default colour map of the selected visual, but if that does not
 have enough free colour cells then some colours will have to be shared.
 .br
@@ -392,7 +392,7 @@ you are defining your own sprite colours. The direction keys will control
 the direction in which the demonstration animated sprites face, and the
 throw key will cycle the background colours for pseudo colour visuals.
 .SH APPLICATION RESOURCES
-Xmris uses the X toolkit application resource mechanism for setting up
+Mr Is uses the X toolkit application resource mechanism for setting up
 the environment. Application resource items start with 'Xmris'. The
 resource name can be derived from the given resource class by
 decapitalizing it. For example 'cherryStalk' is the resource name for the
@@ -507,6 +507,10 @@ Xmris.Right:    Right
 .br
 .PP
 In addition, you have the normal resources such as '*Font'.
+.PP
+Normally the cursor is invisible in the Mr Is window. You can force
+a cursor to be shown by setting the "Xmris*cursorName" resource to a
+named cursor.
 .SH COLOUR RESOURCES
 There are many colour name defaults. You can specify different ones for
 the four combinations of gender and swap resources, or use the same for some
@@ -762,7 +766,7 @@ include files, or comments. An include file is specified
 by '#include "\fIfilename\fP"',
 where filename is the name of the included file. Relative include
 files are searched for relative to the including file, or, if
-that fails, in the xmris subdirectory of app-defaults directory (this
+that fails, in the Mr Is subdirectory of app-defaults directory (this
 will usually be '/usr/lib/X11/app-defaults/xmris'). In
 If the filename is null, then the internal
 gardens will be included. Comments are delimited by '/*' and '*/',
@@ -867,10 +871,10 @@ following names.
 .B .../xmris.score
 The high score file. The directory is system dependent, and may be
 changed by application resource or option.
-This file must either exist and be writable to by xmris, or the
-directory containing it must be writable by xmris. This
+This file must either exist and be writable to by Mr Is, or the
+directory containing it must be writable by Mr Is. This
 can be done by chmoding the score file or directory, or by
-setuiding xmris appropriately. A non-setuid xmris will chmod the score
+setuiding Mr Is appropriately. A non-setuid Mr Is will chmod the score
 file to 666 if creating it.
 .br
 .ne 3
@@ -878,8 +882,8 @@ file to 666 if creating it.
 .B .../xmris.lock
 In some systems, where lockf or flock doesn't work, this temporary file
 is used to perform the locking. The directory containing it must be
-writable by xmris. This can be done by chmoding the directory, or
-by setuiding xmris appropriately.
+writable by Mr Is. This can be done by chmoding the directory, or
+by setuiding Mr Is appropriately.
 .br
 .ne 4
 .TP
@@ -889,15 +893,15 @@ by setuiding xmris appropriately.
 .B ~/.xmris.score
 .PD
 One of these files is used to store the personal best scores.
-Xmris first looks for the personal score file in the score directory and
+Mr Is first looks for the personal score file in the score directory and
 then in the home directory. If a personal
-score file cannot be found, xmris attempts to create one. 
-If the file is found in the user's home directory, xmris attempts
-to move it to the score directory. Xmris
+score file cannot be found, Mr Is attempts to create one. 
+If the file is found in the user's home directory, Mr Is attempts
+to move it to the score directory. Mr Is
 will attempt to create the personal files in the score directory. If this
 cannot be done, the personal score file is placed in the home directory. In
-order to create the personal score file in the score directory, xmris will
-have to have the correct access rights, as with the lock file. A setuid xmris
+order to create the personal score file in the score directory, Mr Is will
+have to have the correct access rights, as with the lock file. A setuid Mr Is
 will juggle the effective uid correctly for accessing both the score directory
 and the users' home directories.
 .br
@@ -909,7 +913,7 @@ and the users' home directories.
 .B .../app-defaults/Xmris.ad
 .PD
 You can place you favourite key bindings and stuff in an application
-resource file, and xmris will use them, rather than its compiled defaults.
+resource file, and Mr Is will use them, rather than its compiled defaults.
 See X for information about how these are searched.
 .br
 .ne 6
@@ -945,7 +949,7 @@ that if you requested a non-default visual, you may also have to request
 a private colormap, otherwise an X error 8 on request 1:0 occurs when
 realizing the widget.
 .PP
-Some systems' timer returns too soon. Xmris detects this, and then starts
+Some systems' timer returns too soon. Mr Is detects this, and then starts
 performing a busywait at the end of the timer period. A warning is also
 printed. If this is the case, it may be better to force busywaiting with
 the busywait resource.
@@ -954,9 +958,9 @@ If a loadable garden is incorrect, an error is displayed, enabling you
 to locate the offending files and lines. The garden is ignored.
 .SH BUGS
 .PP
-Xmris can be addictive, so don't blame me if your work suffers.
+Mr Is can be addictive, so don't blame me if your work suffers.
 .PP
-Xmris does not check that the key definitions in the application
+Mr Is does not check that the key definitions in the application
 resources do not conflict with each other. Neither are the colours
 checked, to see that things are actually visible.
 .PP
@@ -977,15 +981,15 @@ system dependent. There is also slippage between receiving
 one interrupt and starting the next one. You don't want to get the
 interrupt to restart itself (even though this is possible), as
 you then get very rude behaviour if your main loop is a bit too slow,
-(xmris on speed). Some timers round downwards, returning before the
+(Mr Is on speed). Some timers round downwards, returning before the
 requested time. This has to be detected, and a busy wait inserted.
 .PP
 The visual class name conversion is performed by a standard toolkit
 routine. It accepts only American spelling, the English spelling of
 'grey' and 'colour' are not allowed.
 .SH COPYRIGHT
-Copyright (C) 1993, 1992 Nathan Sidwell.
+Copyright (C) 1995, 1994, 1993, 1992 Nathan Sidwell.
 .SH AUTHOR
-Nathan Sidwell <nathan@pact.srf.ac.uk>
+Nathan Sidwell <nathan@pact.srf.ac.uk> <http://www.pact.srf.ac.uk/~nathan/>
 
 Additional sprites by Stefan Gustavson <stefang@isy.liu.se>

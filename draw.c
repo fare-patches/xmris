@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: draw.c,v 4.17 1994/02/08 18:52:34 nathan Stable $ */
+/* RCS $Id: draw.c,v 4.18 1995/12/14 13:53:27 nathan Exp $ */
 #include "xmris.h"
 #include "time.h"
 /*{{{  board load error masks*/
@@ -1032,7 +1032,7 @@ ARGSEP  char CONST *parent
 	  if(!stream)
 	    /*{{{  try in app-defaults/xmris/<file>*/
 	    {
-	      char      *lib;
+	      char CONST *lib;
 	      
 	      lib = XtResolvePathname(display.display,
 		  "app-defaults/xmris", name, NULL, NULL, NULL, 0, NULL);
@@ -1046,7 +1046,7 @@ ARGSEP  char CONST *parent
 	      if(lib)
 		{
 		  XtFree(filename);
-		  filename = lib;
+		  filename = (char *)lib;
 		}
 	      stream = fopen(filename, "r");
 	    }

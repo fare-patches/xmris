@@ -1,7 +1,7 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
 /* additional sprites by Stefan Gustavson <stefang@isy.liu.se> */
 /* common define file for xmris and xmred, included from defmris or defmred */
-/* RCS $Id: defcom.c,v 4.25 1994/02/08 18:52:34 nathan Stable $ */
+/* RCS $Id: defcom.c,v 4.27 1995/12/14 13:53:27 nathan Exp $ */
 /*{{{  some sprite info*/
 /* you can add your own sprites, if you like, but you have to be careful
  * to make sure that they look ok with both -swap and -noswap, and also
@@ -254,9 +254,9 @@ XtResource resources[] =
   {"random", "Random", XtRBoolean, sizeof(Boolean),
       XtOffsetOf(DATA, random), XtRImmediate, (XtPointer)False},
   {"gardens", "Gardens", XtRString, sizeof(String),
-      XtOffsetOf(DATA, boards), XtRString, (XtPointer)NULL},
+      XtOffsetOf(DATA, boards), XtRImmediate, (XtPointer)NULL},
   {"userName", "UserName", XtRBoolean, sizeof(Boolean),
-      XtOffsetOf(DATA, username), XtRBoolean, (XtPointer)False},
+      XtOffsetOf(DATA, username), XtRImmediate, (XtPointer)False},
   {"static", "Static", XtRBoolean, sizeof(Boolean),
       XtOffsetOf(DATA, nodynamic), XtRImmediate, (XtPointer)False},
 #ifndef TRANSPUTER
@@ -265,7 +265,7 @@ XtResource resources[] =
 #endif /* TRANSPUTER */
 #endif /* XMRED */
   {XtNfont, XtCFont, XtRFont, sizeof(Font),
-      XtOffsetOf(DATA, font), XtRString, (XtPointer)FONT_NAME},
+      XtOffsetOf(DATA, font), XtRImmediate, (XtPointer)FONT_NAME},
   {XtNreverseVideo, XtCReverseVideo, XtRBoolean, sizeof(Boolean),
       XtOffsetOf(DATA, swap), XtRImmediate, (XtPointer)False},
   {"monochrome", "Monochrome", XtRBoolean, sizeof(Boolean),
@@ -273,7 +273,7 @@ XtResource resources[] =
   {"gender", "Gender", XtRGender, sizeof(Boolean),
       XtOffsetOf(DATA, gender), XtRGender, (XtPointer)&default_gender},
   {"private", "Private", XtRBoolean, sizeof(Boolean),
-      XtOffsetOf(DATA, private), XtRBoolean, (XtPointer)False},
+      XtOffsetOf(DATA, private), XtRImmediate, (XtPointer)False},
   {"distinct", "Distinct", XtRInt, sizeof(int),
       XtOffsetOf(DATA, distinct), XtRInt, (XtPointer)&negone},
   {NULL}

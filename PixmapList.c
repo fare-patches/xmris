@@ -1,5 +1,5 @@
 /* Copyright (C) 1993 Nathan Sidwell */
-/* RCS $Id: PixmapList.c,v 4.8 1994/01/06 10:20:24 nathan Stable $ */
+/* RCS $Id: PixmapList.c,v 4.9 1995/12/14 13:53:27 nathan Exp $ */
 /* Holds a list of pixmaps which can be selected or dragged like
  * individual Icon widgets.
  * I tried using a box widget with an insertPosition function
@@ -273,6 +273,7 @@ ARGSEP  Cardinal  *num_params
 	  Widget  drag;
 	  Widget  parent;
 	  
+	  drag = NULL;
 	  for(parent = (Widget)plw; parent;
 	      parent = XtParent(parent))
 	    {
@@ -1247,6 +1248,7 @@ ARGSEP  Position  *yp       /* y offset return */
       got = 0;
       break;
     default:
+      x = y = 0;
       got = -1;
   }
   /*}}}*/

@@ -1,0 +1,11 @@
+XMRIS V4.03 changes from 4.02
+
+typo in Imakefile fixed
+
+fchmod changed to chmod (Steven W Orr <steveo@world.std.com>)
+
+strdup removed as not everyone has it (Jeremy Nelson <jnelson@iastate.edu>)
+
+% substitution requirement removed from Imakefile (DaviD W. Sanderson <dws@ssec.wisc.edu>)
+
+\ line breaking tidied up (DaviD W. Sanderson <dws@ssec.wisc.edu>)

@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: demo.c,v 4.14 1994/01/25 18:33:03 nathan Stable $ */
+/* RCS $Id: demo.c,v 4.17 1995/12/22 11:56:52 nathan Exp $ */
 #include "xmris.h"
 #define SCORING_LEN 22
 /*{{{  static*/
@@ -1609,7 +1609,7 @@ ARGSEP  unsigned  split
   y = PIXELY((int)ix, CELL_HEIGHT / 2);
   XDrawString(display.display, display.back, GCN(GC_TEXT),
       PIXELX(0, 0), y + (split ? height > CELL_HEIGHT + GAP_HEIGHT - 2 ?
-      font.digitup - ((CELL_HEIGHT + GAP_HEIGHT) / 2) + 1 :
+      font.digitup - (CELL_HEIGHT + GAP_HEIGHT) / 2 + 1 :
       font.digitup - height / 2 :
       font.center), string, SCORING_LEN - 1);
   name = (char *)sptr->name;
@@ -1643,9 +1643,8 @@ ARGSEP  unsigned  split
       split ? PIXELX(CELLS_ACROSS, -GAP_WIDTH) - (length + 2) * font.width :
       PIXELX(0, 0) + SCORING_LEN * font.width,
       y + (split ? height > CELL_HEIGHT + GAP_HEIGHT - 2 ?
-	  (CELL_HEIGHT + GAP_HEIGHT / 2) - 1 - font.descent :
-	  height / 2 - font.descent :
-	  font.center),
+	  (CELL_HEIGHT + GAP_HEIGHT) / 2 - 1 - font.descent :
+	  height / 2 - font.descent : font.center),
       name, (int)length);
   return;
 }

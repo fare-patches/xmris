@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: makemred.c,v 4.29 1994/01/06 10:20:24 nathan Stable $ */
+/* RCS $Id: makemred.c,v 4.30 1995/12/14 13:53:27 nathan Exp $ */
 /*{{{  includes*/
 #include "xmred.h"
 #include "defmred.h"
@@ -82,6 +82,7 @@ Ctrl<Key>g:set-dialog-button(disagree)\n\
 "*dialog*continue.label:Continue",
 "*dialog*retry.label:Retry",
 "*dialog*cancel.label:Cancel",
+"*dialog*clear.label:Clear",
 "*dialog*abort.label:Abort",
 "*dialog*default.label:Default",
 "*altered.title:Altered",
@@ -490,8 +491,9 @@ ARGSEP  String  *argv
       for(ptr = options; *(char CONST **)ptr; ptr++)
 	/* EMPTY */;
       display.toplevel = XtAppInitialize(&display.context, "Xmris",
-	  options, (Cardinal)(ptr - options), &argc, argv,
-	  (char **)fallback_resources,
+	  options, (Cardinal)(ptr - options),
+	  (Cardinal *)&argc, (String *)argv,
+	  (String *)fallback_resources,
 	  toplevel_args, XtNumber(toplevel_args));
       if(argc > 1)
 	/*{{{  error*/
@@ -508,7 +510,6 @@ ARGSEP  String  *argv
 	}
 	/*}}}*/
       else
-	/*{{{  some more setup*/
 	{
 	  XtResource CONST *ptr;
 	  
@@ -521,10 +522,11 @@ ARGSEP  String  *argv
 	    /* EMPTY */;
 	  XtGetApplicationResources(display.toplevel, (XtPointer)&data,
 	      resources, (Cardinal)(ptr - resources), (Arg *)NULL, 0);
+#ifndef NDEBUG
 	  XSetErrorHandler(error_handler);
+#endif /* NDEBUG */
 	  gettoplevelresources();
 	}
-	/*}}}*/
     }
   return;
 }

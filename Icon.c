@@ -1,5 +1,5 @@
 /* Copyright (C) 1993 Nathan Sidwell */
-/* RCS $Id: Icon.c,v 4.12 1993/10/29 14:04:44 nathan Stable $ */
+/* RCS $Id: Icon.c,v 4.13 1995/12/14 13:53:27 nathan Exp $ */
 /* this widget holds a pixmap which it can select a row/column from
  * similar to a command widget, or initiate a drag on press and move
  */
@@ -232,6 +232,7 @@ ARGSEP  Cardinal  *num_params
       Widget  drag;
       Widget  parent;
       
+      drag = NULL;
       for(parent = (Widget)iw; parent; parent = XtParent(parent))
 	{
 	  drag = XtNameToWidget(parent, iw->icon.drag_name);
@@ -670,6 +671,7 @@ ARGSEP  Position  *yp       /* y coordinate return */
       got = 1;
       break;
     default:
+      x = y = 0;
       got = 0;
   }
   /*}}}*/

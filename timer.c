@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: timer.c,v 4.7 1994/01/31 17:40:36 nathan Stable $ */
+/* RCS $Id: timer.c,v 4.10 1995/12/22 11:56:52 nathan Exp $ */
 /*{{{  the problem with real time under unix*/
 /*
  * Getting accurate, stable timing is difficult. An auto repeating
@@ -59,6 +59,11 @@
 #else
 #include <sys/time.h>
 #include <signal.h>
+#endif
+#ifdef SVR4
+#ifndef SYSV
+#define SYSV
+#endif
 #endif
 #define BUSYWAIT
 /*{{{  signal_hold, signal_release & signal_pause*/
@@ -188,7 +193,7 @@ static struct
   unsigned  VOLATILE waiting;       /* waiting for the interrupt */
 #ifdef BUSYWAIT
   unsigned  busywait;               /* busywaiting is turned on */
-  unsigned  restarted;              /* restarted in signal handler */
+  unsigned  VOLATILE restarted;     /* restarted in signal handler */
   tick_t    timeout;                /* timeout */
   tick_t    delay;                  /* interval delay */
 #endif /* BUSYWAIT */
@@ -201,10 +206,28 @@ static struct
   unsigned  missed;         /* missed count */
 } timer;
 /*}}}*/
+#ifndef NDEBUG
+/*{{{  debug*/
+/*{{{  typedef struct*/
+typedef struct
+{
+  char CONST *text;
+  unsigned  elapsed;
+  unsigned  waiting;
+  unsigned  restarted;
+} RECORD;
+/*}}}*/
+static RECORD list[64];
+static unsigned next;
+/*}}}*/
+#endif
 /*{{{  prototypes*/
 #ifndef TRANSPUTER
 static VOIDFUNC timer_alarm PROTOARG((int));
 #endif /* TRANSPUTER */
+#ifndef NDEBUG
+static VOIDFUNC timer_debug PROTOARG((char CONST *));
+#endif
 /*}}}*/
 #ifdef TRANSPUTER
 /*{{{  void sleep(delay)*/
@@ -233,12 +256,16 @@ FUNCARG((sig),
    * because timer.waiting is only true when the main thread is stuck
    * in a wait() call.
    */
-  timer.elapsed = 1;
+#ifndef NDEBUG
+  timer_debug("In handler");
+#endif
 #ifndef USESIGSET
   signal(SIGALRM, timer_alarm);
 #endif
+  timer.elapsed = !timer.waiting;
   if(timer.waiting)
     {
+      timer.waiting = 0;
 #ifdef BUSYWAIT
       if(timer.busywait)
 	{
@@ -247,10 +274,10 @@ FUNCARG((sig),
 	  gettick(&now);
 	  if(tickafter(now, timer.timeout))
 	    {
+	      timer.timeout = tickadd(timer.timeout, timer.delay);
+	      timer.restarted = 1;
 	      setitimer(ITIMER_REAL, &timer.interval,
 		  (struct itimerval *)NULL);
-	      timer.restarted = 1;
-	      timer.timeout = tickadd(timer.timeout, timer.delay);
 	    }
 	}
       else
@@ -262,7 +289,6 @@ FUNCARG((sig),
 	  setitimer(ITIMER_REAL, &timer.interval,
 	     (struct itimerval *)NULL);
 	}
-      timer.waiting = 0;
     }
   return;
 }
@@ -296,6 +322,26 @@ extern VOIDFUNC timer_close FUNCARGVOID
   return;
 }
 /*}}}*/
+#ifndef NDEBUG
+/*{{{  static void timer_debug(text)*/
+static VOIDFUNC timer_debug
+FUNCARG((text),
+	char CONST *text
+)
+{
+  RECORD *ptr;
+  
+  ptr = &list[next];
+  if(next++ == 63)
+    next = 0;
+  ptr->text = text;
+  ptr->elapsed = timer.elapsed;
+  ptr->waiting = timer.waiting;
+  ptr->restarted = timer.restarted;
+  return;
+}
+/*}}}*/
+#endif
 /*{{{  void timer_open()*/
 extern VOIDFUNC timer_open FUNCARGVOID
 /*
@@ -333,6 +379,9 @@ extern VOIDFUNC timer_open FUNCARGVOID
   timer.waiting = 0;
   timer.elapsed = 1;
 #endif /* TRANSPUTER */
+#ifndef NDEBUG
+  timer_debug("Init");
+#endif
   global.missed = 0;
   global.dilation = FRAME_SCALE;
   global.scale = SCORE_SCALE;
@@ -476,9 +525,15 @@ extern VOIDFUNC timer_wait FUNCARGVOID
     if(!timer.elapsed && data.busywait == False)
       {
 	point = -1;
+#ifndef NDEBUG
+	timer_debug("Starting wait");
+#endif
 	timer.waiting = 1;
 	while(timer.waiting)
 	  signal_pause(&mask);
+#ifndef NDEBUG
+	timer_debug("Done wait");
+#endif
 #ifdef BUSYWAIT
 	if(!timer.restarted)
 	  point = 0;
@@ -487,6 +542,7 @@ extern VOIDFUNC timer_wait FUNCARGVOID
       }
     else
       {
+	timer.elapsed = 0;
 #ifdef BUSYWAIT
 	if(timer.busywait)
 	  point = 0;
@@ -498,7 +554,6 @@ extern VOIDFUNC timer_wait FUNCARGVOID
 	    timer.missed++;
 	  }
       }
-    timer.elapsed = 0;
     signal_release(&mask);
   }
 #ifdef BUSYWAIT
