@@ -1,0 +1,317 @@
+! Copyright (C) 1993 Nathan Sidwell
+! RCS $Id: Xmris-ad.src,v 4.10 1993/12/14 16:47:00 nathan Stable $
+
+! These are some of the resources you can fiddle with for xmris
+! The defaults are shown in the man page.
+
+*Up:			apostrophe
+*Down:			slash
+*Left:			z
+*Right:			x
+*Throw:			space
+*Pause:			p
+*Quit:			q
+*Iconize:		i
+*Keyboard:		k
+*Dir:			SCORE
+*ReverseVideo:		no
+*Monochrome:		no
+*Gender:		he
+*Random:		no
+*Busywait:		no
+*UserName:		no
+*Font:			FONT
+*Static:		no
+
+! The resources for xmred
+! These are overly specific, so you can alter individual ones easily
+*mred*TransientShell.allowShellResize:yes
+*mred*TransientShell*Text.useStringInPlace:no
+*mred*TransientShell.dialog*resize:yes
+*mred*load*dialog*Text*editType:textAppend
+*mred*comment*dialog*Text.baseTranslations:#override
+*mred*comment*dialog*Text.Translations:#override
+*mred*load*dialog*Text.baseTranslations:#override\
+<Key>Return:\n
+*mred*load*dialog*Text.Translations:#override\
+<Key>Return:\n
+*mred*TransientShell*dialog.Text.baseTranslations:#override\
+<Key>Return:set-dialog-button(agree)\n\
+Ctrl<Key>g:set-dialog-button(disagree)\n\
+<Key>Escape:set-dialog-button(disagree)\n
+*mred*TransientShell*dialog.Text.Translations:#override\
+<Key>Return:set-dialog-button(agree)\n\
+Ctrl<Key>g:set-dialog-button(disagree)\n\
+<Key>Escape:set-dialog-button(disagree)\n
+*mred*dialog*ok.label:Ok
+*mred*dialog*continue.label:Continue
+*mred*dialog*retry.label:Retry
+*mred*dialog*cancel.label:Cancel
+*mred*dialog*abort.label:Abort
+*mred*dialog*default.label:Default
+*mred*altered.title:Altered
+*mred*showGrip:no
+*mred.defaultDistance:0
+*mred.pane.orientation:vertical
+*mred.pane.menus.orientation:horizontal
+*mred.pane.menus*allowResize:yes
+*mred.pane.menus*justify:left
+*mred.pane.menus.file.label:File
+*mred.pane.menus.file.menu.clear.label:Clear
+*mred.pane.menus.file.menu.load.attach:clear
+*mred.pane.menus.file.menu.load.label:Load
+*mred.pane.menus.file.menu.insert.attach:load
+*mred.pane.menus.file.menu.insert.label:Insert
+*mred.pane.menus.file.menu.save.attach:insert
+*mred.pane.menus.file.menu.save.label:Save
+*mred.pane.menus.file.menu.saveas.attach:save
+*mred.pane.menus.file.menu.saveas.label:Save As
+*mred.pane.menus.file.menu.quit.attach:saveas
+*mred.pane.menus.file.menu.quit.label:Quit
+*mred.pane.menus.garden.attach:file
+*mred.pane.menus.garden.label:Garden
+*mred.pane.menus.garden.menu.new.label:New
+*mred.pane.menus.garden.menu.clear.attach:new
+*mred.pane.menus.garden.menu.clear.label:Clear
+*mred.pane.menus.garden.menu.undo.attach:clear
+*mred.pane.menus.garden.menu.undo.label:Undo
+*mred.pane.menus.garden.menu.redo.attach:undo
+*mred.pane.menus.garden.menu.redo.label:Redo
+*mred.pane.menus.filename.attach:garden
+*mred.pane.menus.total.attach:filename
+*mred.pane.menus.current.attach:total
+*mred*Form.borderWidth:0
+*mred*Label.borderWidth:0
+*mred.pane.all.attach:one
+*mred.pane.all.orientation:horizontal
+*mred.pane.all.buffer.skipAdjust:yes
+*mred.pane.all.buffer.Icon.top:chainTop
+*mred.pane.all.buffer.Icon.bottom:chainTop
+*mred.pane.all.gardens.attach:buffer
+*mred.pane.all.gardens.orientation:vertical
+*mred.pane.all.gardens.gardens.min:51
+*mred.pane.all.gardens.gardens.orientation:horizontal
+*mred.pane.all.gardens.scrollbar.attach:gardens
+*mred.pane.all.gardens.scrollbar.orientation:horizontal
+*mred.pane.all.gardens.scrollbar.height:12
+*mred.pane.all.gardens.scrollbar.thumb:None
+*mred.pane.all.gardens.scrollbar.skipAdjust:yes
+*mred.pane.all.edit.attach:gardens
+*mred.pane.all.edit.skipAdjust:yes
+*mred.pane.all.edit.Icon.top:chainTop
+*mred.pane.all.edit.Icon.bottom:chainTop
+*mred.pane.all.edit.include.fromHoriz:comment
+*mred.pane.all.edit.garden.fromHoriz:include
+*mred.pane.one.attach:menus
+*mred.pane.one.defaultDistance:0
+*mred.pane.one.orientation:horizontal
+*mred.pane.one.garden.skipAdjust:yes
+*mred.pane.one.panel.attach:garden
+*mred.pane.one.panel.defaultDistance:0
+*mred.pane.one.panel*Label.internalHeight:0
+*mred.pane.one.panel*Label.internalWidth:0
+*mred.pane.one.panel.controls.defaultDistance:0
+*mred.pane.one.panel.controls*left:chainLeft
+*mred.pane.one.panel.controls*right:chainLeft
+*mred.pane.one.panel.controls.Form.Icon.top:chainTop
+*mred.pane.one.panel.controls.Form.Icon.bottom:chainTop
+*mred.pane.one.panel.controls.options.label.label:Options
+*mred.pane.one.panel.controls*Icon.fromVert:label
+*mred.pane.one.panel.controls.options.apple.index:0
+*mred.pane.one.panel.controls.options.random.fromHoriz:apple
+*mred.pane.one.panel.controls.options.cherry.fromHoriz:random
+*mred.pane.one.panel.controls.options.path.fromHoriz:cherry
+*mred.pane.one.panel.controls.options.player.fromHoriz:path
+*mred.pane.one.panel.controls.options.den.fromHoriz:player
+*mred.pane.one.panel.controls.fills.fromVert:options
+*mred.pane.one.panel.controls.fills.label.label:Fills
+*mred.pane.one.panel.controls.fills.fill1.fromHoriz:fill0
+*mred.pane.one.panel.controls.fills.fill2.fromHoriz:fill1
+*mred.pane.one.panel.controls.fills.fill3.fromHoriz:fill2
+*mred.pane.one.panel.controls.fills.index:0
+*mred.pane.one.panel.controls.colors.fromVert:fills
+*mred.pane.one.panel.controls.colors.label.label:Colors
+*mred.pane.one.panel.controls.colors.color1.fromHoriz:color0
+*mred.pane.one.panel.controls.colors.color2.fromHoriz:color1
+*mred.pane.one.panel.controls.colors.index:0
+*mred.pane.one.panel.controls.buttons.fromVert:colors
+*mred.pane.one.panel.controls.buttons.label.label:Buttons
+*mred.pane.one.panel.controls.buttons.button2.fromHoriz:button1
+*mred.pane.one.panel.controls.buttons.button3.fromHoriz:button2
+*mred.pane.one.panel.controls.buttons.button4.fromHoriz:button3
+*mred.pane.one.panel.controls.buttons.button5.fromHoriz:button4
+*mred.pane.one.panel.controls.buttons.button1.option:path
+*mred.pane.one.panel.controls.buttons.button2.option:cherry
+*mred.pane.one.panel.controls.buttons.button3.option:apple
+*mred.pane.one.panel.controls.buttons.button4.option:random
+*mred.pane.one.panel.totals.fromVert:controls
+*mred.pane.one.panel.totals.left:chainLeft
+*mred.pane.one.panel.totals.right:chainLeft
+*mred.pane.one.panel.totals.label.label:Totals
+*mred.pane.one.panel.totals.label.horizDistance:4
+*mred.pane.one.panel.totals.Form.defaultDistance:0
+*mred.pane.one.panel.totals.total0.fromVert:label
+*mred.pane.one.panel.totals.total0.horizDistance:28
+*mred.pane.one.panel.totals.total1.fromVert:total0
+*mred.pane.one.panel.totals.total1.horizDistance:28
+*mred.pane.one.panel.totals.total2.fromVert:total1
+*mred.pane.one.panel.totals.total2.horizDistance:28
+*mred.pane.one.panel.totals.total3.fromVert:total2
+*mred.pane.one.panel.totals.total3.horizDistance:28
+*mred.pane.one.panel.totals.total4.fromVert:label
+*mred.pane.one.panel.totals.total4.horizDistance:30
+*mred.pane.one.panel.totals.total5.fromVert:total4
+*mred.pane.one.panel.totals.total5.horizDistance:30
+*mred.pane.one.panel.totals.total6.fromVert:total5
+*mred.pane.one.panel.totals.total6.horizDistance:30
+*mred.pane.one.panel.totals.total7.fromVert:total6
+*mred.pane.one.panel.totals.total7.horizDistance:30
+*mred.pane.one.panel.totals.total4.fromHoriz:total0
+*mred.pane.one.panel.totals.total5.fromHoriz:total1
+*mred.pane.one.panel.totals.total6.fromHoriz:total2
+*mred.pane.one.panel.totals.total7.fromHoriz:total3
+*mred.pane.one.panel.totals.total8.fromVert:total3
+*mred.pane.one.panel.totals.total8.horizDistance:28
+*mred.pane.one.panel.totals.total9.fromHoriz:total8
+*mred.pane.one.panel.totals.total9.fromVert:total7
+*mred.pane.one.panel.totals.total9.horizDistance:30
+*mred.pane.one.panel.totals.Form.count.fromHoriz:icon
+*mred.pane.one.panel.totals.Form.count.horizDistance:4
+*mred.pane.one.panel.totals.total5.icon.fromHoriz:scrollbar
+*mred.pane.one.panel.totals.Form.icon.horizDistance:0
+*mred.pane.one.panel.totals.total5.scrollbar.height:32
+*mred.pane.one.panel.totals.total5.scrollbar.width:12
+*mred.pane.one.panel.totals.total5.scrollbar.minimumThumb:1
+*mred.pane.one.panel.totals.total5.scrollbar.thumb:None
+*mred.pane.one.panel.totals.total5.scrollbar.baseTranslations:#override\
+~Shift<KeyPress>space:StartScroll(Forward) NotifyScroll(FullLength) EndScroll()\n\
+Shift<KeyPress>space:StartScroll(Backward) NotifyScroll(FullLength) EndScroll()\n
+*mred.pane.one.panel.totals.total5.scrollbar.Translations:#override\
+~Shift<KeyPress>space:StartScroll(Forward) NotifyScroll(FullLength) EndScroll()\n\
+Shift<KeyPress>space:StartScroll(Backward) NotifyScroll(FullLength) EndScroll()\n
+*mred.pane.one.panel.totals.Form.icon.fromHoriz:warning
+*mred.pane.one.panel.totals.Form.warning.width:12
+*mred.pane.one.panel.totals.Form.warning.internalHeight:5
+*mred.pane.one.panel.totals.Form.warning.internalWidth:1
+*mred.pane.one.panel.totals.Form.count.height:34
+*mred.pane.one.panel.totals.Form.count.width:32
+*mred.pane.one.panel.totals.Form.count.resize:no
+*mred.pane.one.panel.totals.Form.left:chainLeft
+*mred.pane.one.panel.totals.Form.right:chainLeft
+*mred.pane.one.panel.totals.Form.top:chainTop
+*mred.pane.one.panel.totals.Form.bottom:chainTop
+*mred.pane.one.panel.mode.fromVert:totals
+*mred.pane.one.panel.mode.fromHoriz:comment
+*mred.pane.one.panel.mode.horizDistance:40
+*mred.pane.one.panel.mode.Icon.left:chainRight
+*mred.pane.one.panel.mode.Icon.right:chainRight
+*mred.pane.one.panel.mode.label.left:chainRight
+*mred.pane.one.panel.mode.label.right:chainRight
+*mred.pane.one.panel.mode.Icon.top:chainTop
+*mred.pane.one.panel.mode.Icon.bottom:chainTop
+*mred.pane.one.panel.mode.label.top:chainTop
+*mred.pane.one.panel.mode.label.bottom:chainTop
+*mred.pane.one.panel.mode.label.label:Mode
+*mred.pane.one.panel.mode.label.height:32
+*mred.pane.one.panel.mode.combined.fromHoriz:label
+*mred.pane.one.panel.mode.separate.fromHoriz:combined
+*mred.pane.one.panel.mode.random.fromHoriz:separate
+*mred.pane.one.panel.mode.left:chainLeft
+*mred.pane.one.panel.mode.right:chainLeft
+*mred.pane.one.panel.mode.top:chainBottom
+*mred.pane.one.panel.mode.bottom:chainBottom
+*mred.pane.one.panel.comment.fromVert:totals
+*mred.pane.one.panel.comment.vertDistance:4
+*mred.pane.one.panel.comment.horizDistance:4
+*mred.pane.one.panel.comment.left:chainLeft
+*mred.pane.one.panel.comment.right:chainLeft
+*mred.pane.one.panel.comment.top:chainBottom
+*mred.pane.one.panel.comment.bottom:chainBottom
+
+! These are the color names for xmris.
+! You can have sub resources mris, msit, mris.swap, msit.swap.
+! The * resource separator is probably useful. RTFM if you're
+! confused.
+
+! Colour resources
+!*Visual:			pseudocolor
+!*Distinct:		255
+!*Private:			no
+!*Depth:			8
+
+! *{mris,msit}.{swap}.<name>:<color>
+*mred*AppleFaint:           #CCCCCC
+*mred*swap.AppleFaint:      #FFFFFF
+*GreenBack:                 #77BB77
+*swap.GreenBack:            #BBFFBB
+*GreenFore:                 #007700
+*swap.GreenFore:            #00BB00
+*RedBack:                   #BB7777
+*swap.RedBack:              #FFBBBB
+*RedFore:                   #770000
+*swap.RedFore:              #BB0000
+*BlueBack:                  #7777BB
+*swap.BlueBack:             #BBBBFF
+*BlueFore:                  #000077
+*swap.BlueFore:             #0000BB
+*mris.DroneBack:            #AA3333
+*mris.swap.DroneBack:       #FF6666
+*mris.DroneFore:            #992222
+*mris.swap.DroneFore:       #FF2222
+*Background:                #FFFFFF
+*swap.Background:           #000000
+*Foreground:                #000000
+*swap.Foreground:           #FFFFFF
+*BorderColor:               #000000
+*swap.BorderColor:          #FFFFFF
+*mris*Ball:                 #FFFF77
+*msit*Ball:                 #FF00FF
+*Cherry:                    #EE0000
+*swap.CherryStalk:          #EEAA66
+*Apple1:                    #EEDD00
+*Apple2:                    #DD3300
+*AppleFaint:                #BBBBBB
+*Gem1:                      #DDDDDD
+*Gem2:                      #BBBBBB
+*LetterGot:                 #000000
+*swap.LetterGot:            #FFFFFF
+*LetterNotGot:              #BBBBBB
+*Normal:                    #EE0000
+*Munch1:                    #FFFF00
+*mris*Munch2:               #CCCCCC
+*msit*Munch2:               #FFFF00
+*mris.Drone:                #0000DD
+*mris.swap.Drone:           #6666FF
+*msit*Drone:                #00FF00
+*msit*DroneTongue:          #EE0000
+*Extra:                     #EEFF00
+*mris.Player:               #0000DD
+*Player:                    #6666FF
+*PlayerBobble:              #FFFFFF
+*PlayerSkin:                #FFCCCC
+*swap.PlayerSkin:           #FFDDDD
+*msit.swap.PlayerBoot:      #DD9955
+*mris.swap.PlayerBoot:      #EEAA66
+*msit.PlayerBoot:           #773322
+*mris*Chomp:                #FFFFFF
+*msit*Chomp:                #CCFF00
+*mris*ChompLip:             #77FFFF
+*msit*ChompTongue:          #EE0000
+*Seat:                      #EE0000
+*Cake:                      #FFFF77
+*CakeIcing:                 #DD9955
+*swap.CakeIcing:            #EEAA66
+*CakeJam:                   #EE0000
+*Spanner:                   #AAAAAA
+*swap.Spanner:              #DDDDDD
+*SpannerShadow:             #000000
+*Brolly1:                   #FFFFFF
+*Brolly2:                   #EE0000
+*BrollyHandle:              #DD9955
+*swap.BrollyHandle:         #EEAA66
+*MushroomStalk:             #FFFFFF
+*MushroomCap:               #EE0000
+*ClockFace:                 #FFFFFF
+*ClockBell:                 #00DD00
+*mris.ClockRim:             #0000DD
+*ClockRim:                  #00DD00

@@ -1,29 +1,18 @@
-/*{{{  (C) 1992 Nathan Sidwell*/
-/*****************************************************************************
-			X M R I S V1.01
-			---------------
-		    (C) 1992 Nathan Sidwell
-
-This program is copyright (C) 1992 Nathan Sidwell. This software and documentation
-is in the public domain. Permission is granted to distribute and compile
-verbatim copies of this software for non-commercial, non-profit use,
-without fee. The software may be modified, provided that both the above copyright
-notice and this permission notice appear.
-
-No guarantee is given as to the robustness or suitability of this
-software for your computer.
-
-Nathan Sidwell  INMOS UK |                 | nathan@inmos.co.uk       DoD#0390
-*****************************************************************************/
-/*}}}*/
+/* Copyright (C) 1993, 1992 Nathan Sidwell */
+/* RCS $Id: apple.c,v 4.10 1993/12/10 11:52:23 nathan stable $ */
 #include "xmris.h"
+/*{{{  prototypes*/
+static APPLE *apple_search PROTOARG((int, int, unsigned, unsigned, unsigned));
+/*}}}*/
 /*{{{  APPLE *apple_search(x, y, width, height, found)*/
-extern APPLE *apple_search FUNCARGLIST((x, y, width, height, found))
-int       x       FUNCARGSEP  /* x coord start */
-int       y       FUNCARGSEP  /* y coord start */
-unsigned  width   FUNCARGSEP  /* width of box */
-unsigned  height  FUNCARGSEP  /* hieght of box */
-unsigned  found   FUNCARGTERM /* already found ones */
+static APPLE *apple_search
+FUNCARG((x, y, width, height, found),
+	int       x       /* x coord start */
+ARGSEP  int       y       /* y coord start */
+ARGSEP  unsigned  width   /* width of box */
+ARGSEP  unsigned  height  /* height of box */
+ARGSEP  unsigned  found   /* already found ones */
+)
 /*
  * looks for an apple in the specified box
  * and returns a ptr to it, if found
@@ -33,17 +22,18 @@ unsigned  found   FUNCARGTERM /* already found ones */
   APPLE     *aptr;
   
   for(aptr = apple.list, i = 0; i != apple.apples; i++, aptr++, found >>= 1)
-    if(!(found & 1) && aptr->pixel.x + aptr->push - x >= 0 &&
-	aptr->pixel.x + aptr->push - x < width &&
-	aptr->pixel.y - y >= 0 && aptr->pixel.y - y < height)
+    if(!(found & 1) && INRANGE(aptr->pixel.x + aptr->push - x, 0, width) &&
+	INRANGE(aptr->pixel.y - y, 0, height))
       return aptr;
   return NULL;
 }
 /*}}}*/
 /*{{{  int apple_stop(mptr, cptr)*/
-extern int apple_stop FUNCARGLIST((mptr, cptr))
-MONSTER   *mptr FUNCARGSEP
-CELL      *cptr FUNCARGTERM
+extern int apple_stop
+FUNCARG((mptr, cptr),
+	MONSTER   *mptr
+ARGSEP  CELL      *cptr
+)
 /*
  * sees if the monster is about to walk into an apple
  * returns 0 if clear, 1 if stopped
@@ -55,34 +45,30 @@ CELL      *cptr FUNCARGTERM
 {
   unsigned  stop;
   unsigned  pause;
+  
   pause = stop = 0;
   switch(mptr->dir)
   {
     /*{{{  case 0: (up)*/
     case 0:
     {
-      if(mptr->offset.y == -VEL_Y)
-	/*{{{  walked into apple?*/
+      unsigned  i;
+      APPLE     *aptr;
+      int       px, py;
+    
+      px = mptr->pixel.x;
+      py = mptr->pixel.y;
+      for(aptr = apple.list, i = apple.apples; i--; aptr++)
 	{
-	  unsigned  i;
-	  APPLE     *aptr;
-	  int       px, py;
-			
-	  px = mptr->pixel.x;
-	  py = mptr->pixel.y;
-	  for(aptr = apple.list, i = apple.apples; i--; aptr++)
+	  if(INRANGE(aptr->pixel.x + aptr->push - px,
+		1 - CELL_WIDTH, CELL_WIDTH) &&
+	      INRANGE(py - aptr->pixel.y, CELL_HEIGHT / 2,
+	      CELL_HEIGHT + VEL_Y) && !aptr->ghost)
 	    {
-	      if(aptr->pixel.x + aptr->push - px < CELL_WIDTH &&
-		  aptr->pixel.x + aptr->push - px > -CELL_WIDTH &&
-		  py - aptr->pixel.y > 0 &&
-		  py - aptr->pixel.y <= CELL_HEIGHT)
-		{
-		  stop = 1;
-		  break;
-		}
+	      stop = 1;
+	      break;
 	    }
 	}
-	/*}}}*/
       break;
     }
     /*}}}*/
@@ -97,11 +83,10 @@ CELL      *cptr FUNCARGTERM
       py = mptr->pixel.y;
       for(aptr = apple.list, i = apple.apples; i--; aptr++)
 	{
-	  if(aptr->pixel.x + aptr->push - px < CELL_WIDTH &&
-	      aptr->pixel.x + aptr->push - px > -CELL_WIDTH &&
-	      aptr->pixel.y + apple_sizes[aptr->state].offset.y - py <=
-		  CELL_HEIGHT &&
-	      aptr->pixel.y + apple_sizes[aptr->state].offset.y - py > 0)
+	  if(INRANGE(aptr->pixel.x + aptr->push - px,
+	      1 - CELL_WIDTH, CELL_WIDTH) &&
+	      INRANGE(aptr->pixel.y + apple_sizes[aptr->state].offset.y - py,
+	      CELL_HEIGHT / 2, CELL_HEIGHT + VEL_Y) && !aptr->ghost)
 	    {
 	      stop = 1;
 	      break;
@@ -129,20 +114,19 @@ CELL      *cptr FUNCARGTERM
 	APPLE     *aptr;
 	CELL      *cptr;
 	      
-	aptr = apple_search(x, y,
-	    width + CELL_WIDTH / 2, 2 * (CELL_HEIGHT - VEL_Y), found);
+	aptr = apple_search(x, y, (unsigned)width + CELL_WIDTH / 2,
+	    2 * (CELL_HEIGHT - VEL_Y), found);
 	if(!aptr)
 	  break;
-	else if(aptr->state > 3 || aptr->push ||
-	    aptr->pixel.x - width < PIXELX(0, 0))
+	else if(aptr->push || aptr->pixel.x - width < PIXELX(0, 0))
 	  {
 	    stop = 1;
 	    break;
 	  }
-	else if(aptr->state == 2 && ((mptr->type != 1 && mptr->type != 4) ||
-	    (aptr->offset.x < 0 &&
-	    (cptr = BOARDCELL(aptr->cell.x, aptr->cell.y +
-		(aptr->offset.y <= 0)))->depths[2] > aptr->offset.x &&
+	else if(aptr->state == 2 &&
+	    ((mptr->type != 1 && mptr->type != 4) ||
+	    (aptr->offset.x < (cptr = BOARDCELL(aptr->cell.x, aptr->cell.y +
+		(aptr->offset.y <= 0)))->depths[2] &&
 		  !cptr[-1].visit)))
 	  break;
 	else
@@ -150,11 +134,12 @@ CELL      *cptr FUNCARGTERM
 	    final = aptr;
 	    found |= 1 << (aptr - apple.list);
 	    width = aptr->pixel.x - x + 1;
+	    width = (width + APPLE_VEL_X - 1) / APPLE_VEL_X * APPLE_VEL_X;
 	    aptr->maypush = width;
 	    x = aptr->pixel.x - CELL_WIDTH + 1 - width;
 	    if(aptr->state != 2 && aptr->offset.y > 0 &&
-		apple_search(x, aptr->pixel.y - aptr->offset.y +
-		CELL_HEIGHT, width, aptr->offset.y, found))
+		apple_search(x, aptr->pixel.y - aptr->offset.y + CELL_HEIGHT,
+		  (unsigned)width, (unsigned)aptr->offset.y, found))
 	      {
 		stop = 1;
 		break;
@@ -173,29 +158,26 @@ CELL      *cptr FUNCARGTERM
 	      unsigned  i;
 	      MONSTER   *mptr;
 	      MONSTER   *list;
-			    
+	  
 	      list = NULL;
 	      for(mptr = monster.list, i = monster.monsters; i--; mptr++)
 		{
-		  if(mptr->pixel.x - x >= 0 &&
-		      mptr->pixel.x - x < width + CELL_WIDTH &&
-		      mptr->pixel.y - y >= 0 &&
-		      mptr->pixel.y - y < 2 * (CELL_HEIGHT - VEL_Y))
+		  if(!mptr->squished && !mptr->shot &&
+		      INRANGE(mptr->pixel.x - x, 0, width + CELL_WIDTH) &&
+		      INRANGE(mptr->pixel.y - y, 0, 2 * (CELL_HEIGHT - VEL_Y)))
 		    {
-		      if(mptr->type == 1)
+		      if(mptr->type == 4)
+			stop = 1;
+		      else if(mptr->type == 1)
 			{
 			  if(mptr->dir & 2 ||
 			      mptr->pixel.x - x >= width + CELL_WIDTH / 2)
 			    stop = 1;
 			}
-		      else if(mptr->pixel.x - x >= width + CELL_WIDTH / 2)
-			/*(EMPTY*/;
-		      else if(mptr->type == 4)
-			stop = 1;
-		      else if(mptr->type == 0)
+		      else if(final->state < 2 && (!mptr->type || mptr->chew))
 			{
 			  CELL      *cptr;
-			    
+			
 			  cptr = BOARDCELL(mptr->cell.x, mptr->cell.y);
 			  if(cptr->depths[2] <= mptr->offset.x - width ||
 			      ((cptr->depths[1] || cptr->depths[0]) &&
@@ -221,8 +203,9 @@ CELL      *cptr FUNCARGTERM
 	    {
 	      unsigned  i;
 	      APPLE     *aptr;
-				  
-	      for(aptr = apple.list, i = apple.apples; i--; aptr++, found >>= 1)
+	    
+	      for(aptr = apple.list, i = apple.apples;
+		  i--; aptr++, found >>= 1)
 		if(found & 1)
 		  aptr->push = -aptr->maypush;
 	    }
@@ -251,19 +234,19 @@ CELL      *cptr FUNCARGTERM
 	APPLE       *aptr;
 	      
 	aptr = apple_search(x - CELL_WIDTH / 2, y,
-	    width + CELL_WIDTH / 2, 2 * (CELL_HEIGHT - VEL_Y), found);
+	    (unsigned)width + CELL_WIDTH / 2,
+	    2 * (CELL_HEIGHT - VEL_Y), found);
 	if(!aptr)
 	  break;
-	else if(aptr->state > 3 || aptr->push ||
+	else if(aptr->push ||
 	    aptr->pixel.x + width > PIXELX(CELLS_ACROSS - 1, 0))
 	  {
 	    stop = 1;
 	    break;
 	  }
 	else if(aptr->state == 2 && ((mptr->type != 1 && mptr->type != 4) ||
-	    (aptr->offset.x > 0 &&
-	    (cptr = BOARDCELL(aptr->cell.x, aptr->cell.y +
-		(aptr->offset.y <= 0)))->depths[3] < aptr->offset.x &&
+	    (aptr->offset.x > (cptr = BOARDCELL(aptr->cell.x, aptr->cell.y +
+		(aptr->offset.y <= 0)))->depths[3] &&
 		  !cptr[1].visit)))
 	  break;
 	else
@@ -271,11 +254,12 @@ CELL      *cptr FUNCARGTERM
 	    final = aptr;
 	    found |= 1 << (aptr - apple.list);
 	    width -= aptr->pixel.x - x;
+	    width = (width + APPLE_VEL_X - 1) / APPLE_VEL_X * APPLE_VEL_X;
 	    aptr->maypush = width;
 	    x = aptr->pixel.x + CELL_WIDTH;
 	    if(aptr->state != 2 && aptr->offset.y > 0 &&
-		apple_search(x, aptr->pixel.y - aptr->offset.y +
-		CELL_HEIGHT, width, aptr->offset.y, found))
+		apple_search(x, aptr->pixel.y - aptr->offset.y + CELL_HEIGHT,
+		    (unsigned)width, (unsigned)aptr->offset.y, found))
 	      {
 		stop = 1;
 		break;
@@ -286,204 +270,78 @@ CELL      *cptr FUNCARGTERM
 	  }
       }
       /*}}}*/
-      /*{{{  check if against monster*/
-      if(found && width)
-	{
-	  unsigned  i;
-	  MONSTER   *mptr;
-	  MONSTER   *list;
-		
-	  list = NULL;
-	  for(mptr = monster.list, i = monster.monsters; i--; mptr++)
-	    {
-	      if(mptr->pixel.x - x >= -CELL_WIDTH &&
-		  mptr->pixel.x - x < width &&
-		  mptr->pixel.y - y >= 0 &&
-		  mptr->pixel.y - y < 2 * (CELL_HEIGHT - VEL_Y))
-		{
-		  if(mptr->type == 1)
-		    {
-		      if(mptr->dir & 2 ||
-			  mptr->pixel.x - x < -CELL_WIDTH / 2)
-			stop = 1;
-		    }
-		  else if(mptr->pixel.x - x < -CELL_WIDTH / 2)
-		    /*EMPTY*/;
-		  else if(mptr->type == 4)
-		    stop = 1;
-		  else if(mptr->type == 0)
-		    {
-		      CELL      *cptr;
-	    
-		      cptr = BOARDCELL(mptr->cell.x, mptr->cell.y);
-		      if(cptr->depths[3] >= mptr->offset.x + width ||
-			  ((cptr->depths[1] || cptr->depths[0]) &&
-			  mptr->offset.x <= 0))
-			{
-			  mptr->list = list;
-			  list = mptr;
-			  mptr->push = 1;
-			}
-		      else
-			stop = 1;
-		    }
-		}
-	    }
-	  if(final->state < 2)
-	    final->list = list;
-	}
-      /*}}}*/
       if(found && !stop)
 	{
-	  pause = 1;
-	  /*{{{  push the apples*/
-	  {
-	    unsigned  i;
-	    APPLE     *aptr;
-			      
-	    for(aptr = apple.list, i = apple.apples; i--; aptr++, found >>= 1)
-	      if(found & 1)
-		aptr->push = aptr->maypush;
-	  }
+	  /*{{{  check if against monster*/
+	  if(width)
+	    {
+	      unsigned  i;
+	      MONSTER   *mptr;
+	      MONSTER   *list;
+	      
+	      list = NULL;
+	      for(mptr = monster.list, i = monster.monsters; i--; mptr++)
+		{
+		  if(!mptr->squished && !mptr->shot &&
+		      INRANGE(mptr->pixel.x - x, -CELL_WIDTH, width) &&
+		      INRANGE(mptr->pixel.y - y, 0, 2 * (CELL_HEIGHT - VEL_Y)))
+		    {
+		      if(mptr->type == 4)
+			stop = 1;
+		      else if(mptr->type == 1)
+			{
+			  if(mptr->dir & 2 ||
+			      mptr->pixel.x - x < -CELL_WIDTH / 2)
+			    stop = 1;
+			}
+		      else if(final->state < 2 && (!mptr->type || mptr->chew))
+			{
+			  CELL      *cptr;
+			
+			  cptr = BOARDCELL(mptr->cell.x, mptr->cell.y);
+			  if(cptr->depths[3] >= mptr->offset.x + width ||
+			      ((cptr->depths[1] || cptr->depths[0]) &&
+			      mptr->offset.x <= 0))
+			    {
+			      mptr->list = list;
+			      list = mptr;
+			      mptr->push = 1;
+			    }
+			  else
+			    stop = 1;
+			}
+		    }
+		}
+	      if(final->state < 2)
+		final->list = list;
+	    }
 	  /*}}}*/
+	  if(!stop)
+	    {
+	      pause = 1;
+	      /*{{{  push the apples*/
+	      {
+		unsigned  i;
+		APPLE     *aptr;
+	      
+		for(aptr = apple.list, i = apple.apples; i--; aptr++, found >>= 1)
+		  if(found & 1)
+		    aptr->push = aptr->maypush;
+	      }
+	      /*}}}*/
+	    }
 	}
       break;
     }
     /*}}}*/
   }
   mptr->stop = stop;
-  mptr->pause = pause | stop;
+  mptr->pause = pause;
   return stop;
 }
 /*}}}*/
-/*{{{  void apple_under(mptr, cptr)*/
-extern void apple_under FUNCARGLIST((mptr, cptr))
-MONSTER   *mptr FUNCARGSEP
-CELL      *cptr FUNCARGTERM
-/*
- * deals with walking under apples
- * so that they start or stop rocking
- * called after we've done the move
- * only for player and muncher
- */
-{
-  assert(mptr->type == 4 || mptr->type == 1);
-  switch(mptr->dir)
-  {
-    /*{{{  case 0: (up)*/
-    case 0:
-      if(!mptr->offset.y)
-	/*{{{  stop apple rocking?*/
-	{
-	  unsigned  i;
-	  APPLE     *aptr;
-			  
-	  for(aptr = apple.list, i = apple.apples; i--; aptr++)
-	    {
-	      if(aptr->pixel.x - mptr->pixel.x <= CELL_WIDTH / 2 &&
-		 aptr->pixel.x - mptr->pixel.x >= -(CELL_WIDTH / 2) &&
-		  aptr->state == 1 && mptr->cell.y == aptr->cell.y + 1)
-	      {
-		aptr->state = 0;
-		aptr->count = 1;
-	      }
-	  }
-	}
-	/*}}}*/
-      break;
-    /*}}}*/
-    /*{{{  case 1: (down)*/
-    case 1:
-      if(mptr->offset.y == VEL_Y)
-	/*{{{  start apple rocking?*/
-	{
-	  unsigned  i;
-	  APPLE     *aptr;
-			
-	  for(aptr = apple.list, i = apple.apples; i--; aptr++)
-	    {
-	      if(aptr->pixel.x - mptr->pixel.x <= CELL_WIDTH / 2 &&
-		  aptr->pixel.x - mptr->pixel.x >= -(CELL_WIDTH / 2) &&
-		  !aptr->state && mptr->cell.y == aptr->cell.y + 1)
-		{
-		  aptr->state = 1;
-		  aptr->count = APPLE_ROCK_DELAY;
-		}
-	    }
-	}
-	/*}}}*/
-      break;
-    /*}}}*/
-    /*{{{  case 2: (left)*/
-    case 2:
-    {
-      unsigned  i;
-      APPLE     *aptr;
-      int       px, py;
-      int       cy;
-	
-      px = mptr->pixel.x;
-      py = mptr->pixel.y;
-      cy = mptr->cell.y;
-      /*{{{  walking under apple?*/
-      for(aptr = apple.list, i = apple.apples; i--; aptr++)
-	{
-	  if(aptr->cell.y + 1 != cy)
-	    /*EMPTY*/;
-	  else if(aptr->pixel.x - px == CELL_WIDTH / 2 && !aptr->state)
-	    {
-	      aptr->state = 1;
-	      aptr->count = APPLE_ROCK_DELAY;
-	    }
-	  else if(mptr->type == 4 && aptr->state == 1 &&
-	      aptr->pixel.x - px == -CELL_WIDTH / 2)
-	    {
-	      aptr->state = 0;
-	      aptr->count = 1;
-	    }
-	}
-      /*}}}*/
-      break;
-    }
-    /*}}}*/
-    /*{{{  case 3: (right)*/
-    case 3:
-    {
-      unsigned  i;
-      APPLE     *aptr;
-      int       px, py;
-      int       cy;
-	
-      px = mptr->pixel.x;
-      py = mptr->pixel.y;
-      cy = mptr->cell.y;
-      /*{{{  walking under apple?*/
-      for(aptr = apple.list, i = apple.apples; i--; aptr++)
-	{
-	  if(aptr->cell.y + 1 != cy)
-	    /*EMPTY*/;
-	  else if(px - aptr->pixel.x == CELL_WIDTH / 2 && !aptr->state)
-	    {
-	      aptr->state = 1;
-	      aptr->count = APPLE_ROCK_DELAY;
-	    }
-	  else if(mptr->type == 4  && aptr->state == 1 &&
-	      px - aptr->pixel.x == -CELL_WIDTH / 2)
-	    {
-	      aptr->state = 0;
-	      aptr->count = 1;
-	    }
-	}
-      /*}}}*/
-      break;
-    }
-    /*}}}*/
-  }
-  return;
-}
-/*}}}*/
 /*{{{  void move_apples()*/
-extern void move_apples FUNCARGVOID
+extern VOIDFUNC move_apples FUNCARGVOID
 /*
  * moves all the apples
  */
@@ -491,6 +349,7 @@ extern void move_apples FUNCARGVOID
   APPLE     *aptr;
   unsigned  i;
 
+  apple.moving = 0;
   for(aptr = apple.list, i = apple.apples; i--; aptr++)
     {
       CELL      *cptr;
@@ -498,289 +357,517 @@ extern void move_apples FUNCARGVOID
       cptr = BOARDCELL(aptr->cell.x, aptr->cell.y);
       if(aptr->chewed)
 	{
-	  if(aptr->monsters)
-	    add_score(squish_scores[aptr->monsters >= SQUISH_SCORES ?
-		SQUISH_SCORES - 1 : aptr->monsters],
-		aptr->pixel.x + CELL_WIDTH / 2,
-		aptr->pixel.y + apple_sizes[4].size.y / 2);
+	  assert(!aptr->monsters);
 	  aptr->state = 6;
 	}
       else
-	switch(aptr->state)
 	{
-	  /*{{{  case 0: (static) case 1: (rock)*/
-	  case 0: case 1:
-	    if(aptr->push)
-	      {
-		aptr->pixel.x += aptr->push;
-		aptr->offset.x += aptr->push;
-		if(aptr->offset.x < -(CELL_WIDTH / 2))
-		  {
-		    aptr->offset.x += CELL_WIDTH + GAP_WIDTH;
-		    aptr->cell.x -= 1;
-		    cptr -= 1;
-		  }
-		else if(aptr->offset.x > (CELL_WIDTH / 2))
-		  {
-		    aptr->offset.x -= CELL_WIDTH + GAP_WIDTH;
-		    aptr->cell.x += 1;
-		    cptr += 1;
-		  }
-		if(cptr[0].depths[1] > aptr->offset.y)
-		  aptr->state = 2;
-		else if(aptr->state == 0 && cptr[CELL_STRIDE].visit)
-		  {
-		    aptr->state = 1;
-		    aptr->count = APPLE_ROCK_DELAY;
-		  }
-		else if(aptr->state == 1 && !cptr[CELL_STRIDE].visit)
-		  {
-		    aptr->state = 0;
-		    aptr->count = 1;
-		  }
-	      }
-	    if(aptr->state == 1 && !aptr->count--)
-	      aptr->state = 2;
-	    if(aptr->state == 2)
-	      {
-		MONSTER   *mptr;
-				  
-		aptr->count = APPLE_ACC;
-		aptr->distance = 0;
-		if(!cptr[0].visit)
-		  {
-		    aptr->cell.y += 1;
-		    aptr->offset.y -= CELL_HEIGHT + GAP_HEIGHT;
-		  }
-		if(cptr[CELL_STRIDE].visit || cptr[0].depths[1])
-		  /*EMPTY*/;
-		else if(cptr[CELL_STRIDE-1].depths[3] +
-		    cptr[CELL_STRIDE+1].depths[2] > 0)
-		  {
-		    aptr->cell.x--;
-		    aptr->offset.x += CELL_WIDTH + GAP_WIDTH;
-		  }
-		else if(cptr[CELL_STRIDE-1].depths[3] +
-		    cptr[CELL_STRIDE+1].depths[2] < 0)
-		  {
-		    aptr->cell.x++;
-		    aptr->offset.x -= CELL_WIDTH + GAP_WIDTH;
-		  }
-		else
-		  {
-		    aptr->state = 0;
-		    aptr->list = NULL;
-		  }
-		for(mptr = aptr->list; mptr; mptr = mptr->list)
-		  {
-		    mptr->apple = aptr;
-		    aptr->monsters++;
-		    aptr->distance = APPLE_FALL_SPLIT;
-		  }
-	      }
-	    else
-	      aptr->list = NULL;
-	    break;
-	  /*}}}*/
-	  /*{{{  case 2: (fall)*/
-	  case 2:
-	  {
-	    unsigned  j;
-	    APPLE     *optr;
-	    COORD     pixel;
-			    
-	    /*{{{  horizontal movement*/
-	    if(aptr->push)
-	      {
-		aptr->pixel.x += aptr->push;
-		aptr->offset.x += aptr->push;
-		if(aptr->offset.x < -(CELL_WIDTH / 2))
-		  {
-		    aptr->offset.x += CELL_WIDTH + GAP_WIDTH;
-		    aptr->cell.x -= 1;
-		    cptr -= 1;
-		  }
-		else if(aptr->offset.x > (CELL_WIDTH / 2))
-		  {
-		    aptr->offset.x -= CELL_WIDTH + GAP_WIDTH;
-		    aptr->cell.x += 1;
-		    cptr += 1;
-		  }
-	      }
-	    else if(aptr->waspushed)
-	      /*EMPTY*/;
-	    else if(aptr->offset.x < 0)
-	      {
-		aptr->offset.x += APPLE_VEL_X;
-		aptr->pixel.x += APPLE_VEL_X;
-		assert(aptr->offset.x <= 0);
-	      }
-	    else if(aptr->offset.x > 0)
-	      {
-		aptr->offset.x -= APPLE_VEL_X;
-		aptr->pixel.x -= APPLE_VEL_X;
-		assert(aptr->offset.x >= 0);
-	      }
-	    /*}}}*/
-	    pixel.x = aptr->pixel.x - aptr->offset.x;
-	    pixel.y = aptr->pixel.y - aptr->offset.y;
-	    aptr->offset.y += aptr->count;
-	    aptr->pixel.y += aptr->count;
-	    aptr->distance += aptr->count;
-	    aptr->count += APPLE_ACC;
-	    if(aptr->count > APPLE_VEL_Y)
-	      aptr->count = APPLE_VEL_Y;
-	    /*{{{  bashes into another?*/
+	  if(aptr->ghost)
+	    aptr->ghost--;
+	  /*{{{  pushed?*/
+	  if(aptr->push)
 	    {
-	      int       x, y;
-				
-	      x = aptr->pixel.x - CELL_WIDTH;
-	      y = pixel.y + aptr->offset.y;
-	      for(optr = apple.list, j = apple.apples; j--; optr++)
-		if(optr != aptr &&
-		    optr->pixel.x - x > 0 &&
-		    optr->pixel.x - x < CELL_WIDTH * 2 &&
-		    optr->pixel.y + apple_sizes[optr->state].offset.y - y > 0 &&
-		    optr->pixel.y + apple_sizes[optr->state].offset.y - y <
-		    CELL_HEIGHT - APPLE_VEL_Y && (optr->state ||
-		    BOARDCELL(optr->cell.x, optr->cell.y)->visit))
-		  {
-		    if(optr->state < 3)
-		      {
-			optr->state = 3;
-			optr->count = APPLE_SPLIT_DELAY;
-		      }
-		    optr = NULL;
-		    break;
-		  }
+	      aptr->pixel.x += aptr->push;
+	      aptr->offset.x += aptr->push;
+	      assert(!(aptr->offset.x % APPLE_VEL_X));
+	      if(aptr->offset.x < -(CELL_WIDTH / 2))
+		{
+		  aptr->offset.x += CELL_WIDTH + GAP_WIDTH;
+		  aptr->cell.x -= 1;
+		  cptr -= 1;
+		}
+	      else if(aptr->offset.x > (CELL_WIDTH / 2))
+		{
+		  aptr->offset.x -= CELL_WIDTH + GAP_WIDTH;
+		  aptr->cell.x += 1;
+		  cptr += 1;
+		}
 	    }
-	    /*}}}*/
-	    if(!optr)
-	      {
-		aptr->state = 3;
-		aptr->count = APPLE_SPLIT_DELAY;
-	      }
-	    else if(aptr->offset.y >= cptr[0].depths[1])
-	      {
-		if(drop_apple(aptr, cptr))
-		  /*EMPTY*/;
-		else if(aptr->distance >= APPLE_FALL_SPLIT ||
-		    aptr->cell.y == CELLS_DOWN - 1)
-		  /*{{{  fell too far*/
-		  {
-		    aptr->state = 3;
-		    aptr->count = APPLE_SPLIT_DELAY;
-		    aptr->offset.y = cptr[0].depths[1];
-		  }
-		  /*}}}*/
-		else
-		  /*{{{  only fell a short way*/
-		  {
-		    aptr->state = 0;
-		    aptr->offset.y = cptr[0].depths[1];
-		  }
-		  /*}}}*/
-	      }
-	    else if(aptr->offset.y > 0 && cptr[CELL_STRIDE].depths[0])
-	      /*{{{  fall into next cell*/
-	      {
-		aptr->cell.y += 1;
-		aptr->offset.y -= CELL_HEIGHT + GAP_HEIGHT;
-		pixel.y += CELL_HEIGHT + GAP_HEIGHT;
-	      }
-	      /*}}}*/
-	    /*{{{  crushed someone?*/
+	  /*}}}*/
+	  switch(aptr->state)
+	  {
+	    /*{{{  case 0: (static) case 1: (rock)*/
+	    case 0: case 1:
 	    {
-	      unsigned  i;
-	      MONSTER   *mptr;
-	      int       x, y;
-				  
-	      x = pixel.x + aptr->offset.x - CELL_WIDTH + VEL_X;
-	      y = pixel.y + aptr->offset.y - APPLE_VEL_Y;
-	      for(mptr = monster.list, i = monster.monsters; i--; mptr++)
-		if(!mptr->apple && !mptr->shot && mptr->type != 5 &&
-		    mptr->pixel.x - x > 0 &&
-		    mptr->pixel.x - x < 2 * (CELL_WIDTH - VEL_X) &&
-		    mptr->pixel.y - y > 0 &&
-		    mptr->pixel.y - y < CELL_WIDTH / 2 + APPLE_VEL_Y &&
-		    (!(mptr->type & 2) || global.state == 4 ||
-		      aptr->monsters || mptr->chew || mptr->dir == 1 ||
-		      (mptr->dir == 2 && mptr->pixel.x - x <
-			CELL_WIDTH - VEL_X + CELL_WIDTH / 2) ||
-		      (mptr->dir == 3 && mptr->pixel.x - x >
-			CELL_WIDTH - VEL_X -  CELL_WIDTH / 2)))
-		  {
-		    if(mptr->type & 2 && !mptr->dir && !mptr->chew &&
-			!aptr->monsters && global.state != 4)
+	      unsigned  old;
+	      unsigned  new;
+	      int       offset;
+	    
+	      old = aptr->state;
+	      new = 0;
+	      offset = 0;
+	      if(aptr->offset.y < cptr->depths[1])
+		new = 2;
+	      else if(aptr->cell.y == CELLS_DOWN - 1)
+		{
+		  new = 3;
+		  aptr->ghost = 0;
+		}
+	      else if(cptr[CELL_STRIDE].visit)
+		new = 1;
+	      else if(aptr->offset.y - cptr[CELL_STRIDE*2].depths[0] >=
+		  CELL_HEIGHT + GAP_HEIGHT)
+		new = 1;
+	      else if(cptr[CELL_STRIDE + 1].visit &&
+		  cptr[CELL_STRIDE + 1].depths[2] - aptr->offset.x <
+		  -(CELL_WIDTH / 2))
+		{
+		  new = 1;
+		  offset = 1;
+		}
+	      else if(cptr[CELL_STRIDE - 1].visit &&
+		  cptr[CELL_STRIDE - 1].depths[3] - aptr->offset.x >
+		  CELL_WIDTH / 2)
+		{
+		  new = 1;
+		  offset = -1;
+		}
+	      if(new == 1 && old == 1 && !aptr->count--)
+		new = 2;
+	      if(new)
+		/*{{{  check for supporting monster*/
+		{
+		  MONSTER   *mptr;
+		  unsigned  count;
+		  int       x, y;
+		
+		  x = aptr->pixel.x;
+		  y = aptr->pixel.y;
+		  for(mptr = monster.list, count = monster.monsters;
+		      count--; mptr++)
+		    if((mptr->type == 4 || mptr->type == 1) && !mptr->shot &&
+			INRANGE(mptr->pixel.x - x, 1 + VEL_X - CELL_WIDTH,
+			  CELL_WIDTH - VEL_X) &&
+			INRANGE(mptr->pixel.y - y, CELL_HEIGHT / 2,
+			  CELL_HEIGHT + GAP_HEIGHT + 1))
 		      {
-			aptr->chewed = 1;
-			mptr->chew = 1;
+			new = 0;
+			break;
 		      }
+		    else if(mptr->type & 2 && !mptr->dir &&
+			INRANGE(mptr->pixel.y - y, 0, CELL_HEIGHT + 1) &&
+			INRANGE(mptr->pixel.x - x, 1 - CELL_WIDTH / 2,
+			  CELL_WIDTH / 2))
+		      {
+			new = 0;
+			break;
+		      }
+		}
+		/*}}}*/
+	      aptr->state = new;
+	      if(new == 0)
+		/*{{{  doesn't fall*/
+		{
+		  aptr->list = NULL;
+		  if(aptr->offset.y)
+		    {
+		      aptr->offset.y += APPLE_SINK_Y;
+		      aptr->pixel.y += APPLE_SINK_Y;
+		      if(aptr->offset.y >= CELL_HEIGHT + GAP_HEIGHT)
+			{
+			  aptr->pixel.y -= aptr->offset.y -
+			      (CELL_HEIGHT + GAP_HEIGHT);
+			  aptr->offset.y = 0;
+			  aptr->cell.y++;
+			}
+		    }
+		}
+		/*}}}*/
+	      else if(new == 1)
+		/*{{{  rock*/
+		{
+		  aptr->list = NULL;
+		  if(old != new)
+		    aptr->count = APPLE_ROCK_DELAY;
+		}
+		/*}}}*/
+	      else if(new == 2)
+		/*{{{  start to fall*/
+		{
+		  MONSTER   *mptr;
+		  MONSTER   *prev;
+		
+		  aptr->count = APPLE_ACC;
+		  aptr->distance = 0;
+		  if(!cptr[offset].visit || aptr->offset.y > 0)
+		    {
+		      aptr->cell.y += 1;
+		      aptr->offset.y -= CELL_HEIGHT + GAP_HEIGHT;
+		    }
+		  aptr->cell.x += offset;
+		  aptr->offset.x -= offset * (CELL_WIDTH + GAP_WIDTH);
+		  for(prev = NULL, mptr = aptr->list; mptr;
+		      prev = mptr, mptr = mptr->list)
+		    if(mptr->squished)
+		      /*{{{  already put on a squish list*/
+		      {
+			if(prev)
+			  prev->list = NULL;
+			else
+			  aptr->list = NULL;
+			break;
+		      }
+		      /*}}}*/
 		    else
 		      {
-			if(mptr != &monster.list[0])
-			  aptr->monsters++;
-			mptr->apple = aptr;
-			aptr->distance = APPLE_FALL_SPLIT;
-			if(!aptr->state)
-			  {
-			    aptr->state = 3;
-			    aptr->count = APPLE_SPLIT_DELAY;
-			  }
+			squish_monster(mptr);
+			if(mptr->pixel.y > aptr->pixel.y)
+			  mptr->pixel.y = aptr->pixel.y;
+			mptr->pixel.y += CELL_HEIGHT - CELL_HEIGHT / 4;
+			aptr->monsters++;
+			aptr->distance = APPLE_FALL_SPLIT + 1;
 		      }
-		  }
+		  panic_monsters(aptr->cell.x, aptr->cell.y,
+		      BOARDCELL(aptr->cell.x, aptr->cell.y));
+		}
+		/*}}}*/
+	      else
+		aptr->count = APPLE_SPLIT_DELAY;
+	      break;
 	    }
 	    /*}}}*/
-	    aptr->pixel.y = pixel.y + aptr->offset.y;
-	    break;
+	    /*{{{  case 2: (fall)*/
+	    case 2:
+	    {
+	      int       j;
+	      APPLE     *optr;
+	    
+	      /*{{{  horizontal movement*/
+	      if(!aptr->push)
+		{
+		  int     shift;
+		  int     x;
+		  
+		  shift = x = 0;
+		  /*{{{  desired direction*/
+		  if(aptr->offset.x < 0)
+		    {
+		      if(aptr->offset.x < cptr->depths[2])
+		       {
+			  shift = APPLE_VEL_X;
+			  x = aptr->pixel.x + CELL_WIDTH;
+			}
+		    }
+		  else if(aptr->offset.x > 0)
+		    {
+		      if(aptr->offset.x > cptr->depths[3])
+			{
+			  shift = -APPLE_VEL_X;
+			  x = aptr->pixel.x - CELL_WIDTH - APPLE_VEL_X;
+			}
+		    }
+		  /*}}}*/
+		  if(shift)
+		    /*{{{  move if not blocked*/
+		    {
+		      MONSTER   *mptr;
+		      unsigned  count;
+		      
+		      for(mptr = monster.list, count = monster.monsters;
+			  count--; mptr++)
+			if((mptr->type == 1 || mptr->type == 2) &&
+			    !mptr->shot && !mptr->squished &&
+			    INRANGE(mptr->pixel.x - x, 0, APPLE_VEL_X) &&
+			    INRANGE(mptr->pixel.y - aptr->pixel.y,
+			      VEL_Y - CELL_HEIGHT + 1, CELL_HEIGHT - VEL_Y))
+			  {
+			    shift = 0;
+			    break;
+			  }
+		      if(shift)
+			{
+			  aptr->offset.x += shift;
+			  aptr->pixel.x += shift;
+			}
+		    }
+		    /*}}}*/
+		}
+	      /*}}}*/
+	      /*{{{  bashes into another?*/
+	      {
+		int       x, y;
+	      
+		x = aptr->pixel.x;
+		y = aptr->pixel.y + aptr->count;
+		for(optr = apple.list, j = apple.apples; j--; optr++)
+		  if(optr != aptr && INRANGE(optr->pixel.x - x,
+			1 - CELL_WIDTH, CELL_WIDTH) &&
+		      INRANGE(optr->pixel.y +
+			apple_sizes[optr->state].offset.y - y, 1,
+			CELL_HEIGHT - APPLE_VEL_Y) &&
+		      (optr->state ||
+			BOARDCELL(optr->cell.x, optr->cell.y)->visit))
+		    {
+		      if(optr->ghost || aptr->ghost)
+			/* EMPTY */;
+		      else if(optr->state < 2)
+			{
+			  optr->list = NULL;
+			  optr->state = 3;
+			  optr->count = APPLE_SPLIT_DELAY;
+			}
+		      else if(optr->state == 2)
+			optr->distance = APPLE_FALL_SPLIT + 1;
+		      break;
+		    }
+	      }
+	      /*}}}*/
+	      if(j >= 0)
+		{
+		  aptr->count = 0;
+		  if(aptr->distance > APPLE_FALL_SPLIT)
+		    {
+		      aptr->state = 3;
+		      aptr->count = APPLE_SPLIT_DELAY;
+		    }
+		  else
+		    aptr->distance = 0;
+		}
+	      else
+		{
+		  CELL      *nptr;
+	    
+		  aptr->offset.y += aptr->count;
+		  aptr->pixel.y += aptr->count;
+		  aptr->distance += aptr->count;
+		  aptr->count += APPLE_ACC;
+		  if(aptr->count > APPLE_VEL_Y)
+		    aptr->count = APPLE_VEL_Y;
+		  nptr = drop_apple(aptr, cptr);
+		  if(nptr)
+		    panic_monsters(aptr->cell.x, aptr->cell.y, nptr);
+		  else if(aptr->offset.y <= cptr[0].depths[1])
+		    /*{{{  not broken*/
+		    {
+		      if(aptr->offset.y > 0 && cptr[CELL_STRIDE].visit)
+			{
+			  aptr->cell.y += 1;
+			  aptr->offset.y -= CELL_HEIGHT + GAP_HEIGHT;
+			}
+		    }
+		    /*}}}*/
+		  else
+		    /*{{{  stop falling*/
+		    {
+		      aptr->pixel.y += cptr[0].depths[1] - aptr->offset.y;
+		      aptr->offset.y = cptr[0].depths[1];
+		      assert(aptr->offset.y < CELL_HEIGHT + GAP_HEIGHT);
+		      if(aptr->distance > APPLE_FALL_SPLIT ||
+			  aptr->cell.y == CELLS_DOWN - 1)
+			{
+			  aptr->state = 3;
+			  aptr->count = APPLE_SPLIT_DELAY;
+			  aptr->ghost = 0;
+			}
+		      else
+			{
+			  assert(!aptr->list);
+			  aptr->state = 0;
+			}
+		    }
+		    /*}}}*/
+		}
+	      if(aptr->state < 6)
+		/*{{{  crushed someone?*/
+		{
+		  unsigned  i;
+		  MONSTER   *mptr;
+		  int       x, y;
+		
+		  x = aptr->pixel.x;
+		  y = aptr->pixel.y;
+		  for(mptr = monster.list, i = monster.monsters; i--; mptr++)
+		    if(!mptr->squished && !mptr->shot && mptr->type < 5 &&
+			(mptr->type != 4 ||
+			(global.state != 4 && !aptr->ghost)) &&
+			INRANGE(mptr->pixel.x - x, VEL_X - CELL_WIDTH,
+			  CELL_WIDTH - VEL_X + 1) && INRANGE(mptr->pixel.y - y,
+			    mptr->type & 2 && mptr->dir != 1 ?
+			      -CELL_HEIGHT / 2 : VEL_Y,
+			  CELL_HEIGHT / 2 + VEL_Y + 1))
+		      {
+			unsigned  squish;
+			
+			if(!(mptr->type & 2) || mptr->chew ||
+			    aptr->monsters || mptr->dir == 1 ||
+			    global.state == 4)
+			  squish = mptr->pixel.y - y >= VEL_Y;
+			else if(!mptr->dir)
+			  /*{{{  going up*/
+			  {
+			    squish = 0;
+			    if(mptr->pixel.y - y >= -APPLE_VEL_Y &&
+				INRANGE(mptr->pixel.x - x,
+				  -VEL_X * 2, VEL_X * 2 + 1))
+			      {
+				aptr->chewed = 1;
+				mptr->chew = 1;
+				break;
+			      }
+			  }
+			  /*}}}*/
+			else if(mptr->dir == 2)
+			  /*{{{  going left*/
+			  {
+			    squish = mptr->pixel.x - x + y - mptr->pixel.y <
+				  CELL_WIDTH / 2;
+			    if(!squish && mptr->pixel.x - x <= 2 * VEL_X)
+			      {
+				aptr->chewed = 1;
+				mptr->chew = 1;
+				break;
+			      }
+			  }
+			  /*}}}*/
+			else
+			  /*{{{  going right*/
+			  {
+			    squish = x - mptr->pixel.x + y - mptr->pixel.y <
+				  CELL_WIDTH /2;
+			    if(!squish && x - mptr->pixel.x <= 2 * VEL_X)
+			      {
+				aptr->chewed = 1;
+				mptr->chew = 1;
+				break;
+			      }
+			  }
+			  /*}}}*/
+			if(squish)
+			  /*{{{  squish it*/
+			  {
+			    mptr->list = aptr->list;
+			    aptr->list = mptr;
+			    if(mptr != &monster.list[0])
+			      aptr->monsters++;
+			    aptr->distance = APPLE_FALL_SPLIT + 1;
+			    if(!aptr->state)
+			      {
+				aptr->state = 3;
+				aptr->count = APPLE_SPLIT_DELAY;
+			      }
+			    squish_monster(mptr);
+			  }
+			  /*}}}*/
+		      }
+		}
+		/*}}}*/
+	      /*{{{  move the crushed monsters*/
+	      {
+		MONSTER   *mptr;
+		unsigned  count;
+		  
+		count = 0; /* XXX DEBUG */
+		for(mptr = aptr->list; mptr; mptr = mptr->list)
+		  {
+		    mptr->pixel.y = aptr->pixel.y + CELL_HEIGHT;
+		    count += mptr->type != 4;
+		  }
+		assert(count == aptr->monsters);
+	      }
+	      /*}}}*/
+	      break;
+	    }
+	    /*}}}*/
+	    /*{{{  case 3: (split)*/
+	    case 3:
+	      if(!aptr->count--)
+		{
+		  aptr->state = 4;
+		  aptr->count = APPLE_DECAY_DELAY;
+		  assert(!aptr->monsters || aptr->list);
+		  /*{{{  delete the crushed monsters*/
+		  {
+		    MONSTER   *mptr;
+		    unsigned  count;
+		      
+		    count = 0; /* XXX */
+		    for(mptr = aptr->list; mptr; mptr = mptr->list)
+		      if(mptr->type != 4)
+			{
+			  mptr->type = 5;
+			  count++;
+			}
+		    assert(count == aptr->monsters);
+		  }
+		  /*}}}*/
+		  aptr->list = NULL;
+		  if(aptr->monsters)
+		    add_score(squish_scores[aptr->monsters >= SQUISH_SCORES ?
+			SQUISH_SCORES - 1 : aptr->monsters],
+			aptr->pixel.x + CELL_WIDTH / 2,
+			aptr->pixel.y + (int)(apple_sizes[4].size.y / 2));
+		  if(!aptr->offset.x && !aptr->offset.y && !global.diamond &&
+		      global.state != 4 && chaotic() < DIAMOND_PROB)
+		    {
+		      global.diamond = 1;
+		      spawn_monster(1, 6, 1, 1, aptr->cell.x, aptr->cell.y,
+			  0, 0)->count = DIAMOND_DELAY;
+		    }
+		}
+	      break;
+	    /*}}}*/
+	    /*{{{  case 4: (decay)*/
+	    case 4:
+	      if(!aptr->count--)
+		{
+		  aptr->state = 5;
+		  aptr->count = APPLE_ROT_DELAY;
+		}
+	      break;
+	    /*}}}*/
+	    /*{{{  case 5: (rot)*/
+	    case 5:
+	      if(!aptr->count--)
+		aptr->state = 6;
+	      break;
+	    /*}}}*/
+	    /*{{{  default:*/
+	    default:
+	      assert(0);
+	    /*}}}*/
 	  }
-	  /*}}}*/
-	  /*{{{  case 3: (split)*/
-	  case 3:
-	    if(!aptr->count--)
-	      {
-		aptr->state = 4;
-		aptr->count = APPLE_DECAY_DELAY;
-		if(aptr->monsters)
-		  add_score(squish_scores[aptr->monsters >= SQUISH_SCORES ?
-		      SQUISH_SCORES - 1 : aptr->monsters],
-		      aptr->pixel.x + CELL_WIDTH / 2,
-		      aptr->pixel.y + apple_sizes[4].size.y / 2);
-	      }
-	    break;
-	  /*}}}*/
-	  /*{{{  case 4: (decay)*/
-	  case 4:
-	    if(!aptr->count--)
-	      {
-		aptr->state = 5;
-		aptr->count = APPLE_ROT_DELAY;
-	      }
-	    break;
-	  /*}}}*/
-	  /*{{{  case 5: (rot)*/
-	  case 5:
-	    if(!aptr->count--)
-	      aptr->state = 6;
-	    break;
-	  /*}}}*/
-	  /*{{{  default:*/
-	  default:
-	    assert(0);
-	  /*}}}*/
+	  apple.moving |= aptr->state;
 	}
-      aptr->waspushed = aptr->push;
       aptr->push = 0;
     }
   return;
 }
 /*}}}*/
+/*{{{  void panic_monsters(cx, cy, cptr)*/
+extern VOIDFUNC panic_monsters
+FUNCARG((cx, cy, cptr),
+	int       cx
+ARGSEP  int       cy
+ARGSEP  CELL      *cptr
+)
+/*
+ * looks underneath a newly falling apple and
+ * sees if there are any normal monsters to panic
+ */
+{
+  MONSTER   *mptr;
+  unsigned  count;
+  unsigned  by;
+  
+  for(by = ++cy; cptr->depths[1] >= GAP_HEIGHT; cptr++)
+    by++;
+  for(mptr = &monster.list[1], count = monster.monsters - 1; count--; mptr++)
+    if(!mptr->squished && !mptr->shot && !mptr->type && !mptr->panic &&
+	mptr->cell.x == cx && INRANGE(mptr->cell.y, cy, by) &&
+	(mptr->offset.x >= 0 || mptr->dir != 2) &&
+	(mptr->offset.x <= 0 || mptr->dir != 3))
+      mptr->panic = 1;
+  return;
+}
+/*}}}*/
 /*{{{  APPLE *spawn_apple(cx, cy, ox, oy)*/
-extern APPLE *spawn_apple FUNCARGLIST((cx, cy, ox, oy))
-int       cx FUNCARGSEP
-int       cy FUNCARGSEP
-int       ox FUNCARGSEP
-int       oy FUNCARGTERM
+extern APPLE *spawn_apple
+FUNCARG((cx, cy, ox, oy),
+	int       cx
+ARGSEP  int       cy
+ARGSEP  int       ox
+ARGSEP  int       oy
+)
 /*
  * spawns a new apple in state 0
  */
@@ -789,19 +876,47 @@ int       oy FUNCARGTERM
 
   assert(apple.apples != APPLES);
   aptr = &apple.list[apple.apples++];
-  aptr->state = 0;
   aptr->cell.x = cx;
   aptr->cell.y = cy;
   aptr->offset.x = ox = ox / APPLE_VEL_X * APPLE_VEL_X;
   aptr->offset.y = oy;
-  aptr->count = 1;
   aptr->old_pixel.x = aptr->pixel.x = PIXELX(cx, ox);
   aptr->old_pixel.y = aptr->pixel.y = PIXELY(cy, oy);
+  aptr->ghost = aptr->state = 0;
+  aptr->count = 1;
   aptr->distance = 0;
   aptr->monsters = 0;
+  aptr->list = NULL;
   aptr->push = 0;
   aptr->chewed = 0;
   aptr->old_state = 7;
+  aptr->back = 0;
   return aptr;
+}
+/*}}}*/
+/*{{{  void squish_monster(mptr)*/
+extern VOIDFUNC squish_monster
+FUNCARG((mptr),
+	MONSTER   *mptr
+)
+/*
+ * oh no, I've been squashed!
+ */
+{
+  mptr->squished = 1;
+  new_face(mptr);
+  if(mptr == &monster.list[0])
+    mptr->shot = 1;
+  else
+    {
+      mptr->chew = 0;
+      if(mptr->type < 2)
+	monster.normals--;
+      else if(mptr->type == 2)
+	extra_dies();
+      else if(mptr->type == 3)
+	monster.drones--;
+    }
+  return;
 }
 /*}}}*/

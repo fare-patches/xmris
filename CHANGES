@@ -1,0 +1,99 @@
+V4.00's main new feature is loadable gardens and a new tool, xmred, to
+create them. There are several new features and several bug fixes.
+
+Many thanks for beta testing to,
+	Stefan Gustavson <stefang@rainier.isy.liu.se>
+	Michael L. Dupuis <dupuis@ctron.com>
+	Frans Meulenbroeks <meulenbr@prl.philips.nl>
+	Chris Moore <Chris.Moore@sowerby-research-centre.british-aerospace.co.uk>
+
+Changes from v3.03 to V4.00
+
+Loadable board layouts (gardens) and some example gardens.
+Tool to create and edit the gardens.
+
+Imakefile considerably altered. You only need do make to generate the
+whole thing. 'make install' puts things where you expect, if you're
+installing into X properly. Also some other checks put in & RCS support.
+The README file has been altered to document this.
+
+tar file unpacks to include the xmris directory, so that you can bung it in
+the X11/contrib/clients directory, and the right thing happens.
+
+-help -colors changed, so the output shows the default color
+values too, in a form suitable for an X resource file. Ie, the
+output from this can be catted onto the end of your .Xdefaults, if
+you want.
+
++display (or -nodisplay) option. Prevents opening of X display when using the
+-scores or -expire options. Pointed out by <meulenbr@prl.philips.nl>.
+
+-static option and Static resource to prevent using dynamic background
+colors.
+
+Better integration into the X toolkit.
+
+Automatically inhibits keyboard auto repeat as necessary.
+
+Ignores shift & control modifiers on the keys, so you can bind Shift_l
+and the like to functions, without affecting others.
+
+Titled by xmsit when run as female.
+
+Xmris.ad & Xmris-color.ad cleaned up, so that they're complete, puts
+default SCORE and FONT in them correctly
+
+Some color sprite source files, were 'unsigned char' rather
+than plain 'char'. Some xservers couldn't read them, so scram
+failed.
+
+Personal score file insertion broke, when the personal score
+file was inconsistant with the score file.
+
+scram function isblank renamed to is_blank, so that some gcc's
+which have isblank in ctypes.h, don't get confused.
+
+scram no longer depends on an X server to do its bit blitting. That's
+what happens when you're stuck 5 miles up for 10 hours!
+
+Random apples selected on toolkit switch (Random or arg [+-]random).
+(The compiler option didn't work anyway!)
+
+SYSV signal handling was wrong. This meant the game speed was erratic
+or too fast for SYSV. (Thanks Michael L. Dupuis <dupuis@ctron.com>)
+
+Leavepause has been removed, and the leavepause is done on losing
+the keyboard focus, as it should have been all along.
+
+Score table display doesn't show a blank table.
+
+Several casts put in to shut compilers up.
+
+Transputer flags put in to generate transputer version.
+
+-expire & -format options to remove score entries.
+
+-busywait option and dynamic waiting installed to work around
+SIGALRM arriving too early.
+
+CONST and VOLATILE used, not #define const, #define volatile
+
+Color fading added, to make the color changes less harsh.
+
+Some apple squishing bugs fixed.
+
+demo.c split into demo.c and scoring.c sections
+
+Manual page expanded
+
+Interactive key rebinding clarified
+
+Score table selection by direction keys
+
+Demo garden & first garden selectection by direction keys
+
+Named by truename or username in score file
+
+Skipping the death or end of screen is delayed when apples are falling. This
+makes sure that you get scores and don't get reincarnated in the row below
+the board.

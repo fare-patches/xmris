@@ -1,59 +1,53 @@
-/*{{{  (C) 1992 Nathan Sidwell*/
-/*****************************************************************************
-			X M R I S V1.01
-			---------------
-		    (C) 1992 Nathan Sidwell
-
-This program is copyright (C) 1992 Nathan Sidwell. This software and documentation
-is in the public domain. Permission is granted to distribute and compile
-verbatim copies of this software for non-commercial, non-profit use,
-without fee. The software may be modified, provided that both the above copyright
-notice and this permission notice appear.
-
-No guarantee is given as to the robustness or suitability of this
-software for your computer.
-
-Nathan Sidwell  INMOS UK |                 | nathan@inmos.co.uk       DoD#0390
-*****************************************************************************/
-/*}}}*/
+/* Copyright (C) 1993, 1992 Nathan Sidwell */
+/* RCS $Id: player.c,v 4.3 1993/10/07 18:08:36 nathan stable $ */
 #include "xmris.h"
 /*{{{  void bounce_ball()*/
-extern void bounce_ball FUNCARGVOID
+extern VOIDFUNC bounce_ball FUNCARGVOID
 /*
  * throws, bounces, explodes & implodes the ball
- * note that show_updates, does the ball ploting
+ * bouncing the ball is rather involved
  */
 {
+  COORD     tl;
+  COORD     br;
+  CELL      *cptr;
+  CELL      *optr;
+  
+  cptr = optr = NULL;
   switch(player.ball.state)
   {
     /*{{{  case 0: (held)*/
     case 0:
-      if(player.throw == 1)
+      if(global.throw == 1 && global.state != 4)
 	{
-	  CELL      *cptr;
 	  unsigned  face;
+	  CELL      *nptr;
 	
-	  player.throw = 2;
 	  player.ball.state = 1;
 	  face = monster.list[0].face;
 	  player.ball.cell.x = monster.list[0].cell.x;
 	  player.ball.cell.y = monster.list[0].cell.y;
-	  player.ball.offset.x = monster.list[0].offset.x + ball_throw[face].x;
-	  player.ball.offset.y = monster.list[0].offset.y + ball_throw[face].y;
+	  player.ball.offset.x =
+	    monster.list[0].offset.x + ball_throw[face].x;
+	  player.ball.offset.y =
+	    monster.list[0].offset.y + ball_throw[face].y;
 	  player.ball.count = ball_dir[face];
-	  cptr = BOARDCELL(player.ball.cell.x, player.ball.cell.y);
+	  nptr = cptr = BOARDCELL(player.ball.cell.x, player.ball.cell.y);
 	  switch(monster.list[0].dir)
 	  {
 	    /*{{{  case 0: (up)*/
 	    case 0:
+	      optr = cptr;
+	      nptr = optr - CELL_STRIDE;
 	      if(player.ball.offset.y > -(CELL_HEIGHT / 2))
-		/*EMPTY*/;
+		/* EMPTY */;
 	      else if(cptr[-CELL_STRIDE].visit)
 		{
 		  player.ball.offset.y += CELL_HEIGHT + GAP_HEIGHT;
 		  player.ball.cell.y--;
 		}
-	      else if(cptr[-CELL_STRIDE * 2].depths[1] - player.ball.offset.y >
+	      else if(cptr[-CELL_STRIDE * 2].depths[1] -
+		  player.ball.offset.y >
 		  CELL_HEIGHT / 2 + CELL_HEIGHT + GAP_HEIGHT)
 		{
 		  player.ball.offset.y += (CELL_HEIGHT + GAP_HEIGHT) * 2;
@@ -66,8 +60,10 @@ extern void bounce_ball FUNCARGVOID
 	    /*}}}*/
 	    /*{{{  case 1: (down)*/
 	    case 1:
+	      optr = cptr;
+	      nptr = optr + CELL_STRIDE;
 	      if(player.ball.offset.y < (CELL_HEIGHT / 2))
-		/*EMPTY*/;
+		/* EMPTY */;
 	      else if(cptr[CELL_STRIDE].visit)
 		{
 		  player.ball.offset.y -= CELL_HEIGHT + GAP_HEIGHT;
@@ -86,8 +82,10 @@ extern void bounce_ball FUNCARGVOID
 	    /*}}}*/
 	    /*{{{  case 2: (left)*/
 	    case 2:
+	      optr = cptr;
+	      nptr = optr - 1;
 	      if(player.ball.offset.x > -(CELL_WIDTH / 2))
-		/*EMPTY*/;
+		/* EMPTY */;
 	      else if(cptr[-1].visit)
 		{
 		  player.ball.offset.x += CELL_WIDTH + GAP_WIDTH;
@@ -106,8 +104,10 @@ extern void bounce_ball FUNCARGVOID
 	    /*}}}*/
 	    /*{{{  case 3: (right)*/
 	    case 3:
+	      optr = cptr;
+	      nptr = optr + 1;
 	      if(player.ball.offset.x < (CELL_HEIGHT / 2))
-		/*EMPTY*/;
+		/* EMPTY */;
 	      else if(cptr[1].visit)
 		{
 		  player.ball.offset.x -= CELL_WIDTH + GAP_WIDTH;
@@ -125,10 +125,24 @@ extern void bounce_ball FUNCARGVOID
 	      break;
 	    /*}}}*/
 	  }
-	  player.ball.pixel.x =
-	      PIXELX(player.ball.cell.x, player.ball.offset.x) + CELL_WIDTH / 2;
-	  player.ball.pixel.y =
-	      PIXELY(player.ball.cell.y, player.ball.offset.y) + CELL_HEIGHT / 2;
+	  if(player.ball.state)
+	    {
+	      player.ball.pixel.x = PIXELX(player.ball.cell.x,
+		  player.ball.offset.x + CELL_WIDTH / 2);
+	      player.ball.pixel.y = PIXELY(player.ball.cell.y,
+		  player.ball.offset.y + CELL_HEIGHT / 2);
+	      br.x = player.ball.pixel.x;
+	      br.y = player.ball.pixel.y;
+	      tl.x = player.ball.pixel.x;
+	      tl.y = player.ball.pixel.y;
+	      player.ball.image = 2;
+	      if(!optr->visit || !nptr->visit)
+		optr = cptr = NULL;
+	      else
+		cptr = nptr;
+	    }
+	  else
+	    optr = cptr = NULL;
 	}
       break;
     /*}}}*/
@@ -136,24 +150,34 @@ extern void bounce_ball FUNCARGVOID
     case 1:
     {
       int       i;
-      CELL      *cptr;
 	
-      cptr = BOARDCELL(player.ball.cell.x, player.ball.cell.y);
+      br.x = tl.x = player.ball.pixel.x;
+      br.y = tl.y = player.ball.pixel.y;
+      optr = cptr = BOARDCELL(player.ball.cell.x, player.ball.cell.y);
       for(i = BALL_STEPS; i--;)
+	/*{{{  move one step*/
 	{
 	  int       walls;
 	  /* bit vector tl, br, bl, tr, t, b, l, r */
 	
 	  /*{{{  moved to above or below cell?*/
 	  if(player.ball.offset.y > CELL_HEIGHT / 2 &&
-	      cptr[CELL_STRIDE].depths[0])
+	      (cptr[CELL_STRIDE].depths[0] ||
+	      (cptr->holes[3] &&
+	      player.ball.offset.x + CELL_WIDTH / 2 >= cptr->holes[3]) ||
+	      (cptr->holes[2] &&
+	      player.ball.offset.x - CELL_WIDTH / 2 <= cptr->holes[2])))
 	    {
 	      player.ball.offset.y -= CELL_HEIGHT + GAP_HEIGHT;
 	      player.ball.cell.y++;
 	      cptr += CELL_STRIDE;
 	    }
 	  else if(player.ball.offset.y < -CELL_HEIGHT / 2 &&
-	      cptr[-CELL_STRIDE].depths[1])
+	      (cptr[-CELL_STRIDE].depths[1] ||
+	      (cptr->holes[1] &&
+	      player.ball.offset.x + CELL_WIDTH / 2 >= cptr->holes[1]) ||
+	      (cptr->holes[0] &&
+	      player.ball.offset.x - CELL_WIDTH / 2 <= cptr->holes[0])))
 	    {
 	      player.ball.offset.y += CELL_HEIGHT + GAP_HEIGHT;
 	      player.ball.cell.y--;
@@ -167,7 +191,8 @@ extern void bounce_ball FUNCARGVOID
 	      player.ball.cell.x++;
 	      cptr++;
 	    }
-	  else if(player.ball.offset.x < -CELL_WIDTH / 2 && cptr[-1].depths[3])
+	  else if(player.ball.offset.x < -CELL_WIDTH / 2 &&
+	      cptr[-1].depths[3])
 	    {
 	      player.ball.offset.x += CELL_WIDTH + GAP_WIDTH;
 	      player.ball.cell.x--;
@@ -179,7 +204,7 @@ extern void bounce_ball FUNCARGVOID
 	  {
 	    unsigned  quadrant;
 	    /* quadrants to, bo, lo, ro, ti, bi, li, ri, t, b, l, r */
-		    
+	  
 	    /* work out where we are in the cell */
 	    quadrant = 0x000;
 	    /*{{{  y place*/
@@ -219,7 +244,7 @@ extern void bounce_ball FUNCARGVOID
 		if(quadrant & 0x808)
 		  {
 		    unsigned  mask;
-				  
+	      
 		    if(quadrant & 0x800)
 		      mask = 0x93;
 		    else
@@ -259,7 +284,7 @@ extern void bounce_ball FUNCARGVOID
 		if(quadrant & 0x404)
 		  {
 		    unsigned  mask;
-				  
+	      
 		    if(quadrant & 0x400)
 		      mask = 0x63;
 		    else
@@ -299,7 +324,7 @@ extern void bounce_ball FUNCARGVOID
 		if(quadrant & 0x202)
 		  {
 		    unsigned  mask;
-				  
+	      
 		    if(quadrant & 0x200)
 		      mask = 0xAC;
 		    else
@@ -320,7 +345,7 @@ extern void bounce_ball FUNCARGVOID
 		if(quadrant & 0x101)
 		  {
 		    unsigned  mask;
-				  
+	      
 		    if(quadrant & 0x100)
 		      mask = 0x5C;
 		    else
@@ -332,19 +357,45 @@ extern void bounce_ball FUNCARGVOID
 		  }
 	      }
 	      /*}}}*/
+	    /*{{{  holes?*/
+	    {
+	      if(quadrant & 0x888)
+		/*{{{  top*/
+		{
+		  if(cptr->holes[0] &&
+		      player.ball.offset.x - CELL_WIDTH / 2 < cptr->holes[0])
+		    walls &= ~0x99;
+		  if(cptr->holes[1] &&
+		      player.ball.offset.x + CELL_WIDTH / 2 > cptr->holes[1])
+		    walls &= ~0x9A;
+		}
+		/*}}}*/
+	      else if(quadrant & 0x444)
+		/*{{{  bottom*/
+		{
+		  if(cptr->holes[2] &&
+		      player.ball.offset.x - CELL_WIDTH / 2 < cptr->holes[2])
+		    walls &= ~0x65;
+		  if(cptr->holes[3] &&
+		      player.ball.offset.x + CELL_WIDTH / 2 > cptr->holes[3])
+		    walls &= ~0x66;
+		}
+		/*}}}*/
+	    }
+	    /*}}}*/
 	  }
 	  /*}}}*/
 	  /*{{{  set apple walls*/
 	  {
 	    unsigned  i;
 	    APPLE     *aptr;
-		    
+	  
 	    for(aptr = apple.list, i = apple.apples; i--; aptr++)
 	      {
 		int     x, y;
 		int     edge;
 		/* edge ot, ob, ol, or, t, b, l, r */
-			  
+	  
 		if(aptr->state < 4)
 		  {
 		    x = aptr->pixel.x;
@@ -353,7 +404,7 @@ extern void bounce_ball FUNCARGVOID
 		    /*{{{  Y edge*/
 		    if(player.ball.pixel.y - y < -VEL_Y ||
 			player.ball.pixel.y - y >= CELL_HEIGHT + VEL_Y)
-		      /*EMPTY*/;
+		      /* EMPTY */;
 		    else if(player.ball.pixel.y - y < 0)
 		      edge |= 0X80;
 		    else if(player.ball.pixel.y - y < CELL_HEIGHT / 2)
@@ -366,7 +417,7 @@ extern void bounce_ball FUNCARGVOID
 		    /*{{{  X edge*/
 		    if(player.ball.pixel.x - x < -VEL_X ||
 			player.ball.pixel.x - x >= CELL_WIDTH + VEL_X)
-		      /*EMPTY*/;
+		      /* EMPTY */;
 		    else if(player.ball.pixel.x - x < 0)
 		      edge |= 0X20;
 		    else if(player.ball.pixel.x - x < CELL_WIDTH / 2)
@@ -426,11 +477,14 @@ extern void bounce_ball FUNCARGVOID
 	  }
 	  /*}}}*/
 	  if((walls & 0xC) == 0xC || (walls & 0x03) == 0x03)
+	    /*{{{  trapped*/
 	    {
+	      player.count = 0;
 	      player.ball.state = 2;
 	      player.ball.count = 0;
 	      break;
 	    }
+	    /*}}}*/
 	  else
 	    {
 	      /*{{{  bounce?*/
@@ -439,49 +493,57 @@ extern void bounce_ball FUNCARGVOID
 		/*{{{  case 0: (up left)*/
 		case 0:
 		  if(!(walls & 0X80))
-		    /*EMPTY*/;
+		    /* EMPTY */;
 		  else if((walls & 0X0A) == 0X08)
 		    player.ball.count = 2;
 		  else if((walls & 0X0A) == 0X02)
 		    player.ball.count = 3;
-		  else
+		  else if((walls & 0X0A) == 0X0A)
 		    player.ball.count = 1;
+		  else
+		    player.ball.count = chaotic() & 1 ? 2 : 3;
 		  break;
 		/*}}}*/
 		/*{{{  case 1: (down right)*/
 		case 1:
 		  if(!(walls & 0X40))
-		    /*EMPTY*/;
+		    /* EMPTY */;
 		  else if((walls & 0X05) == 0X04)
 		    player.ball.count = 3;
 		  else if((walls & 0X05) == 0X01)
 		    player.ball.count = 2;
-		  else
+		  else if((walls & 0X05) == 0X05)
 		    player.ball.count = 0;
+		  else
+		    player.ball.count = chaotic() & 1 ? 3 : 2;
 		  break;
 		/*}}}*/
 		/*{{{  case 2: (down left)*/
 		case 2:
 		  if(!(walls & 0X20))
-		    /*EMPTY*/;
+		    /* EMPTY */;
 		  else if((walls & 0X06) == 0X04)
 		    player.ball.count = 0;
 		  else if((walls & 0X06) == 0X02)
 		    player.ball.count = 1;
-		  else
+		  else if((walls & 0X06) == 0X06)
 		    player.ball.count = 3;
+		  else
+		    player.ball.count = chaotic() & 1 ? 0 : 1;
 		  break;
 		/*}}}*/
 		/*{{{  case 3: (up right)*/
 		case 3:
 		  if(!(walls & 0X10))
-		    /*EMPTY*/;
+		    /* EMPTY */;
 		  else if((walls & 0X09) == 0X08)
 		    player.ball.count = 1;
 		  else if((walls & 0X09) == 0X01)
 		    player.ball.count = 0;
-		  else
+		  else if((walls & 0x09) == 0x09)
 		    player.ball.count = 2;
+		  else
+		    player.ball.count = chaotic() & 1 ? 1 : 0;
 		  break;
 		/*}}}*/
 	      }
@@ -524,37 +586,14 @@ extern void bounce_ball FUNCARGVOID
 	      }
 	      /*}}}*/
 	    }
-	}
-      if(player.ball.state == 1)
-	/*{{{  hit a monster?*/
-	{
-	  unsigned  i;
-	  MONSTER   *mptr;
-		
-	  for(mptr = monster.list, i = monster.monsters; i--; mptr++)
-	    if(!mptr->shot && !mptr->apple &&
-		player.ball.pixel.x - mptr->pixel.x >= 0 &&
-		player.ball.pixel.x - mptr->pixel.x < CELL_WIDTH &&
-		player.ball.pixel.y - mptr->pixel.y >= 0 &&
-		player.ball.pixel.y - mptr->pixel.y < CELL_HEIGHT)
-	      {
-		if(mptr == monster.list)
-		  {
-		    player.ball.state = 0;
-		    player.ball.count = monster.list[0].face;
-		    player.ball.pixel.x = monster.list[0].pixel.x +
-			CELL_WIDTH / 2;
-		    player.ball.pixel.y = monster.list[0].pixel.y +
-			CELL_HEIGHT / 2;
-		  }
-		else
-		  {
-		    mptr->shot = 1;
-		    player.ball.state = 2;
-		    player.ball.count = 0;
-		  }
-		break;
-	      }
+	  if(player.ball.pixel.x < tl.x)
+	    tl.x = player.ball.pixel.x;
+	  else
+	    br.x = player.ball.pixel.x;
+	  if(player.ball.pixel.y < tl.y)
+	    tl.y = player.ball.pixel.y;
+	  else
+	    br.y = player.ball.pixel.y;
 	}
 	/*}}}*/
       break;
@@ -569,20 +608,19 @@ extern void bounce_ball FUNCARGVOID
     /*}}}*/
     /*{{{  case 3: (exploded)*/
     case 3:
-      if(random() < 4)
-	{
-	  player.ball.state = 4;
-	  player.ball.count--;
-	}
+      {
+	if(!player.count--)
+	  {
+	    player.ball.state = 4;
+	    player.ball.count--;
+	  }
+      }
       break;
     /*}}}*/
     /*{{{  case 4: (implode)*/
     case 4:
     {
-      int       face;
-	  
       player.ball.count--;
-      face = monster.list[0].face;
       player.ball.pixel.x = monster.list[0].pixel.x + CELL_WIDTH / 2;
       player.ball.pixel.y = monster.list[0].pixel.y + CELL_HEIGHT / 2;
       if(!player.ball.count)
@@ -591,6 +629,137 @@ extern void bounce_ball FUNCARGVOID
     }
     /*}}}*/
   }
+  if(optr && cptr && optr != cptr)
+    /*{{{  calc ball distances*/
+    {
+      CELL    **aptr, **sptr;
+      CELL    *list[2][FLOOD_FILL];
+      int     toggle;
+      int     x, y;
+      int     count;
+      CELL    *pptr;
+    
+      for(y = CELLS_DOWN; y--;)
+	{
+	  CELL      *cptr;
+	  
+	  cptr = BOARDCELL(0, y);
+	  for(x = CELLS_ACROSS; x--; cptr++)
+	    cptr->ball = 0;
+	}
+      toggle = 0;
+      pptr = BOARDCELL(monster.list[0].cell.x, monster.list[0].cell.y);
+      pptr->ball = optr->ball = cptr->ball = count = BALL_DISTANCE;
+      list[0][0] = cptr;
+      list[0][1] = NULL;
+      while(list[toggle][0] && --count)
+      {
+	sptr = list[toggle];
+	toggle = !toggle;
+	aptr = list[toggle];
+	while((cptr = *sptr++) != NULL)
+	  {
+	    CELL      *tptr;
+	    
+	    /*{{{  go up?*/
+	    if(cptr->depths[0])
+	      {
+		tptr = cptr - CELL_STRIDE;
+		if(tptr->visit && !tptr->ball)
+		  {
+		    tptr->ball = count;
+		    *aptr++ = tptr;
+		  }
+	      }
+	    /*}}}*/
+	    /*{{{  go down?*/
+	    if(cptr->depths[1])
+	      {
+		tptr = cptr + CELL_STRIDE;
+		if(tptr->visit && !tptr->ball)
+		  {
+		    tptr->ball = count;
+		    *aptr++ = tptr;
+		  }
+	      }
+	    /*}}}*/
+	    /*{{{  go left?*/
+	    if(cptr->depths[2])
+	      {
+		tptr = cptr - 1;
+		if(tptr->visit && !tptr->ball)
+		  {
+		    tptr->ball = count;
+		    *aptr++ = tptr;
+		  }
+	      }
+	    /*}}}*/
+	    /*{{{  go right?*/
+	    if(cptr->depths[3])
+	      {
+		tptr = cptr + 1;
+		if(tptr->visit && !tptr->ball)
+		  {
+		    tptr->ball = count;
+		    *aptr++ = tptr;
+		  }
+	      }
+	    /*}}}*/
+	    assert(aptr - list[toggle] < FLOOD_FILL);
+	  }
+	*aptr = NULL;
+      }
+      pptr->ball = optr->ball = 0;
+    }
+    /*}}}*/
+  if(player.ball.state == 1)
+    /*{{{  hit a monster?*/
+    {
+      unsigned  i;
+      MONSTER   *mptr;
+	  
+      tl.x -= CELL_WIDTH;
+      tl.y -= CELL_HEIGHT;
+      br.x += 1;
+      br.y += 1;
+      for(mptr = monster.list, i = monster.monsters; i--; mptr++)
+	if(!mptr->shot && !mptr->squished &&
+	    (mptr->type < 5 || mptr->type > 6) &&
+	    (mptr != monster.list || !player.ball.image) &&
+	    INRANGE(mptr->pixel.x, tl.x, br.x) &&
+	    INRANGE(mptr->pixel.y, tl.y, br.y))
+	  {
+	    if(mptr->type == 4)
+	      player.ball.state = 0;
+	    else
+	      {
+		if(global.state == 2 || mptr->type == 2)
+		  player.count = ball_returns[0];
+		else
+		  {
+		    player.count = ball_returns[player.thrown];
+		    if(player.thrown < BALL_RETURNS - 1)
+		      player.thrown++;
+		  }
+		if(mptr->type < 6)
+		  mptr->shot = 1;
+		else if(INRANGE(mptr->type, SPRITE_MRIS + 4, SPRITE_MRIS + 8))
+		  mptr->type -= 4;
+		player.ball.state = 2;
+		player.ball.count = 0;
+	      }
+	    break;
+	  }
+      if(player.ball.image)
+	player.ball.image--;
+    }
+    /*}}}*/
+  if(global.state == 4 || global.throw != 1)
+    /* EMPTY */;
+  else if(player.ball.state)
+    global.throw = 2;
+  else if(!(global.pressed & (1 << KEY_THROW)))
+    global.throw = 0;
   if(!player.ball.state)
     {
       player.ball.count = monster.list[0].face;
@@ -601,153 +770,26 @@ extern void bounce_ball FUNCARGVOID
   return;
 }
 /*}}}*/
-/*{{{  void move_player()*/
-extern void move_player FUNCARGVOID
+/*{{{  unsigned move_player()*/
+extern unsigned move_player FUNCARGVOID
 /*
- * moves the player
- * and deals with eating cherries etc
+ * move the player
+ * and deal with eating cherries etc
+ * there is a wart to make it easier to stop just before a thin bit of
+ * hedge and throw the ball through it.
  */
 {
-  CELL      *cptr;
   unsigned  dir;
+  unsigned  step;
+  unsigned  stop;
+  unsigned  eaten;
 
   dir = monster.list[0].dir;
-  /*{{{  motionevent?*/
-  if(player.motionevent && !player.keyboard &&
-      (!monster.list[0].stop ||
-       player.raw_mouse.x - player.mouse.x * (CELL_WIDTH + GAP_WIDTH) >
-	  BORDER_LEFT + GAP_WIDTH / 2 + (CELL_WIDTH + GAP_WIDTH) / 4 +
-	  CELL_WIDTH + GAP_WIDTH ||
-       player.raw_mouse.y - (int)player.mouse.y * (CELL_HEIGHT + GAP_HEIGHT) >
-	  BORDER_TOP + GAP_HEIGHT / 2 + (CELL_HEIGHT + GAP_HEIGHT) / 4 +
-	  CELL_HEIGHT + GAP_HEIGHT ||
-       player.raw_mouse.x - (int)player.mouse.x * (CELL_WIDTH + GAP_WIDTH) <
-	  BORDER_LEFT + GAP_WIDTH / 2 - (GAP_WIDTH + CELL_WIDTH) / 4||
-       player.raw_mouse.y - (int)player.mouse.y * (CELL_HEIGHT + GAP_HEIGHT) <
-	  BORDER_TOP + GAP_HEIGHT / 2 - (GAP_HEIGHT + CELL_HEIGHT) / 4))
-    /*
-     * for mouse motion, we get the cell number for the mouse, and
-     * set dir & mouse dir to point towards it
-     */
-    {
-      int       x, y;
-	
-      x = (player.raw_mouse.x - BORDER_LEFT - GAP_WIDTH / 2) /
-	  (GAP_WIDTH + CELL_WIDTH);
-      y = (player.raw_mouse.y - BORDER_TOP - GAP_HEIGHT / 2) /
-	  (GAP_HEIGHT + CELL_HEIGHT);
-      /*{{{  clip x*/
-      if(x < 0)
-	x = 0;
-      else if(x > CELLS_ACROSS - 1)
-	x = CELLS_ACROSS - 1;
-      /*}}}*/
-      /*{{{  clip y*/
-      if(y < 0)
-	y = 0;
-      else if(y > CELLS_DOWN - 1)
-	y = CELLS_DOWN - 1;
-      /*}}}*/
-      if(y != player.mouse.y || x != player.mouse.x)
-	{
-	  unsigned  dir;
-	  unsigned  second;
-	
-	  player.mouse.x = x;
-	  player.mouse.y = y;
-	  /*{{{  calc x direction*/
-	  if(x == monster.list[0].cell.x && !monster.list[0].offset.x)
-	    x = 0;
-	  else if(x < monster.list[0].cell.x ||
-	      (x == monster.list[0].cell.x && monster.list[0].offset.x > 0))
-	    x = 6;
-	  else
-	    x = 7;
-	  /*}}}*/
-	  /*{{{  calc y direction*/
-	  if(y == monster.list[0].cell.y && !monster.list[0].offset.y)
-	    y = 0;
-	  else if(y < monster.list[0].cell.y ||
-	      (y == monster.list[0].cell.y && monster.list[0].offset.y > 0))
-	    y = 4;
-	  else
-	    y = 5;
-	  /*}}}*/
-	  /*{{{  select which way round to do them*/
-	  if(monster.list[0].dir & 2)
-	    {
-	      if(monster.list[0].dir != x)
-		{
-		  dir = y;
-		  second = x;
-		}
-	      else
-		{
-		  dir = x;
-		  second = y;
-		}
-	    }
-	  else
-	    {
-	      if(monster.list[0].dir != y)
-		{
-		  dir = x;
-		  second = y;
-		}
-	      else
-		{
-		  dir = y;
-		  second = x;
-		}
-	    }
-	  /*}}}*/
-	  player.next_dir = 0;
-	  /*{{{  do u turn fiddling*/
-	  if(!dir)
-	    dir = second;
-	  else if(!second)
-	    second = dir;
-	  else if(monster.list[0].offset.x && !(dir & 2))
-	    {
-	      player.next_dir = dir;
-	      if(monster.list[0].offset.x < -(CELL_WIDTH + GAP_WIDTH) * 3 / 4)
-		dir = 6;
-	      else if(monster.list[0].offset.x > (CELL_WIDTH + GAP_WIDTH) * 3 / 4)
-		dir = 7;
-	      else if(monster.list[0].offset.x > 0 &&
-		  monster.list[0].offset.x <= (CELL_WIDTH + GAP_WIDTH) / 4)
-		dir = 6;
-	      else if(monster.list[0].offset.x < 0 &&
-		  monster.list[0].offset.x >= -(CELL_WIDTH + GAP_WIDTH) / 4)
-		dir = 7;
-	      else
-		dir = monster.list[0].dir | 4;
-	    }
-	  else if(monster.list[0].offset.y && (dir & 2))
-	    {
-	      player.next_dir = dir;
-	      if(monster.list[0].offset.y < -(CELL_HEIGHT + GAP_HEIGHT) * 3 / 4)
-		dir = 4;
-	      else if(monster.list[0].offset.y > (CELL_HEIGHT + GAP_HEIGHT) * 3 / 4)
-		dir = 5;
-	      else if(monster.list[0].offset.y > 0 &&
-		  monster.list[0].offset.y <= (CELL_HEIGHT + GAP_HEIGHT) / 4)
-		dir = 4;
-	      else if(monster.list[0].offset.y < 0 &&
-		  monster.list[0].offset.y >= -(CELL_HEIGHT + GAP_HEIGHT) / 4)
-		dir = 5;
-	      else
-		dir = monster.list[0].dir | 4;
-	    }
-	  /*}}}*/
-	  monster.list[0].dir = dir & 3;
-	  monster.list[0].stop = !(dir & 4);
-	  player.mouse_dir = second;
-	}
-    }
-  /*}}}*/
+  stop = monster.list[0].stop;
+  step = 0;
+  eaten = 0;
   /*{{{  key change?*/
-  if(player.bashed || (player.old_pressed ^ player.pressed) & 0xF)
+  if(player.bashed || (player.pressed ^ global.pressed) & 0xF)
   /*
    * The keys have changed, so we need to select a new direction
    * if we're not an interchange to change dir, we keep going
@@ -757,11 +799,28 @@ extern void move_player FUNCARGVOID
   {
     unsigned  valid;
     unsigned  pressed;
-    
-    player.mouse_dir = 0;
-    pressed = player.pressed & ~player.bashed;
+	
+    pressed = global.pressed & 0xF;
     if(!pressed)
-      pressed = player.pressed;
+      {
+	if(dir == 0 && monster.list[0].offset.y <=
+	    VEL_Y * STEP_OFF - CELL_HEIGHT - GAP_HEIGHT)
+	  pressed = 0x1;
+	else if(dir == 1 && monster.list[0].offset.y >=
+	    CELL_HEIGHT + GAP_HEIGHT - VEL_Y * STEP_OFF)
+	  pressed = 0x2;
+	else if(dir == 2 && monster.list[0].offset.x <=
+	    VEL_X * STEP_OFF - CELL_WIDTH - GAP_WIDTH)
+	  pressed = 0x4;
+	else if(dir == 3 && monster.list[0].offset.x >=
+	    CELL_WIDTH + GAP_WIDTH - VEL_X * STEP_OFF)
+	  pressed = 0x8;
+	if(pressed)
+	  step = 1;
+      }
+    pressed &= ~player.bashed;
+    if(!pressed)
+      pressed = global.pressed & 0xF;
     valid = 0xF;
     /*{{{  work out valid direction and the edges*/
     if(monster.list[0].offset.x)
@@ -799,29 +858,30 @@ extern void move_player FUNCARGVOID
       pressed &= 0x3;
     if(!pressed)
       {
+	step = 0;
 	monster.list[0].stop = 1;
-	player.next_dir = 0;
+	player.next = 0;
       }
     else if((valid & pressed) == pressed)
       {
 	unsigned  dir;
-    
+	
 	if((pressed & 0x3) && (pressed & 0xC))
 	  pressed &= monster.list[0].dir & 2 ? 0x3 : 0xC;
 	for(dir = 0; !(pressed & 1); dir++, pressed >>= 1)
-	  /*EMPTY*/;
-	player.next_dir = 0;
+	  /* EMPTY */;
+	player.next = 0;
 	monster.list[0].dir = dir;
 	monster.list[0].stop = 0;
       }
     else
       {
 	unsigned  dir;
-    
+	
 	pressed &= ~valid;
 	for(dir = 0; !(pressed & 1); pressed >>= 1)
 	  dir++;
-	player.next_dir = dir | 4;
+	player.next = dir | 4;
 	if(monster.list[0].stop)
 	  {
 	    /*{{{  select nearest cell*/
@@ -878,30 +938,28 @@ extern void move_player FUNCARGVOID
       player.bashed = 0x10;
   }
   /*}}}*/
-  player.old_pressed = player.pressed;
-  if(player.throw == 2)
-    {
-      if(!player.button)
-	player.throw = 0;
-    }
-  else if(player.throw == 0)
-    player.throw = player.button;
   if(dir != monster.list[0].dir)
-    new_face(&monster.list[0]);
+    {
+      if(stop || dir == (monster.list[0].dir ^ 1))
+	monster.list[0].pause = 1;
+      new_face(&monster.list[0]);
+    }
   if(monster.list[0].pause)
     {
       player.cherry = player.distance = 0;
       monster.list[0].pause = 0;
     }
   else if(!monster.list[0].stop)
+    /*{{{  move*/
     {
+      CELL      *cptr;
+      
       if(!monster.list[0].cycle)
 	{
 	  monster.list[0].cycle = MONSTER_CYCLES;
 	  monster.list[0].image++;
 	  if(monster.list[0].image == MONSTER_IMAGES)
 	    monster.list[0].image = 0;
-	  
 	}
       monster.list[0].cycle--;
       cptr = move_muncher(&monster.list[0]);
@@ -924,16 +982,18 @@ extern void move_player FUNCARGVOID
 	}
       if(cptr)
 	{
+	  monster.player = cptr;
+	  global.stepped = 1;
 	  if(cptr->sprite == SPRITE_CHERRY)
 	    /*{{{  eat cherry*/
 	    {
 	      cptr->sprite = 0;
 	      global.cherries--;
-	      add_score(50, 0, 0);
+	      add_score(50 / SCORE_ROUND, 0, 0);
 	      player.cherry++;
 	      if(player.cherry == 8)
 		{
-		  add_score(500,
+		  add_score(500 / SCORE_ROUND,
 		      monster.list[0].pixel.x + CELL_WIDTH / 2,
 		      monster.list[0].pixel.y + CELL_HEIGHT / 2);
 		  player.cherry = 0;
@@ -943,27 +1003,39 @@ extern void move_player FUNCARGVOID
 		    (CELL_WIDTH + GAP_WIDTH) / VEL_X;
 	    }
 	    /*}}}*/
-	  else if(cptr->sprite >= SPRITE_PRIZE_BASE &&
-	      cptr->sprite < SPRITE_PRIZE_BASE + SPRITE_PRIZES)
+	  else if(cptr->sprite && global.state == 1)
 	    /*{{{  eat prize*/
 	    {
-	      int     score;
-			
+	      unsigned  score;
+	    
+	      eaten = 1;
 	      history.prize |= 1;
-	      cptr->sprite = 0;
-	      score = player.screen * 500 + 500;
-	      add_score(score > 9500 ? 9500 : score,
-		  monster.list[0].pixel.x + CELL_WIDTH / 2,
+	      score = global.screen * (500 / SCORE_ROUND) + 500 / SCORE_ROUND;
+	      add_score(score > 9500 / SCORE_ROUND ? 9500 / SCORE_ROUND :
+		  score, monster.list[0].pixel.x + CELL_WIDTH / 2,
 		  monster.list[0].pixel.y + CELL_HEIGHT / 2);
 	      global.state = 2;
+	      if(((global.screen - 1) % SPRITE_PRIZES) ==
+		  SPRITE_MUSHROOM && chaotic() < WHIZZ_PROB)
+		color_set(BACKGROUND_WHIZZ);
+	      else if(data.gender == False)
+		color_set(BACKGROUND_DRONES);
 	      if(!extra.escape)
 		extra_escape();
+	      else if(extra.escape == 2)
+		{
+		  extra.escape = 1;
+		  extra.count = XTRA_HOME_DELAY - 1;
+		}
 	      monster.den = 3;
 	      monster.delay = 1;
 	    }
 	    /*}}}*/
 	}
     }
+    /*}}}*/
+  if(!step)
+    player.pressed = global.pressed;
   if(player.distance)
     player.distance--;
   else
@@ -971,21 +1043,11 @@ extern void move_player FUNCARGVOID
   /*{{{  player looping*/
   if(monster.list[0].stop ||
       monster.list[0].offset.x || monster.list[0].offset.y)
-    /*EMPTY*/;
-  else if(player.mouse_dir &&
-      monster.list[0].cell.x == player.mouse.x &&
-      monster.list[0].cell.y == player.mouse.y)
+    /* EMPTY */;
+  else if(player.next)
     {
-      player.next_dir = player.mouse_dir = 0;
-      monster.list[0].stop = 1;
-    }
-  else if(player.mouse_dir &&
-      monster.list[0].dir != (player.mouse_dir & 3) &&
-      (monster.list[0].cell.x == player.mouse.x ||
-       monster.list[0].cell.y == player.mouse.y))
-    {
-      monster.list[0].dir = player.mouse_dir & 3;
-      player.next_dir = 0;
+      monster.list[0].dir = player.next & 3;
+      player.next = 0;
       new_face(&monster.list[0]);
     }
   else if((!monster.list[0].cell.x && monster.list[0].dir == 2) ||
@@ -995,38 +1057,56 @@ extern void move_player FUNCARGVOID
       (monster.list[0].cell.y == CELLS_DOWN - 1 &&
 	  monster.list[0].dir == 1))
     {
-      player.next_dir = 0;
+      player.next = 0;
       monster.list[0].stop = 1;
       player.bashed = 1 << monster.list[0].dir;
     }
-  else if(player.next_dir)
-    {
-      monster.list[0].dir = player.next_dir & 3;
-      player.next_dir = 0;
-      new_face(&monster.list[0]);
-    }
+  else if(step)
+    monster.list[0].stop = 1;
   /*}}}*/
+  return eaten;
+}
+/*}}}*/
+/*{{{  void killed_player()*/
+extern VOIDFUNC killed_player FUNCARGVOID
+/*
+ * sees if the player has walked into a live monster
+ */
+{
   if(!monster.list[0].shot)
-    /*{{{  hit monster?*/
     {
       unsigned  i;
       MONSTER   *mptr;
       int       x, y;
 	
-      x = monster.list[0].pixel.x - CELL_WIDTH + GAP_WIDTH;
-      y = monster.list[0].pixel.y - CELL_HEIGHT + GAP_HEIGHT;
+      x = monster.list[0].pixel.x;
+      y = monster.list[0].pixel.y;
       for(mptr = &monster.list[1], i = monster.monsters - 1; i--; mptr++)
-	if(!mptr->chew && !mptr->shot && !mptr->apple &&
-	    mptr->pixel.x - x > 0 &&
-	    mptr->pixel.x - x < 2 * (CELL_WIDTH - GAP_WIDTH) &&
-	    mptr->pixel.y - y > 0 &&
-	    mptr->pixel.y - y < 2 * (CELL_HEIGHT - GAP_HEIGHT))
+	if(mptr->chew || mptr->shot || mptr->squished || mptr->type == 5)
+	  /* EMPTY */;
+	else if(mptr->type == 6)
 	  {
-	    monster.list[0].shot = 1;
-	    break;
+	    if(mptr->pixel.x == x && mptr->pixel.y == y)
+	      mptr->shot = 1;
+	  }
+	else
+	  {
+	    int     dx, dy;
+	    
+	    dx = mptr->pixel.x - x;
+	    dy = mptr->pixel.y - y;
+	    if(dx < 0)
+	      dx = -dx;
+	    if(dy < 0)
+	      dy = -dy;
+	    if(dx * CELL_HEIGHT + dy * CELL_WIDTH <
+		CELL_WIDTH * CELL_HEIGHT)
+	      {
+		monster.list[0].shot = 1;
+		break;
+	      }
 	  }
     }
-    /*}}}*/
   return;
 }
 /*}}}*/

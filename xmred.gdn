@@ -1,0 +1,22 @@
+/*!
+ * xmred V0.00 14 July 1993
+ * Copyright 1993 Nathan Sidwell
+ */
+{
+  0, 0, 0,
+  {
+    "++++++++++++",
+    "DDBDCBDCACDB",
+    "BBBDDADCA+BB",
+    "AACACCCCCCCA",
+    "++++++++++++",
+    "+CDCB+BDCA++",
+    "++B+DCBDCA++",
+    "++A+A+CCCA++",
+    "++++++++++++",
+    "+DCACDBDCDA+",
+    "+DCA+BBB+B++",
+    "+CCCCCCA+A++",
+    "++++++++++++",
+  }
+},

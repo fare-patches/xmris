@@ -28,11 +28,11 @@
 # -------------------------------------------------------------------------
 # platform-specific configuration parameters - edit sun.cf to change
 
-# platform:  $XConsortium: sun.cf,v 1.68 91/07/30 11:34:39 rws Exp $
+# platform:  $XConsortium: sun.cf,v 1.72.1.1 92/03/18 13:13:37 rws Exp $
 
-# operating system:  SunOS 4.1.1
+# operating system:  SunOS 5.1
 
-# $XConsortium: sunLib.rules,v 1.6 91/03/24 17:55:58 rws Exp $
+# $XConsortium: sv4Lib.rules,v 1.8 91/07/19 15:38:53 rws Exp $
 
 # -------------------------------------------------------------------------
 # site-specific configuration parameters that go after
@@ -45,26 +45,23 @@
               TOP = .
       CURRENT_DIR = .
 
-               AR = ar clq
-  BOOTSTRAPCFLAGS =
-               CC = cc
+               AR = ar cq
+  BOOTSTRAPCFLAGS = -DSVR4
+               CC = gcc -fpcc-struct-return
                AS = as
 
          COMPRESS = compress
-              CPP = /lib/cpp $(STD_CPP_DEFINES)
-    PREPROCESSCMD = cc -E $(STD_CPP_DEFINES)
-          INSTALL = install
-               LD = ld
+              CPP = /usr/ccs/lib/cpp $(STD_CPP_DEFINES)
+    PREPROCESSCMD = gcc -fpcc-struct-return -E $(STD_CPP_DEFINES)
+          INSTALL = $(BINDIR)/bsdinst
+               LD = gcc -nostdlib
              LINT = lint
-      LINTLIBFLAG = -C
-         LINTOPTS = -axz
+      LINTLIBFLAG = -o
+         LINTOPTS = -ax
                LN = ln -s
              MAKE = make
                MV = mv
                CP = cp
-
-           RANLIB = ranlib
-  RANLIBINSTFLAGS =
 
                RM = rm -f
             TROFF = psroff
@@ -72,16 +69,16 @@
               TBL = tbl
               EQN = eqn
      STD_INCLUDES =
-  STD_CPP_DEFINES =
-      STD_DEFINES =
+  STD_CPP_DEFINES = -DSVR4 -DSYSV
+      STD_DEFINES = -DSVR4 -DSYSV
  EXTRA_LOAD_FLAGS =
-  EXTRA_LIBRARIES =
+  EXTRA_LIBRARIES = -lsocket -lnsl
              TAGS = ctags
 
-    SHAREDCODEDEF = -DSHAREDCODE
-         SHLIBDEF = -DSUNSHLIB
+    SHAREDCODEDEF =
+         SHLIBDEF =
 
-    PROTO_DEFINES =
+    PROTO_DEFINES = -DFUNCPROTO=15
 
      INSTPGMFLAGS =
 
@@ -91,14 +88,14 @@
      INSTINCFLAGS = -m 0444
      INSTMANFLAGS = -m 0444
      INSTDATFLAGS = -m 0444
-    INSTKMEMFLAGS = -m 4755
+    INSTKMEMFLAGS = -g sys -m 2755
 
-      PROJECTROOT = /usr/X11/R5
+      PROJECTROOT = /cellar/X11R5
 
      TOP_INCLUDES = -I$(INCROOT)
 
-      CDEBUGFLAGS = -O
-        CCOPTIONS = -pipe
+      CDEBUGFLAGS = -O2 -mv8
+        CCOPTIONS =
 
       ALLINCLUDES = $(INCLUDES) $(EXTRA_INCLUDES) $(TOP_INCLUDES) $(STD_INCLUDES)
        ALLDEFINES = $(ALLINCLUDES) $(STD_DEFINES) $(EXTRA_DEFINES) $(PROTO_DEFINES) $(DEFINES)
@@ -107,9 +104,9 @@
 
            LDLIBS = $(SYS_LIBRARIES) $(EXTRA_LIBRARIES)
 
-        LDOPTIONS = $(CDEBUGFLAGS) $(CCOPTIONS) $(LOCAL_LDFLAGS) -L$(USRLIBDIR)
+        LDOPTIONS = $(CDEBUGFLAGS) $(CCOPTIONS) $(LOCAL_LDFLAGS) -L$(USRLIBDIR) -R$(USRLIBDIR)$${LD_RUN_PATH+\:$$LD_RUN_PATH}
 
-   LDCOMBINEFLAGS = -X -r
+   LDCOMBINEFLAGS = -r
       DEPENDFLAGS =
 
         MACROFILE = sun.cf
@@ -126,15 +123,15 @@
 
 # -------------------------------------------------------------------------
 # X Window System Build Parameters
-# $XConsortium: Project.tmpl,v 1.138 91/09/10 09:02:12 rws Exp $
+# $XConsortium: Project.tmpl,v 1.138.1.1 92/11/11 09:49:19 rws Exp $
 
 # -------------------------------------------------------------------------
 # X Window System make variables; this need to be coordinated with rules
 
           PATHSEP = /
-        USRLIBDIR = /usr/X11/R5/lib
-           BINDIR = /usr/X11/R5/bin
-          INCROOT = /usr/X11/R5/include
+        USRLIBDIR = /cellar/X11R5/lib
+           BINDIR = /cellar/X11R5/bin
+          INCROOT = /cellar/X11R5/include
      BUILDINCROOT = $(TOP)
       BUILDINCDIR = $(BUILDINCROOT)/X11
       BUILDINCTOP = ..
@@ -148,7 +145,7 @@
          XINITDIR = $(LIBDIR)/xinit
            XDMDIR = $(LIBDIR)/xdm
            TWMDIR = $(LIBDIR)/twm
-          MANPATH = /usr/X11/R5/man
+          MANPATH = /cellar/X11R5/man
     MANSOURCEPATH = $(MANPATH)/man
         MANSUFFIX = n
      LIBMANSUFFIX = 3
@@ -201,12 +198,13 @@
     FONTSERVERSRC = $(FONTSRC)/server
      EXTENSIONSRC = $(TOP)/extensions
          XILIBSRC = $(EXTENSIONSRC)/lib/xinput
+        PEXLIBSRC = $(EXTENSIONSRC)/lib/PEXlib
       PHIGSLIBSRC = $(EXTENSIONSRC)/lib/PEX
 
-# $XConsortium: sunLib.tmpl,v 1.11 91/07/31 11:32:08 rws Exp $
+# $XConsortium: sv4Lib.tmpl,v 1.4.1.1 92/11/11 09:57:17 rws Exp $
 
-SHLIBLDFLAGS = -assert pure-text
-PICFLAGS = -pic
+SHLIBLDFLAGS = -G -z text
+PICFLAGS = -fPIC
 
   DEPEXTENSIONLIB =
      EXTENSIONLIB = -lXext
@@ -214,28 +212,34 @@ PICFLAGS = -pic
           DEPXLIB = $(DEPEXTENSIONLIB)
              XLIB = $(EXTENSIONLIB) -lX11
 
-        DEPXMULIB = $(USRLIBDIR)/libXmu.sa.$(SOXMUREV)
+        DEPXMULIB =
+       XMULIBONLY = -lXmu
+
            XMULIB = -lXmu
 
        DEPOLDXLIB =
           OLDXLIB = -loldX
 
-      DEPXTOOLLIB = $(USRLIBDIR)/libXt.sa.$(SOXTREV)
+      DEPXTOOLLIB =
          XTOOLLIB = -lXt
 
-        DEPXAWLIB = $(USRLIBDIR)/libXaw.sa.$(SOXAWREV)
+        DEPXAWLIB =
            XAWLIB = -lXaw
 
         DEPXILIB =
            XILIB = -lXi
 
-        SOXLIBREV = 4.10
-          SOXTREV = 4.10
+        DEPPEXLIB =
+         PEXLIB = -lPEX5
+
+        SOXLIBREV = 5.0
+          SOXTREV = 5.0
          SOXAWREV = 5.0
-        SOOLDXREV = 4.10
-         SOXMUREV = 4.10
-        SOXEXTREV = 4.10
-      SOXINPUTREV = 4.10
+        SOOLDXREV = 5.0
+         SOXMUREV = 5.0
+        SOXEXTREV = 5.0
+      SOXINPUTREV = 5.0
+         SOPEXREV = 1.0
 
       DEPXAUTHLIB = $(USRLIBDIR)/libXau.a
          XAUTHLIB =  -lXau
@@ -254,6 +258,7 @@ PICFLAGS = -pic
         LINTXTOOL = $(LINTLIBDIR)/llib-lXt.ln
           LINTXAW = $(LINTLIBDIR)/llib-lXaw.ln
            LINTXI = $(LINTLIBDIR)/llib-lXi.ln
+          LINTPEX = $(LINTLIBDIR)/llib-lPEX5.ln
         LINTPHIGS = $(LINTLIBDIR)/llib-lphigs.ln
 
           DEPLIBS = $(DEPXAWLIB) $(DEPXMULIB) $(DEPXTOOLLIB) $(DEPXLIB)
@@ -269,70 +274,851 @@ PICFLAGS = -pic
 # -------------------------------------------------------------------------
 # start of Imakefile
 
-# I need special include directories for gcc
-STD_INCLUDES =
-# select your compiler
-CC = gcc -traditional
-#CC = gcc -ansi -pedantic -nostdinc -Wall -Wpointer-arith -Wwrite-strings
-#CC = gcc -traditional -nostdinc -Wall -Wpointer-arith -Wwrite-strings
-# uncomment and fiddle with the following lines if you want
-# default game gender 0 = male, 1 = female
-#GENDER = -DGAME_GENDER=1
-# frame rate in microseconds
-#FRAME = -DFRAME_RATE=37000
-# font name
-#FONT = -DFONT_NAME="-*-courier-*-r-*-*-18-*-*-*-*-*-*-*"
+# Copyright (C) 1993 Nathan Sidwell
+# RCS $Id: Imakefile,v 4.50 1994/02/08 18:52:34 nathan stable $
+
+# specify if this is a transputer target
+# #define transputerbuild 1
+
+# For full details of the switches herein, read the README file
+# Imake file for xmris V4.01 31 January 1994
+VERSION = 4.01
+
+# compiler options
+#
+
+EXTRACCOPTIONS = -Wall -Wpointer-arith -Wwrite-strings -Wtraditional
+
+# Is it a knr compiler which _doesn't_ have void?
+KNR =
+# KNR = -DSTRICTKNR
 # do you trust the code?
+NDEBUG =
 # NDEBUG = -DNDEBUG
-# K&R doesn't have __DATE__ so we supply it here
-DATE = -DDATE="\"`date '+%h %d 19%y'`\""
 # Allow debugging?
-#CDEBUGFLAGS = -g
+CDEBUGFLAGS = -g
+# debug event loop?
+# CDEBUGFLAGS += -DDEBUGEVENTLOOP
 
-DEFINES = $(DATE) $(GENDER) $(FRAME) $(FONT) $(NDEBUG)
-SRCS = apple.c create.c demo.c draw.c monster.c move.c player.c timer.c xmris.c
-OBJS = apple.o create.o demo.o draw.o monster.o move.o player.o timer.o xmris.o
-LOCAL_LIBRARIES = $(XLIB)
+# system environment
+#
+# don't you have gettimeofday?
+TIME =
+# TIME = -DUSETIME
+# don't you have lockf or flock?
+LOCK =
+LOCK = -DUSELOCKFILE
 
- PROGRAM = xmris
+# game defaults, you probably only want to alter the SCORE
+#
 
-all:: xmris
+# where is the high score file?
+SCORE = $(LOCAL)/lib/xmris
+# SCORE = $(DESTDIR)$(LIBDIR)/xmris
 
-xmris: $(OBJS) $(DEPLIBS)
+# The following defines are needed for some implementations and/or sites.
+# It is xmkmf's job to get these right in the first place.
+# If you have to declare any of these, X may not be installed correctly.
+#
+# DEC station 5000 appears to require these includes
+# STD_INCLUDES = -I/usr/include/mit
+# and they require these two libraries changed
+# XLIB = -lXext-mit -lX11-mit
+# required for setuid, try one or the other, (the first is better)
+# EXTRA_LOAD_FLAGS = -R$(USRLIBDIR)$${LD_RUN_PATH+\:$$LD_RUN_PATH}
+# EXTRA_LOAD_FLAGS = -static
+# some X implementations and openwindows require the maths library
+# MATHSLIB = -lm
+
+# install parameters
+#
+
+# owner and access rights for executable & score directory
+# these are set for a setuid xmris
+OWNER = -o games
+INSTSCOREFLAGS = $(OWNER) -m 755
+INSTMRISFLAGS = $(OWNER) $(INSTUIDFLAGS)
+# normal install locations
+THEBINDIR = $(BINDIR)
+THEMANDIR = $(MANDIR)
+# for open access you want 777 and $(INSTPGMFLAGS),
+# (the personal score files go in users' home dirs.)
+# INSTSCOREFLAGS = -m 777
+# INSTMRISFLAGS = $(INSTPGMFLAGS)
+# If you're not installing in the default locations
+DESTDIR =
+THEBINDIR = $(LOCAL)/bin
+THEMANDIR = $(LOCAL)/man/man6
+
+FONT = "-*-courier-*-r-*-*-18-*-*-*-m-*-*-*"
+
+# default args for RCS ci and co
+# override from the command line to do other things
+CIFLAGS =
+COFLAGS =
+RCSFLAGS =
+
+DEFINES = $(EXTRACCOPTIONS) -DFONT_NAME='$(FONT)' $(NDEBUG) \
+	-DSCORE_DIR='"$(SCORE)"' $(LOCK) $(TIME) $(KNR) -DSCROLLBARBUGFIX
+LOCAL_LIBRARIES = $(XAWLIB) $(XTOOLLIB) $(XMULIB) $(XLIB) $(MATHSLIB)
+DEPLIBS = $(DEPXLIB)
+
+# filenames or stems
+COMMONHDRS = patchlevel.h ansiknr.h defcom.h common.h
+MRISHDRS = xmris.h defmris.h
+MREDHDRS = xmred.h defmred.h
+COMMONSRCS = defcom.c makecom.c
+GARDENS = alphabet.gdn digits.gdn puzzle.gdn xmred.gdn
+FILES = CHANGES CHANGES.4.01 README COPYRIGHT Imakefile \
+	xmris.man xmred.man Xmris-ad.src
+MRISSRCS = apple.c defmris.c demo.c draw.c makemris.c \
+	monster.c move.c player.c scoring.c timer.c xmris.c
+MRISOBJS = $(MRISSRCS:%.c=%.o)
+SCRAMSRCS = scram.c
+SCRAMOBJS = $(SCRAMSRCS:%.c=%.o)
+WIDGETSRCS = Drag.c Icon.c PixmapList.c
+WIDGETOBJS = $(WIDGETSRCS:%.c=%.o)
+WIDGETHDRS = $(WIDGETSRCS:%.c=%.h)
+MREDSRCS = all.c control.c defmred.c dialogs.c garden.c makemred.c \
+	menubar.c xmred.c
+MREDOBJS = $(MREDSRCS:%.c=%.o)
+# name all the sprites -- these are root names
+APPLE = bitmaps/apple/apldcy bitmaps/apple/aplnorm \
+	bitmaps/apple/aplrock bitmaps/apple/aplrot \
+	bitmaps/apple/aplspl bitmaps/apple/gstnorm \
+	bitmaps/apple/gstrock bitmaps/apple/aplsmall \
+	bitmaps/apple/bigedge bitmaps/apple/smledge
+BOARD = bitmaps/board/cherry bitmaps/board/digits \
+	bitmaps/board/seat bitmaps/board/ball
+CHOMP = bitmaps/chomp/hchmpc bitmaps/chomp/hchmpo \
+	bitmaps/chomp/schmpc bitmaps/chomp/schmpo
+DRONE = bitmaps/drone/hdronw1 bitmaps/drone/hdronw2 \
+	bitmaps/drone/hdronf \
+	bitmaps/drone/sdronw1 bitmaps/drone/sdronw2 \
+	bitmaps/drone/sdronf
+ICON = bitmaps/icon/solidi bitmaps/icon/shelli \
+	bitmaps/icon/solidm bitmaps/icon/shellm \
+	bitmaps/icon/solidr bitmaps/icon/shellr \
+	bitmaps/icon/solids bitmaps/icon/shells \
+	bitmaps/icon/solidt bitmaps/icon/shellt
+MUNCH = bitmaps/munch/hmnchw1 bitmaps/munch/hmnchw2 \
+	bitmaps/munch/hmnchf \
+	bitmaps/munch/smnchw1 bitmaps/munch/smnchw2 \
+	bitmaps/munch/smnchf
+NORMAL = bitmaps/normal/hnormw1 bitmaps/normal/hnormw2 \
+	bitmaps/normal/hnormf bitmaps/normal/hden \
+	bitmaps/normal/snormw1 bitmaps/normal/snormw2 \
+	bitmaps/normal/snormf bitmaps/normal/sden
+PLAYER = bitmaps/player/hplyrf \
+	bitmaps/player/hplyrh1 bitmaps/player/hplyrh2 \
+	bitmaps/player/hplyrp1 bitmaps/player/hplyrp2 \
+	bitmaps/player/hplyrs1 bitmaps/player/hplyrs2 \
+	bitmaps/player/hplyrw1 bitmaps/player/hplyrw2 \
+	bitmaps/player/splyrf \
+	bitmaps/player/splyrp1 bitmaps/player/splyrp2 \
+	bitmaps/player/splyrs1 bitmaps/player/splyrs2 \
+	bitmaps/player/splyrw1 bitmaps/player/splyrw2 \
+	bitmaps/player/splyrd1 bitmaps/player/splyrd2 \
+	bitmaps/player/splyrh1 bitmaps/player/splyrh2
+PRIZE = bitmaps/prize/cake bitmaps/prize/spanner \
+	bitmaps/prize/brolly bitmaps/prize/mushrm bitmaps/prize/clock \
+	bitmaps/prize/gem1 bitmaps/prize/gem2 bitmaps/prize/gem3
+XTRA = bitmaps/xtra/hxtraf bitmaps/xtra/hxtraw1 bitmaps/xtra/hxtraw2 \
+	bitmaps/xtra/sxtraf bitmaps/xtra/sxtraw1 bitmaps/xtra/sxtraw2 \
+	bitmaps/xtra/xtrbold bitmaps/xtra/xtrfaint
+EDIT = bitmaps/edit/bigearw bitmaps/edit/bigsarw \
+	bitmaps/edit/smlearw bitmaps/edit/smlsarw bitmaps/edit/path \
+	bitmaps/edit/red bitmaps/edit/green bitmaps/edit/blue \
+	bitmaps/edit/include bitmaps/edit/iconi bitmaps/edit/boardi \
+	bitmaps/edit/warnon bitmaps/edit/warnoff
+BITMAPS = bitmaps/bitmaps/edge bitmaps/bitmaps/fill0 \
+	bitmaps/bitmaps/fill1 bitmaps/bitmaps/fill2 \
+	bitmaps/bitmaps/fill3 bitmaps/bitmaps/rect \
+	bitmaps/bitmaps/oblong bitmaps/bitmaps/mris \
+	bitmaps/bitmaps/msit bitmaps/bitmaps/mred \
+	bitmaps/bitmaps/ghosting
+ALLFILES = $(FILES) $(GARDENS) $(COMMONHDRS) $(MRISHDRS) $(MREDHDRS) \
+	$(COMMONSRCS) $(MRISSRCS) $(SCRAMSRCS) $(MREDSRCS) \
+	$(WIDGETSRCS) $(WIDGETHDRS) \
+	$(APPLE:%=%.bw) $(APPLE:%=%.rgb) $(BOARD:%=%.bw) $(BOARD:%=%.rgb) \
+	$(CHOMP:%=%.bw) $(CHOMP:%=%.rgb) $(DRONE:%=%.bw) $(DRONE:%=%.rgb) \
+	$(ICON:%=%.bw) $(ICON:%=%.rgb) $(MUNCH:%=%.bw) $(MUNCH:%=%.rgb) \
+	$(NORMAL:%=%.bw) $(NORMAL:%=%.rgb) $(PLAYER:%=%.bw) $(PLAYER:%=%.rgb) \
+	$(PRIZE:%=%.bw) $(PRIZE:%=%.rgb) $(XTRA:%=%.bw) $(XTRA:%=%.rgb) \
+	$(EDIT:%=%.bw) $(EDIT:%=%.rgb) $(BITMAPS:%=%.h)
+
+# using alltarget can cause gnumake to try and make a target called all.
+# the reason is the All Target macro has no rules, so gnumake tries
+# to find an implicit one. Other makes just give up.
+all :: initialize
+	@#keep gnumake happy
+
+all:: xmris xmred
+
+all:: README.xmris README.xmred Xmris.ad
+
+# rules to make sure the initialize thing is done
+clean :: initialize
+
+install :: initialize
+
+# xmris build
+
+xmris: $(MRISOBJS) $(DEPLIBS)
 	$(RM) $@
-	$(CC) -o $@ $(OBJS) $(LDOPTIONS) $(LOCAL_LIBRARIES) $(LDLIBS) $(EXTRA_LOAD_FLAGS)
-
-saber_xmris:: $(SRCS)
-	# load $(ALLDEFINES) $(SRCS) $(LOCAL_LIBRARIES) $(SYS_LIBRARIES) $(EXTRA_LIBRARIES)
-
-osaber_xmris:: $(OBJS)
-	# load $(ALLDEFINES) $(OBJS) $(LOCAL_LIBRARIES) $(SYS_LIBRARIES) $(EXTRA_LIBRARIES)
-
-install:: xmris
-	@if [ -d $(DESTDIR)$(BINDIR) ]; then set +x; \
-	else (set -x; $(MKDIRHIER) $(DESTDIR)$(BINDIR)); fi
-	$(INSTALL) -c $(INSTPGMFLAGS)  xmris $(DESTDIR)$(BINDIR)
-
-install.man:: xmris.man
-	@if [ -d $(DESTDIR)$(MANDIR) ]; then set +x; \
-	else (set -x; $(MKDIRHIER) $(DESTDIR)$(MANDIR)); fi
-	$(INSTALL) -c $(INSTMANFLAGS) xmris.man $(DESTDIR)$(MANDIR)/xmris.$(MANSUFFIX)
-
-depend::
-	$(DEPEND) $(DEPENDFLAGS) -s "# DO NOT DELETE" -- $(ALLDEFINES) -- $(SRCS)
-
-lint:
-	$(LINT) $(LINTFLAGS) $(SRCS) $(LINTLIBS)
-lint1:
-	$(LINT) $(LINTFLAGS) $(FILE) $(LINTLIBS)
+	$(CC) -o $@ $(MRISOBJS) $(LDOPTIONS) $(LOCAL_LIBRARIES) $(LDLIBS)  $(EXTRA_LOAD_FLAGS)
 
 clean::
-	$(RM) $(PROGRAM)
+	$(RM) xmris
 
-all :: xmris xmsit
+install:: xmris
+	@if [ -d $(DESTDIR)$(THEBINDIR) ]; then set +x; \
+	else (set -x; $(MKDIRHIER) $(DESTDIR)$(THEBINDIR)); fi
+	$(INSTALL) -c $(INSTPGMFLAGS) $(INSTMRISFLAGS) xmris $(DESTDIR)$(THEBINDIR)
 
-xmsit: xmris
-	ln -s xmris xmsit
+install :: $(THEBINDIR)/xmris
+	$(RM) $(THEBINDIR)/xmsit
+	$(LN) ./xmris $(THEBINDIR)/xmsit
+
+# xmred build
+
+xmred: $(MREDOBJS) $(WIDGETOBJS) $(DEPLIBS)
+	$(RM) $@
+	$(CC) -o $@ $(MREDOBJS) $(WIDGETOBJS) $(LDOPTIONS) $(LOCAL_LIBRARIES) -lm $(LDLIBS)  $(EXTRA_LOAD_FLAGS)
+
+clean::
+	$(RM) xmred
+
+install:: xmred
+	@if [ -d $(DESTDIR)$(THEBINDIR) ]; then set +x; \
+	else (set -x; $(MKDIRHIER) $(DESTDIR)$(THEBINDIR)); fi
+	$(INSTALL) -c $(INSTPGMFLAGS)  xmred $(DESTDIR)$(THEBINDIR)
+
+# manual pages
+README.xmris : xmris.man
+	$(RM) README.xmris
+	nroff -man xmris.man > README.xmris
+
+README.xmred : xmred.man
+	$(RM) README.xmred
+	nroff -man xmred.man > README.xmred
+
+install.man:: xmris.man
+	@if [ -d $(DESTDIR)$(THEMANDIR) ]; then set +x; \
+	else (set -x; $(MKDIRHIER) $(DESTDIR)$(THEMANDIR)); fi
+	$(INSTALL) -c $(INSTMANFLAGS) xmris.man $(DESTDIR)$(THEMANDIR)/xmris.$(MANSUFFIX)
+
+install.man::
+	@(TMP=/tmp/tmp.$$$$; \
+	$(RM) $${TMP}; \
+	echo .so `basename $(THEMANDIR)`/xmris.$(MANSUFFIX) > $${TMP}; \
+	for i in xmsit; do (set -x; \
+	$(INSTALL) -c $(INSTMANFLAGS) $${TMP} $(DESTDIR)$(THEMANDIR)/$$i.$(MANSUFFIX)); \
+	done; \
+	$(RM) $${TMP})
+
+install.man:: xmred.man
+	@if [ -d $(DESTDIR)$(THEMANDIR) ]; then set +x; \
+	else (set -x; $(MKDIRHIER) $(DESTDIR)$(THEMANDIR)); fi
+	$(INSTALL) -c $(INSTMANFLAGS) xmred.man $(DESTDIR)$(THEMANDIR)/xmred.$(MANSUFFIX)
+
+# application resource files
+
+install:: Xmris.ad
+	@if [ -d $(DESTDIR)$(XAPPLOADDIR) ]; then set +x; \
+	else (set -x; $(MKDIRHIER) $(DESTDIR)$(XAPPLOADDIR)); fi
+	$(INSTALL) -c $(INSTAPPFLAGS) Xmris.ad $(DESTDIR)$(XAPPLOADDIR)/Xmris
+
+Xmris.ad : Xmris-ad.src
+	sed -e 's@SCORE@$(SCORE)@' -e s@FONT@$(FONT)@ < Xmris-ad.src > Xmris.ad
+
+# score directory install
+install ::
+	@if [ -d $(SCORE) ]; then set +x; \
+	else (set -x; $(MKDIRHIER) $(SCORE)); fi
+	@#not all $(INSTALL) have a -d flag, have to do it explicitly
+	@echo installing $(INSTSCOREFLAGS) $(SCORE)
+	@set -- $(INSTSCOREFLAGS) ; \
+	while [ $$# -ne 0 ] ; \
+	do \
+	case "$$1" in \
+	"-o") shift ; chown $$1 $(SCORE) ; echo owner is $$1 ;; \
+	"-m") shift ; chmod $$1 $(SCORE) ;; \
+	"-g") shift ; chgrp $$1 $(SCORE) ; echo group is $$1 ;; \
+	*) echo unknown option '$$1' ;; \
+	esac ; \
+	shift ; \
+	done
+
+# install default gardens
+install :: $(GARDENS)
+	@if [ -d $(DESTDIR)/$(XAPPLOADDIR)/xmris ]; then set +x; \
+	else (set -x; $(MKDIRHIER) $(DESTDIR)/$(XAPPLOADDIR)/xmris); fi
+	@set dummy $(GARDENS) ; shift ; \
+	while [ $$# != 0 ] ; \
+	do \
+	  (set -x ; $(INSTALL) -c $(INSTAPPFLAGS) $$1 $(DESTDIR)/$(XAPPLOADDIR)/xmris/$$1) ; \
+	  shift ; \
+	done
+
+# scram program
+
+scram: $(SCRAMOBJS)
+	$(RM) $@
+	$(CC) -o $@ $(SCRAMOBJS) $(LDOPTIONS)  $(LDLIBS)  $(EXTRA_LOAD_FLAGS)
+
+clean::
+	$(RM) scram
+
+clean ::
+	$(RM) $(MRISOBJS)
+	$(RM) Xmris.ad
+	$(RM) $(MREDOBJS)
+	$(RM) $(WIDGETOBJS)
+	$(RM) $(SCRAMOBJS)
+
+# tar is somewhat complicated because we want it to untar into an xmris
+# subdirectory with the correct version number (ie xmris.4.00)
+# this is done by cd'ing up, creating a link of the correct name to
+# where we are and then tarring the files in here with the directory
+# prefix tacked on. But we don't know the directory name we're in so
+# we have to determine that, and if it is already what we want, then
+# don't make a link
+tar : checkout README.xmris README.xmred
+	@if [ ! -f Makefile.std ] ; then \
+	  echo No Makefile.std, winging it ; \
+	  cp Makefile Makefile.std ; \
+	elif [ `ls -t Makefile Makefile.std | \
+	    sed '2,$$d'` = Makefile ] ; then \
+	  echo Warning:Makefile.std is older than Makefile ; \
+	fi
+	@echo Tarring \& feathering into xmris.$(VERSION).tar.gz
+	@DIR=`pwd | sed "s+/.*/++"` ; \
+	  if [ "$$DIR" != "xmris.$(VERSION)" ] ; then \
+	    $(RM) ../xmris.$(VERSION) ; $(LN) ./$$DIR ../xmris.$(VERSION) ; \
+	  fi ; \
+	  (cd .. ;  tar cf - `set README.xmris README.xmred Makefile.std \
+	      $(ALLFILES) ; \
+	    while [ $$# -ne 0 ] ; \
+	    do echo xmris.$(VERSION)/$$1 ; shift ; \
+	    done`) | \
+	  gzip -f > xmris.$(VERSION).tar.gz ; \
+	  if [ "$$DIR" != "xmris.$(VERSION)" ]; then \
+	    $(RM) ../xmris.$(VERSION) ; \
+	  fi
+
+# checkpoint the RCS files
+checkpoint.all : checkout
+	@ARGS='$(CIFLAGS)' ; \
+	echo Checkpointing all files with $${ARGS:-'no options'}
+	@ci $(CIFLAGS) $(ALLFILES)
+
+checkpoint : initialize
+	@ARGS='$(CIFLAGS)' ; \
+	echo Checkpointing locked files with $${ARGS:-'no options'}
+	@ci $(CIFLAGS) `set $(ALLFILES) ; \
+	  while [ $$# -ne 0 ] ; \
+	  do if [ -w $$1 ] ; then echo $$1 ; fi ; \
+	    shift ; \
+	  done`
+
+rcs : checkout
+	@ARGS='$(RCSFLAGS)' ; \
+	echo RCSing all files with $${ARGS:-'no options'}
+	@rcs $(RCSFLAGS) $(ALLFILES)
+
+checkout : initialize $(ALLFILES)
+	@#keep gnumake happy
+
+Makefile.std :: initialize
+	cp Makefile Makefile.std
+	@echo You may want to edit Makefile.std now
+
+# these are the o dependencies
+$(MRISOBJS) : xmris.h common.h ansiknr.h patchlevel.h
+
+makemris.o : defmris.h defcom.h makecom.c
+
+defmris.o : defmris.h defcom.h defcom.c bitmaps/sprites
+
+draw.o : digits.gdn
+
+$(MREDOBJS) : xmred.h common.h ansiknr.h patchlevel.h
+
+all.o : Drag.h Icon.h PixmapList.h
+
+control.o : Drag.h Icon.h
+
+defmred.o : defmred.h defcom.h defcom.c bitmaps/sprites xmred.gdn
+
+makemred.o : defmred.h defcom.h makecom.c Icon.h PixmapList.h
+
+$(SCRAMOBJS) : ansiknr.h
+
+Drag.o : Drag.h
+
+Icon.o : Drag.h Icon.h
+
+PixmapList.o : PixmapList.h Drag.h
+
+# dependencies for single files
+# can't use $(@:.o=.c) or similar clever thing, 'cos its incompatible
+# gnumake is clever enough to perform a check out using implicit rules
+
+apple.o : apple.c
+
+defmris.o : defmris.c
+
+demo.o : demo.c
+
+draw.o : draw.c
+
+makemris.o : makemris.c
+
+monster.o : monster.c
+
+move.o : move.c
+
+player.o : player.c
+
+scoring.o : scoring.c
+
+timer.o : timer.c
+
+xmris.o : xmris.c
+
+scram.o : scram.c
+
+Drag.o : Drag.c
+
+Icon.o : Icon.c
+
+PixmapList.o : PixmapList.c
+
+all.o : all.c
+
+control.o : control.c
+
+defmred.o : defmred.c
+
+dialogs.o : dialogs.c
+
+garden.o : garden.c
+
+makemred.o : makemred.c
+
+menubar.o : menubar.c
+
+xmred.o : xmred.c
+
+# sprite rules
+SPRITEMARKERS = bitmaps/apple/sprites bitmaps/board/sprites \
+	bitmaps/icon/sprites bitmaps/player/sprites bitmaps/normal/sprites \
+	bitmaps/munch/sprites bitmaps/xtra/sprites bitmaps/drone/sprites \
+	bitmaps/chomp/sprites bitmaps/prize/sprites bitmaps/edit/sprites \
+	bitmaps/bitmaps/sprites
+clean ::
+	$(RM) $(APPLE:%=%.h)
+	$(RM) $(BOARD:%=%.h)
+	$(RM) $(CHOMP:%=%.h)
+	$(RM) $(DRONE:%=%.h)
+	$(RM) $(ICON:%=%.h)
+	$(RM) $(MUNCH:%=%.h)
+	$(RM) $(NORMAL:%=%.h)
+	$(RM) $(PLAYER:%=%.h)
+	$(RM) $(PRIZE:%=%.h)
+	$(RM) $(XTRA:%=%.h)
+	$(RM) $(EDIT:%=%.h)
+	$(RM) bitmaps/sprites $(SPRITEMARKERS)
+
+# makes the sprites from the rgb and bw images
+bitmaps/sprites : $(SPRITEMARKERS)
+	touch $@
+
+bitmaps/apple/sprites : $(APPLE:%=%.h)
+	touch $@
+
+bitmaps/board/sprites : $(BOARD:%=%.h)
+	touch $@
+
+bitmaps/chomp/sprites : $(CHOMP:%=%.h)
+	touch $@
+
+bitmaps/drone/sprites : $(DRONE:%=%.h)
+	touch $@
+
+bitmaps/icon/sprites : $(ICON:%=%.h)
+	touch $@
+
+bitmaps/munch/sprites : $(MUNCH:%=%.h)
+	touch $@
+
+bitmaps/normal/sprites : $(NORMAL:%=%.h)
+	touch $@
+
+bitmaps/player/sprites : $(PLAYER:%=%.h)
+	touch $@
+
+bitmaps/prize/sprites : $(PRIZE:%=%.h)
+	touch $@
+
+bitmaps/xtra/sprites : $(XTRA:%=%.h)
+	touch $@
+
+bitmaps/edit/sprites : $(EDIT:%=%.h)
+	touch $@
+
+bitmaps/bitmaps/sprites : $(BITMAPS:%=%.h)
+	touch $@
+
+# sprite building rule, again clever make stuff is incompatible
+
+bitmaps/apple/apldcy.h : ./scram bitmaps/apple/apldcy.rgb bitmaps/apple/apldcy.bw
+	./scram bitmaps/apple/apldcy  COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE COLOR_BLACK + COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE COLOR_BLACK + COLOR_BLACK
+
+bitmaps/apple/aplnorm.h : ./scram bitmaps/apple/aplnorm.rgb bitmaps/apple/aplnorm.bw
+	./scram bitmaps/apple/aplnorm  COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE COLOR_BLACK + COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE COLOR_BLACK + COLOR_BLACK
+
+bitmaps/apple/aplrock.h : ./scram bitmaps/apple/aplrock.rgb bitmaps/apple/aplrock.bw
+	./scram bitmaps/apple/aplrock  COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE COLOR_BLACK + COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE COLOR_BLACK + COLOR_BLACK
+
+bitmaps/apple/aplrot.h : ./scram bitmaps/apple/aplrot.rgb bitmaps/apple/aplrot.bw
+	./scram bitmaps/apple/aplrot  COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE COLOR_BLACK + COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE COLOR_BLACK + COLOR_BLACK
+
+bitmaps/apple/aplspl.h : ./scram bitmaps/apple/aplspl.rgb bitmaps/apple/aplspl.bw
+	./scram bitmaps/apple/aplspl  COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE COLOR_BLACK + COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE COLOR_BLACK + COLOR_BLACK
+
+bitmaps/apple/gstnorm.h : ./scram bitmaps/apple/gstnorm.rgb bitmaps/apple/gstnorm.bw
+	./scram bitmaps/apple/gstnorm  COLOR_APPLE_FAINT COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE + COLOR_BACKGROUND COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE + COLOR_APPLE_FAINT
+
+bitmaps/apple/gstrock.h : ./scram bitmaps/apple/gstrock.rgb bitmaps/apple/gstrock.bw
+	./scram bitmaps/apple/gstrock  COLOR_APPLE_FAINT COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE + COLOR_BACKGROUND COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE + COLOR_APPLE_FAINT
+
+bitmaps/apple/aplsmall.h : ./scram bitmaps/apple/aplsmall.rgb bitmaps/apple/aplsmall.bw
+	./scram bitmaps/apple/aplsmall  COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE COLOR_BLACK + COLOR_APPLE_1 COLOR_APPLE_2 COLOR_WHITE COLOR_BLACK + COLOR_BLACK
+
+bitmaps/apple/bigedge.h : ./scram bitmaps/apple/bigedge.rgb bitmaps/apple/bigedge.bw
+	./scram bitmaps/apple/bigedge -s COLOR_APPLE_FAINT + COLOR_APPLE_FAINT +
+
+bitmaps/apple/smledge.h : ./scram bitmaps/apple/smledge.rgb bitmaps/apple/smledge.bw
+	./scram bitmaps/apple/smledge -s COLOR_APPLE_FAINT + COLOR_APPLE_FAINT +
+
+bitmaps/board/cherry.h : ./scram bitmaps/board/cherry.rgb bitmaps/board/cherry.bw
+	./scram bitmaps/board/cherry +s COLOR_WHITE COLOR_CHERRY COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_CHERRY COLOR_BLACK COLOR_CHERRY_STALK + COLOR_BLACK
+
+bitmaps/board/ball.h : ./scram bitmaps/board/ball.rgb bitmaps/board/ball.bw
+	./scram bitmaps/board/ball +n COLOR_BALL + COLOR_BALL + COLOR_BLACK
+
+bitmaps/board/digits.h : ./scram bitmaps/board/digits.rgb bitmaps/board/digits.bw
+	./scram bitmaps/board/digits -s COLOR_BACKGROUND COLOR_BLACK + COLOR_BACKGROUND COLOR_WHITE +
+
+bitmaps/board/seat.h : ./scram bitmaps/board/seat.rgb bitmaps/board/seat.bw
+	./scram bitmaps/board/seat -s COLOR_SEAT COLOR_BLACK + COLOR_SEAT COLOR_WHITE +
+
+bitmaps/chomp/hchmpc.h : ./scram bitmaps/chomp/hchmpc.rgb bitmaps/chomp/hchmpc.bw
+	./scram bitmaps/chomp/hchmpc  COLOR_CHOMP COLOR_BLACK COLOR_WHITE COLOR_CHOMP_LIP COLOR_BLACK COLOR_BLACK + COLOR_CHOMP COLOR_CHOMP COLOR_BLACK COLOR_CHOMP_LIP COLOR_BLACK COLOR_WHITE + COLOR_BLACK
+
+bitmaps/chomp/hchmpo.h : ./scram bitmaps/chomp/hchmpo.rgb bitmaps/chomp/hchmpo.bw
+	./scram bitmaps/chomp/hchmpo  COLOR_CHOMP COLOR_BLACK COLOR_WHITE COLOR_CHOMP_LIP COLOR_BLACK COLOR_BLACK + COLOR_CHOMP COLOR_CHOMP COLOR_BLACK COLOR_CHOMP_LIP COLOR_BLACK COLOR_WHITE + COLOR_BLACK
+
+bitmaps/chomp/schmpc.h : ./scram bitmaps/chomp/schmpc.rgb bitmaps/chomp/schmpc.bw
+	./scram bitmaps/chomp/schmpc  COLOR_WHITE COLOR_CHOMP COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_CHOMP COLOR_CHOMP COLOR_BLACK +
+
+bitmaps/chomp/schmpo.h : ./scram bitmaps/chomp/schmpo.rgb bitmaps/chomp/schmpo.bw
+	./scram bitmaps/chomp/schmpo  COLOR_WHITE COLOR_CHOMP COLOR_CHOMP_TONGUE COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_CHOMP COLOR_CHOMP_TONGUE COLOR_CHOMP COLOR_BLACK +
+
+bitmaps/drone/hdronf.h : ./scram bitmaps/drone/hdronf.rgb bitmaps/drone/hdronf.bw
+	./scram bitmaps/drone/hdronf  COLOR_WHITE COLOR_DRONE COLOR_BLACK COLOR_WHITE + COLOR_BLACK COLOR_DRONE COLOR_WHITE COLOR_WHITE + COLOR_BLACK
+
+bitmaps/drone/hdronw1.h : ./scram bitmaps/drone/hdronw1.rgb bitmaps/drone/hdronw1.bw
+	./scram bitmaps/drone/hdronw1  COLOR_WHITE COLOR_DRONE COLOR_BLACK COLOR_WHITE COLOR_BLACK + COLOR_BLACK COLOR_DRONE COLOR_WHITE COLOR_WHITE COLOR_BACKGROUND + COLOR_BLACK
+
+bitmaps/drone/hdronw2.h : ./scram bitmaps/drone/hdronw2.rgb bitmaps/drone/hdronw2.bw
+	./scram bitmaps/drone/hdronw2  COLOR_WHITE COLOR_DRONE COLOR_BLACK COLOR_WHITE COLOR_BLACK + COLOR_BLACK COLOR_DRONE COLOR_WHITE COLOR_WHITE COLOR_BACKGROUND + COLOR_BLACK
+
+bitmaps/drone/sdronf.h : ./scram bitmaps/drone/sdronf.rgb bitmaps/drone/sdronf.bw
+	./scram bitmaps/drone/sdronf  COLOR_DRONE COLOR_BLACK COLOR_BLACK + COLOR_DRONE COLOR_DRONE COLOR_BLACK +
+
+bitmaps/drone/sdronw1.h : ./scram bitmaps/drone/sdronw1.rgb bitmaps/drone/sdronw1.bw
+	./scram bitmaps/drone/sdronw1  COLOR_WHITE COLOR_DRONE COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_DRONE COLOR_DRONE COLOR_BLACK +
+
+bitmaps/drone/sdronw2.h : ./scram bitmaps/drone/sdronw2.rgb bitmaps/drone/sdronw2.bw
+	./scram bitmaps/drone/sdronw2  COLOR_WHITE COLOR_DRONE COLOR_DRONE_TONGUE COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_DRONE COLOR_DRONE_TONGUE COLOR_DRONE COLOR_BLACK +
+
+bitmaps/icon/solidi.h : ./scram bitmaps/icon/solidi.rgb bitmaps/icon/solidi.bw
+	./scram bitmaps/icon/solidi -s COLOR_LETTER_GOT + COLOR_LETTER_GOT +
+
+bitmaps/icon/solidm.h : ./scram bitmaps/icon/solidm.rgb bitmaps/icon/solidm.bw
+	./scram bitmaps/icon/solidm -s COLOR_LETTER_GOT + COLOR_LETTER_GOT +
+
+bitmaps/icon/solidr.h : ./scram bitmaps/icon/solidr.rgb bitmaps/icon/solidr.bw
+	./scram bitmaps/icon/solidr -s COLOR_LETTER_GOT + COLOR_LETTER_GOT +
+
+bitmaps/icon/solids.h : ./scram bitmaps/icon/solids.rgb bitmaps/icon/solids.bw
+	./scram bitmaps/icon/solids -s COLOR_LETTER_GOT + COLOR_LETTER_GOT +
+
+bitmaps/icon/solidt.h : ./scram bitmaps/icon/solidt.rgb bitmaps/icon/solidt.bw
+	./scram bitmaps/icon/solidt -s COLOR_LETTER_GOT + COLOR_LETTER_GOT +
+
+bitmaps/icon/shelli.h : ./scram bitmaps/icon/shelli.rgb bitmaps/icon/shelli.bw
+	./scram bitmaps/icon/shelli -s COLOR_LETTER_NOT_GOT + COLOR_LETTER_NOT_GOT +
+
+bitmaps/icon/shellm.h : ./scram bitmaps/icon/shellm.rgb bitmaps/icon/shellm.bw
+	./scram bitmaps/icon/shellm -s COLOR_LETTER_NOT_GOT + COLOR_LETTER_NOT_GOT +
+
+bitmaps/icon/shellr.h : ./scram bitmaps/icon/shellr.rgb bitmaps/icon/shellr.bw
+	./scram bitmaps/icon/shellr -s COLOR_LETTER_NOT_GOT + COLOR_LETTER_NOT_GOT +
+
+bitmaps/icon/shells.h : ./scram bitmaps/icon/shells.rgb bitmaps/icon/shells.bw
+	./scram bitmaps/icon/shells -s COLOR_LETTER_NOT_GOT + COLOR_LETTER_NOT_GOT +
+
+bitmaps/icon/shellt.h : ./scram bitmaps/icon/shellt.rgb bitmaps/icon/shellt.bw
+	./scram bitmaps/icon/shellt -s COLOR_LETTER_NOT_GOT + COLOR_LETTER_NOT_GOT +
+
+bitmaps/munch/hmnchf.h : ./scram bitmaps/munch/hmnchf.rgb bitmaps/munch/hmnchf.bw
+	./scram bitmaps/munch/hmnchf  COLOR_MUNCH_1 COLOR_MUNCH_2 COLOR_BLACK COLOR_WHITE COLOR_BLACK + COLOR_MUNCH_1 COLOR_MUNCH_2 COLOR_BLACK COLOR_WHITE COLOR_WHITE + COLOR_BLACK
+
+bitmaps/munch/hmnchw1.h : ./scram bitmaps/munch/hmnchw1.rgb bitmaps/munch/hmnchw1.bw
+	./scram bitmaps/munch/hmnchw1  COLOR_MUNCH_1 COLOR_MUNCH_2 COLOR_BLACK COLOR_WHITE COLOR_BLACK COLOR_BLACK + COLOR_MUNCH_1 COLOR_MUNCH_2 COLOR_MUNCH_2 COLOR_WHITE COLOR_BLACK COLOR_WHITE + COLOR_BLACK
+
+bitmaps/munch/hmnchw2.h : ./scram bitmaps/munch/hmnchw2.rgb bitmaps/munch/hmnchw2.bw
+	./scram bitmaps/munch/hmnchw2  COLOR_MUNCH_1 COLOR_MUNCH_2 COLOR_BLACK COLOR_WHITE COLOR_BLACK COLOR_BLACK + COLOR_MUNCH_1 COLOR_MUNCH_2 COLOR_MUNCH_2 COLOR_WHITE COLOR_BLACK COLOR_WHITE + COLOR_BLACK
+
+bitmaps/munch/smnchf.h : ./scram bitmaps/munch/smnchf.rgb bitmaps/munch/smnchf.bw
+	./scram bitmaps/munch/smnchf  COLOR_WHITE COLOR_MUNCH_1 COLOR_MUNCH_2 COLOR_BLACK COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_MUNCH_1 COLOR_MUNCH_2 COLOR_MUNCH_1 COLOR_MUNCH_2 COLOR_BLACK +
+
+bitmaps/munch/smnchw1.h : ./scram bitmaps/munch/smnchw1.rgb bitmaps/munch/smnchw1.bw
+	./scram bitmaps/munch/smnchw1  COLOR_WHITE COLOR_MUNCH_1 COLOR_MUNCH_2 COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_MUNCH_1 COLOR_MUNCH_2 COLOR_WHITE COLOR_MUNCH_1 COLOR_MUNCH_2 COLOR_BLACK +
+
+bitmaps/munch/smnchw2.h : ./scram bitmaps/munch/smnchw2.rgb bitmaps/munch/smnchw2.bw
+	./scram bitmaps/munch/smnchw2  COLOR_WHITE COLOR_MUNCH_1 COLOR_MUNCH_2 COLOR_BLACK COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_MUNCH_1 COLOR_MUNCH_2 COLOR_MUNCH_1 COLOR_MUNCH_2 COLOR_BLACK +
+
+bitmaps/normal/hden.h : ./scram bitmaps/normal/hden.rgb bitmaps/normal/hden.bw
+	./scram bitmaps/normal/hden -s COLOR_NORMAL COLOR_NORMAL COLOR_WHITE COLOR_BLACK + COLOR_NORMAL COLOR_NORMAL COLOR_BLACK COLOR_WHITE +
+
+bitmaps/normal/hnormf.h : ./scram bitmaps/normal/hnormf.rgb bitmaps/normal/hnormf.bw
+	./scram bitmaps/normal/hnormf -s COLOR_NORMAL COLOR_NORMAL COLOR_WHITE COLOR_BLACK + COLOR_NORMAL COLOR_NORMAL COLOR_BLACK COLOR_WHITE +
+
+bitmaps/normal/hnormw1.h : ./scram bitmaps/normal/hnormw1.rgb bitmaps/normal/hnormw1.bw
+	./scram bitmaps/normal/hnormw1 -s COLOR_NORMAL COLOR_NORMAL COLOR_WHITE COLOR_BLACK + COLOR_NORMAL COLOR_NORMAL COLOR_BLACK COLOR_WHITE +
+
+bitmaps/normal/hnormw2.h : ./scram bitmaps/normal/hnormw2.rgb bitmaps/normal/hnormw2.bw
+	./scram bitmaps/normal/hnormw2 -s COLOR_NORMAL COLOR_NORMAL COLOR_WHITE COLOR_BLACK + COLOR_NORMAL COLOR_NORMAL COLOR_BLACK COLOR_WHITE +
+
+bitmaps/normal/sden.h : ./scram bitmaps/normal/sden.rgb bitmaps/normal/sden.bw
+	./scram bitmaps/normal/sden  COLOR_WHITE COLOR_NORMAL COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_NORMAL COLOR_WHITE COLOR_BLACK +
+
+bitmaps/normal/snormf.h : ./scram bitmaps/normal/snormf.rgb bitmaps/normal/snormf.bw
+	./scram bitmaps/normal/snormf  COLOR_WHITE COLOR_NORMAL COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_NORMAL COLOR_NORMAL COLOR_BLACK +
+
+bitmaps/normal/snormw1.h : ./scram bitmaps/normal/snormw1.rgb bitmaps/normal/snormw1.bw
+	./scram bitmaps/normal/snormw1  COLOR_WHITE COLOR_NORMAL COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_NORMAL COLOR_NORMAL COLOR_BLACK +
+
+bitmaps/normal/snormw2.h : ./scram bitmaps/normal/snormw2.rgb bitmaps/normal/snormw2.bw
+	./scram bitmaps/normal/snormw2  COLOR_WHITE COLOR_NORMAL COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_NORMAL COLOR_NORMAL COLOR_BLACK +
+
+bitmaps/player/hplyrf.h : ./scram bitmaps/player/hplyrf.rgb bitmaps/player/hplyrf.bw
+	./scram bitmaps/player/hplyrf  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BACKGROUND + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOOT COLOR_BACKGROUND + COLOR_BLACK
+
+bitmaps/player/hplyrh1.h : ./scram bitmaps/player/hplyrh1.rgb bitmaps/player/hplyrh1.bw
+	./scram bitmaps/player/hplyrh1  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BACKGROUND + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOOT COLOR_BACKGROUND + COLOR_BLACK
+
+bitmaps/player/hplyrh2.h : ./scram bitmaps/player/hplyrh2.rgb bitmaps/player/hplyrh2.bw
+	./scram bitmaps/player/hplyrh2  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BACKGROUND + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOOT COLOR_BACKGROUND + COLOR_BLACK
+
+bitmaps/player/hplyrp1.h : ./scram bitmaps/player/hplyrp1.rgb bitmaps/player/hplyrp1.bw
+	./scram bitmaps/player/hplyrp1  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BACKGROUND COLOR_BLACK + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOOT COLOR_BACKGROUND COLOR_WHITE + COLOR_BLACK
+
+bitmaps/player/hplyrp2.h : ./scram bitmaps/player/hplyrp2.rgb bitmaps/player/hplyrp2.bw
+	./scram bitmaps/player/hplyrp2  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BACKGROUND COLOR_BLACK + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOOT COLOR_BACKGROUND COLOR_WHITE + COLOR_BLACK
+
+bitmaps/player/hplyrs1.h : ./scram bitmaps/player/hplyrs1.rgb bitmaps/player/hplyrs1.bw
+	./scram bitmaps/player/hplyrs1  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BACKGROUND + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOOT COLOR_BACKGROUND + COLOR_BLACK
+
+bitmaps/player/hplyrs2.h : ./scram bitmaps/player/hplyrs2.rgb bitmaps/player/hplyrs2.bw
+	./scram bitmaps/player/hplyrs2  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BACKGROUND + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOOT COLOR_BACKGROUND + COLOR_BLACK
+
+bitmaps/player/hplyrw1.h : ./scram bitmaps/player/hplyrw1.rgb bitmaps/player/hplyrw1.bw
+	./scram bitmaps/player/hplyrw1  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BACKGROUND + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOOT COLOR_BACKGROUND + COLOR_BLACK
+
+bitmaps/player/hplyrw2.h : ./scram bitmaps/player/hplyrw2.rgb bitmaps/player/hplyrw2.bw
+	./scram bitmaps/player/hplyrw2  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BACKGROUND + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOOT COLOR_BACKGROUND + COLOR_BLACK
+
+bitmaps/player/splyrf.h : ./scram bitmaps/player/splyrf.rgb bitmaps/player/splyrf.bw
+	./scram bitmaps/player/splyrf  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_PLAYER_BOOT + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_PLAYER_BOOT +
+
+bitmaps/player/splyrp1.h : ./scram bitmaps/player/splyrp1.rgb bitmaps/player/splyrp1.bw
+	./scram bitmaps/player/splyrp1  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_PLAYER_BOOT + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_PLAYER_BOOT +
+
+bitmaps/player/splyrp2.h : ./scram bitmaps/player/splyrp2.rgb bitmaps/player/splyrp2.bw
+	./scram bitmaps/player/splyrp2  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_PLAYER_BOOT + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_PLAYER_BOOT +
+
+bitmaps/player/splyrs1.h : ./scram bitmaps/player/splyrs1.rgb bitmaps/player/splyrs1.bw
+	./scram bitmaps/player/splyrs1  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_PLAYER_BOOT + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_PLAYER_BOOT +
+
+bitmaps/player/splyrs2.h : ./scram bitmaps/player/splyrs2.rgb bitmaps/player/splyrs2.bw
+	./scram bitmaps/player/splyrs2  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_PLAYER_BOOT + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_PLAYER_BOOT +
+
+bitmaps/player/splyrw1.h : ./scram bitmaps/player/splyrw1.rgb bitmaps/player/splyrw1.bw
+	./scram bitmaps/player/splyrw1  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_PLAYER_BOOT + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_PLAYER_BOOT +
+
+bitmaps/player/splyrw2.h : ./scram bitmaps/player/splyrw2.rgb bitmaps/player/splyrw2.bw
+	./scram bitmaps/player/splyrw2  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_PLAYER_BOOT + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_PLAYER_BOOT +
+
+bitmaps/player/splyrd1.h : ./scram bitmaps/player/splyrd1.rgb bitmaps/player/splyrd1.bw
+	./scram bitmaps/player/splyrd1  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_PLAYER_BOOT + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_PLAYER_BOOT +
+
+bitmaps/player/splyrd2.h : ./scram bitmaps/player/splyrd2.rgb bitmaps/player/splyrd2.bw
+	./scram bitmaps/player/splyrd2  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_PLAYER_BOOT + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_PLAYER_BOOT +
+
+bitmaps/player/splyrh1.h : ./scram bitmaps/player/splyrh1.rgb bitmaps/player/splyrh1.bw
+	./scram bitmaps/player/splyrh1  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_PLAYER_BOOT + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_PLAYER_BOOT +
+
+bitmaps/player/splyrh2.h : ./scram bitmaps/player/splyrh2.rgb bitmaps/player/splyrh2.bw
+	./scram bitmaps/player/splyrh2  COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_PLAYER_BOOT + COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_BLACK COLOR_PLAYER_BOBBLE COLOR_PLAYER COLOR_PLAYER_FACE COLOR_PLAYER_BOOT +
+
+bitmaps/prize/cake.h : ./scram bitmaps/prize/cake.rgb bitmaps/prize/cake.bw
+	./scram bitmaps/prize/cake +s COLOR_CAKE_ICING COLOR_CAKE COLOR_BLACK COLOR_CAKE_JAM + COLOR_CAKE_ICING COLOR_CAKE COLOR_BLACK COLOR_CAKE_JAM + COLOR_BLACK
+
+bitmaps/prize/spanner.h : ./scram bitmaps/prize/spanner.rgb bitmaps/prize/spanner.bw
+	./scram bitmaps/prize/spanner +s COLOR_SPANNER_SHADOW COLOR_SPANNER + COLOR_SPANNER_SHADOW COLOR_SPANNER +  COLOR_BLACK
+
+bitmaps/prize/brolly.h : ./scram bitmaps/prize/brolly.rgb bitmaps/prize/brolly.bw
+	./scram bitmaps/prize/brolly +s COLOR_BROLLY_1 COLOR_BROLLY_2 COLOR_BROLLY_HANDLE COLOR_BLACK + COLOR_BROLLY_1 COLOR_BROLLY_2 COLOR_BROLLY_HANDLE COLOR_BLACK + COLOR_BLACK
+
+bitmaps/prize/mushrm.h : ./scram bitmaps/prize/mushrm.rgb bitmaps/prize/mushrm.bw
+	./scram bitmaps/prize/mushrm +s COLOR_MUSHROOM_STALK COLOR_MUSHROOM_CAP COLOR_BLACK COLOR_WHITE + COLOR_MUSHROOM_STALK COLOR_MUSHROOM_CAP COLOR_BLACK COLOR_WHITE + COLOR_BLACK
+
+bitmaps/prize/clock.h : ./scram bitmaps/prize/clock.rgb bitmaps/prize/clock.bw
+	./scram bitmaps/prize/clock +s COLOR_CLOCK_FACE COLOR_BLACK COLOR_CLOCK_BELL COLOR_CLOCK_EDGE + COLOR_CLOCK_FACE COLOR_BLACK COLOR_CLOCK_BELL COLOR_CLOCK_EDGE + COLOR_BLACK
+
+bitmaps/prize/gem1.h : ./scram bitmaps/prize/gem1.rgb bitmaps/prize/gem1.bw
+	./scram bitmaps/prize/gem1  COLOR_WHITE COLOR_GEM_1 COLOR_GEM_2 COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_GEM_1 COLOR_GEM_2 COLOR_WHITE COLOR_GEM_1 COLOR_GEM_2 COLOR_BLACK +
+
+bitmaps/prize/gem2.h : ./scram bitmaps/prize/gem2.rgb bitmaps/prize/gem2.bw
+	./scram bitmaps/prize/gem2  COLOR_WHITE COLOR_GEM_1 COLOR_GEM_2 COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_GEM_1 COLOR_GEM_2 COLOR_WHITE COLOR_GEM_1 COLOR_GEM_2 COLOR_BLACK +
+
+bitmaps/prize/gem3.h : ./scram bitmaps/prize/gem3.rgb bitmaps/prize/gem3.bw
+	./scram bitmaps/prize/gem3  COLOR_WHITE COLOR_GEM_1 COLOR_GEM_2 COLOR_BLACK COLOR_BLACK COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_GEM_1 COLOR_GEM_2 COLOR_WHITE COLOR_GEM_1 COLOR_GEM_2 COLOR_BLACK +
+
+bitmaps/xtra/sxtraf.h : ./scram bitmaps/xtra/sxtraf.rgb bitmaps/xtra/sxtraf.bw
+	./scram bitmaps/xtra/sxtraf  COLOR_WHITE COLOR_XTRA COLOR_BLACK + COLOR_BLACK COLOR_XTRA COLOR_XTRA +
+
+bitmaps/xtra/sxtraw1.h : ./scram bitmaps/xtra/sxtraw1.rgb bitmaps/xtra/sxtraw1.bw
+	./scram bitmaps/xtra/sxtraw1  COLOR_WHITE COLOR_XTRA COLOR_BLACK COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_XTRA COLOR_WHITE COLOR_XTRA COLOR_BLACK +
+
+bitmaps/xtra/sxtraw2.h : ./scram bitmaps/xtra/sxtraw2.rgb bitmaps/xtra/sxtraw2.bw
+	./scram bitmaps/xtra/sxtraw2  COLOR_WHITE COLOR_XTRA COLOR_BLACK COLOR_BLACK COLOR_BLACK + COLOR_WHITE COLOR_XTRA COLOR_WHITE COLOR_XTRA COLOR_BLACK +
+
+bitmaps/xtra/hxtraf.h : ./scram bitmaps/xtra/hxtraf.rgb bitmaps/xtra/hxtraf.bw
+	./scram bitmaps/xtra/hxtraf -s COLOR_XTRA COLOR_WHITE COLOR_BLACK + COLOR_XTRA COLOR_BLACK COLOR_WHITE +
+
+bitmaps/xtra/hxtraw1.h : ./scram bitmaps/xtra/hxtraw1.rgb bitmaps/xtra/hxtraw1.bw
+	./scram bitmaps/xtra/hxtraw1 -s COLOR_XTRA COLOR_WHITE COLOR_BLACK + COLOR_XTRA COLOR_BLACK COLOR_WHITE +
+
+bitmaps/xtra/hxtraw2.h : ./scram bitmaps/xtra/hxtraw2.rgb bitmaps/xtra/hxtraw2.bw
+	./scram bitmaps/xtra/hxtraw2 -s COLOR_XTRA COLOR_WHITE COLOR_BLACK + COLOR_XTRA COLOR_BLACK COLOR_WHITE +
+
+bitmaps/xtra/xtrbold.h : ./scram bitmaps/xtra/xtrbold.rgb bitmaps/xtra/xtrbold.bw
+	./scram bitmaps/xtra/xtrbold -s - COLOR_LETTER_GOT + - COLOR_LETTER_GOT +
+
+bitmaps/xtra/xtrfaint.h : ./scram bitmaps/xtra/xtrfaint.rgb bitmaps/xtra/xtrfaint.bw
+	./scram bitmaps/xtra/xtrfaint -s - COLOR_LETTER_NOT_GOT + - COLOR_LETTER_NOT_GOT +
+
+bitmaps/edit/bigearw.h : ./scram bitmaps/edit/bigearw.rgb bitmaps/edit/bigearw.bw
+	./scram bitmaps/edit/bigearw -s COLOR_APPLE_FAINT + COLOR_APPLE_FAINT +
+
+bitmaps/edit/bigsarw.h : ./scram bitmaps/edit/bigsarw.rgb bitmaps/edit/bigsarw.bw
+	./scram bitmaps/edit/bigsarw -s COLOR_APPLE_FAINT + COLOR_APPLE_FAINT +
+
+bitmaps/edit/smlearw.h : ./scram bitmaps/edit/smlearw.rgb bitmaps/edit/smlearw.bw
+	./scram bitmaps/edit/smlearw -s COLOR_APPLE_FAINT + COLOR_APPLE_FAINT +
+
+bitmaps/edit/smlsarw.h : ./scram bitmaps/edit/smlsarw.rgb bitmaps/edit/smlsarw.bw
+	./scram bitmaps/edit/smlsarw -s COLOR_APPLE_FAINT + COLOR_APPLE_FAINT +
+
+bitmaps/edit/path.h : ./scram bitmaps/edit/path.rgb bitmaps/edit/path.bw
+	./scram bitmaps/edit/path -s COLOR_BACKGROUND + COLOR_BACKGROUND +
+
+bitmaps/edit/red.h : ./scram bitmaps/edit/red.rgb bitmaps/edit/red.bw
+	./scram bitmaps/edit/red -s COLOR_RED_FORE + COLOR_RED_FORE +
+
+bitmaps/edit/green.h : ./scram bitmaps/edit/green.rgb bitmaps/edit/green.bw
+	./scram bitmaps/edit/green -s COLOR_GREEN_FORE + COLOR_GREEN_FORE +
+
+bitmaps/edit/blue.h : ./scram bitmaps/edit/blue.rgb bitmaps/edit/blue.bw
+	./scram bitmaps/edit/blue -s COLOR_BLUE_FORE + COLOR_BLUE_FORE +
+
+bitmaps/edit/include.h : ./scram bitmaps/edit/include.rgb bitmaps/edit/include.bw
+	./scram bitmaps/edit/include -s -c -m COLOR_BACKGROUND COLOR_BORDER COLOR_BACKGROUND COLOR_RED_FORE COLOR_BACKGROUND COLOR_BLUE_FORE COLOR_BACKGROUND COLOR_GREEN_FORE + COLOR_BACKGROUND COLOR_BORDER COLOR_BACKGROUND COLOR_RED_FORE COLOR_BACKGROUND COLOR_BLUE_FORE COLOR_BACKGROUND COLOR_GREEN_FORE +
+
+bitmaps/edit/iconi.h : ./scram bitmaps/edit/iconi.rgb bitmaps/edit/iconi.bw
+	./scram bitmaps/edit/iconi -s -c -m COLOR_BACKGROUND COLOR_FOREGROUND + COLOR_BACKGROUND COLOR_FOREGROUND +
+
+bitmaps/edit/boardi.h : ./scram bitmaps/edit/boardi.rgb bitmaps/edit/boardi.bw
+	./scram bitmaps/edit/boardi -s -c -m COLOR_BACKGROUND COLOR_FOREGROUND + COLOR_BACKGROUND COLOR_FOREGROUND +
+
+bitmaps/edit/warnon.h : ./scram bitmaps/edit/warnon.rgb bitmaps/edit/warnon.bw
+	./scram bitmaps/edit/warnon -s -c -m COLOR_BACKGROUND COLOR_FOREGROUND + COLOR_BACKGROUND COLOR_FOREGROUND +
+
+bitmaps/edit/warnoff.h : ./scram bitmaps/edit/warnoff.rgb bitmaps/edit/warnoff.bw
+	./scram bitmaps/edit/warnoff -s -c -m COLOR_BACKGROUND COLOR_FOREGROUND + COLOR_BACKGROUND COLOR_FOREGROUND +
+
+.DONE :
+	@echo "Hurrah!"
+
+.FAILED :
+	@echo "Bummer!"
+
+CHECKSUBST = a.b
+# initialize rule is done before all makes. Not all makes
+# have a .INIT implicit rule, so I don't use that
+initialize :
+	@echo Checking a few things
+	@if [ $(CHECKSUBST:%.b=%.c) = a.b ] ; then \
+	  echo This make does not understand % substitutions. ; \
+	  echo It will lose big time. ; \
+	  exit 1 ; \
+	fi
+	@if [ `ls -t Makefile Imakefile | sed '2,$$d'` = Imakefile ] ; then \
+	  echo Warning:Makefile is older than Imakefile ; \
+	fi
+	@if [ ! -d `echo '$(SCORE)' | sed 's=/[^/]*$$=='` ] ; then \
+	  echo The parent of $(SCORE) does not exist ; \
+	fi
+	@if [ $(FONT) = "" ] ; then true ; \
+	elif echo $(FONT) | grep -c -- '-m-.*-.*-.*$$' > /dev/null ; then \
+	  if [ "$(XLSFONTS)" = "" -o "$(DISPLAY)" = "" ] ; then \
+	    XLSFONTS="" ; \
+	  elif [ -x $(XLSFONTS) ] ; then \
+	    XLSFONTS=$(XLSFONTS) ; \
+	  elif [ -x $(BINDIR)/$(XLSFONTS) ] ; then \
+	    XLSFONTS=$(BINDIR)/$(XLSFONTS) ; \
+	  elif [ -x /usr/bin/X11/$(XLSFONTS) ] ; then \
+	    XLSFONTS=/usr/bin/X11/$(XLSFONTS) ; \
+	  else \
+	    XLSFONTS="" ; \
+	  fi ; \
+	  if [ "$$XLSFONTS" = "" ] ; then \
+	    true ; \
+	  elif [ `$$xlsfonts -o -fn "$(FONT)" 2> /dev/null | wc -l` -eq 0 ] ; then \
+	    echo Warning:Font $(FONT) not found ; \
+	  fi ; \
+	else \
+	  echo Warning:Font $(FONT) is not fixed width ; \
+	fi
+	@echo "Geronimo!"
+
+# default rule looks for an RCS file to check out
+# not required for gmake, as that already has a rule for it
+.DEFAULT :
+	@if echo $@ | grep -cv '^/' > /dev/null && \
+	  [ -f `echo ./$@ | sed 's+^\(.*/\)\([^/]*\)$$+\1RCS/\2,v+'` ] ; then \
+	    co $(COFLAGS) $@ ; \
+	else \
+	  echo Cannot make $@ and cannot find one made. ; \
+	  exit 1 ; \
+	fi
 
 # -------------------------------------------------------------------------
 # common rules for all Makefiles - do not edit

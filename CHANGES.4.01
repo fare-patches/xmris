@@ -1,0 +1,33 @@
+XMRIS V4.01 changes from 4.00
+
+some minor typos fixed
+
+mismatched extern/static function declarations fixed
+
+some casts put in to shut up compilers
+
+bug found in scrollbar widget and workaround installed
+
+xmred segfault on startup fixed (not enough room in nadger_widget_tree array)
+
+Saved unsaved dialog segfault fixed
+
+Redo/undo confusion fixed
+
+Imakefile fiddled with to remove gnumake switch and dynamically
+check that the make is kosher
+
+Key detection on keycodes doesn't work when a keysym is bound to more
+than one keycode. Keysyms used instead.
+
+Iconizing with keyboard loses autorepeat.
+
+ansiknr included after Intrinsic.h as sun's Intrinsic breaks CONST
+
+the BSD signal handing was broke, and is now fixed. (I don't know,
+V3 had broken SYSV signal handling. May be its impossible to have
+source that works wth both BSD and SYSV :-)
+
+xmred -h no longer says -sprites is an option
+
+garden search path increased to include score directory

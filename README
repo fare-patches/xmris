@@ -1,139 +1,122 @@
-			X M R I S V1.01
+			X M R I S V4.01
+		Copyright (C) 1994, 1993, 1992 Nathan Sidwell
+RCS $Id: README,v 4.5 1994/01/06 10:20:24 nathan Exp $
 
-		    (C) 1992 Nathan Sidwell
+If you had an xmris release prior to V3.00, I suggest you create this
+one in an empty directory, as some of the earlier xmris files are no longer
+used, and may be deleted. (If you've already unpacked this one on
+top of the old xmris, go back and start again.)
 
-This program is copyright (C) 1992 Nathan Sidwell.  This software and
-documentation is in the public domain.  Permission is granted to
-distribute and compile verbatim copies of this software for
-non-commercial, non-profit use, without fee.  The software may be
-modified, provided that both the above copyright notice and this
-permission notice appear.
+Modify the Imakefile as appropriate for your system. This should just mean
+setting SCORE to point to the score file directory, and maybe setting
+THEBINDIR and THEMANDIR. Both the FONT and the SCORE are checked for sanity.
 
-No guarantee is given as to the robustness or suitability of this
-software for your computer.
+The source will compile with both ANSI and K&R compilers, provided that
+they both correctly define __STDC__. You can also use FUNCPROTO to specify
+partial conformance. FUNCPROTO is used in the same way that Xfuncproto.h
+uses it. Namely bit 0 specifies function prototypes and ANSI declarations,
+bit 1 specifies if varargs are used like ansi does, bit 2 specifies if
+const is available, bit 3 specifies if function args should be prototyped.
+Most KnR compilers can take FUNCPROTO=5 or 7.
+Some DEC 5000 systems appear to have incorrectly set up xmkmf, there are some
+lines in the Imakefile which will need to be uncommented to get them
+to compile properly. The openwindows include files for solaris are
+broken for K&R compilers (problems with _XString and _Xconst). The
+offending files are Intrinsic.h, Xfuncproto.h, and Xresource.h
 
-SCENARIO
+There are a few things which may cause problems with different
+platforms. The timer interrupt stuff, in timer.c, knows about
+BSD, SYSV, __hpux and POSIX signals, make sure that the correct define
+is given to the compiler from the Imakefile. The elapsed time should
+use gettimeofday, if you haven't got that function, then supply
+the define USETIME, this will give less accurate timing. Also
+gettimeofday may or may not need a timezone argument, this is checked
+by the system type in timer.c.
 
-Xmris is a version of the arcade game Mr Do, which will run under the X
-windowing system.
+Set SCORE to the name of the high score directory.
+The score file uses lockf or flock by default, this doesn't work
+on some distributed filing systems. If so,
+define USELOCKFILE, and a lock file is used to do the locking with
+open(O_CREAT | O_EXCL). The name of the lock file is xmris.lock.
+For this to work the high score directory must be writeable, which
+is not the case with lockf. Personal high score files are also put
+in this directory, if xmris can create them there, otherwise they
+will be put in the users' home directory.
 
-You control a gnome, who can walk around a garden, along paths already
-marked, or create new paths wherever you wish.  You also have a ball,
-which can be thrown in the direction you're facing, towards the gnome's
-feet.  Points are scored for collecting cherries (if you collect 8
-cherries without stopping, you get a bonus), killing monsters (by
-squashing them, or throwing the ball at them), and collecting the prize
-left when all the monsters have come out of their den.
+You may need to force static linking, and not use shared libraries, or
+store a library load path with the binary with the linker -R option.
+The EXTRA_LOAD_FLAGS can be used for this. (This may be necessary for
+a setuid version, as these programs only search /usr/lib to do the
+dynamic linking, disregarding LD_LIBRARY_PATH, for obvious reasons.)
 
-Extra lives are obtained by filling in the 'EXTRA' monsters at the top
-of the screen.  One of these comes out every 5000 points, and also when
-you get the prize, along with 3 drones.  Killing the EXTRA will kill the
-drones too.  When you collect the prize, the normal monsters freeze,
-until the three drones are dead.  Beware things go faster after that!
-When all the normal monsters are killed or all the cherries collected,
-or you have got the final EXTRA monster, you advance to the next screen.
+The make file is configured so that 'make install' will install a setuid
+xmris owned by games in the BINDIR. Set up the score directory
+appropriately, copying the example garden files into it.
+You can alter OWNER, SCOREFILEFLAGS and INSTPGMFLAGS as you require.
+If you do not want to install xmris into the normal locations, then
+alter THEBINDIR, THEMANDIR and XAPPLOADDIR appropriately.
 
-You can kill the monsters by throwing the ball at them, or dropping the
-apples on them.  You get more points for squashing them.  The EXTRA
-monsters and its drones, can eat the apples if they're walking towards
-it when they meet.  You die by colliding with a monster (unless its
-eating an apple, in which case no harm done), or by being squashed be a
-falling apple.
+To make on your system type
 
-GAME CONTROLS
+	xmkmf
+	make
+	make install
+	make install.man
 
-The gnome can be controlled by the mouse or keyboard, this is selected
-when you start a new game.  The gnome walks towards the mouse, and
-throws the ball when you press a button.  You can move the mouse at
-right angles to the gnome's direction while its walking, the gnome
-continues towards the previous destination, before turning towards the
-new one.  Mouse control is not that accurate for fine control of the
-gnome (I don't use it).  Keyboard control is by 'z' and 'x' for left and
-right, and '\'' and '/' for up and down.  The ball is thrown with the
-space bar.  Pressing more than one key, will turn the gnome
-appropriately at the next intersection, so you can go round corners by
-pressing the new direction key before releasing the old one.  If you try
-to go in a direction not possible, the gnome will move towards the
-nearest intersection or in the direction it was going, depending on how
-near to an intersection it was.
+Xmred uses the same database as xmris, so that it can pick up the color
+resources. This means that it will not use its fallback resources if you have
+an old Xmris resource file installed. The result will be xmred laying itself
+out incorrectly, such that you will not be able to use it.
 
-The game can be paused by iconifying it (when your boss walks in), or by
-pressing 'p'.  When de-iconified, the game remains paused.  To continue
-press space.  When paused, you can abort the game by pressing 'q'.  If
-the game is displaying the demo screens, 'q' will quit the game
-entirely.
+The scram program is used to generate the sprites in the smallest
+number of bitplanes. You will get some warnings warnings of the form
+'Warning: Noswap color 'COLOR_WHITE' has no pixels', these may be ignored.
 
-OPTIONS
+To remove all the garbage left by a make you can do
 
--help
-	Lists command arguments and version number
+	make clean
 
--display <display>
-	Display to run on
+This removes all the object files, and all the sprites generated by scram.
 
--font <font>
-	Text font name
+Please report modifications, so that they can be considered for
+inclusion in later releases (especially true of system specific stuff).
 
--rv
-	Reverse video
+email to nathan@pact.srf.ac.uk
 
--bw
-	Force black and white
+XMRIS has been tested on the following systems, os's and compilers
+(but not all combinations of them!), and X release R4 and R5, and
+openwindows. Interestingly on a 40MHz sparc classic, openwindows is
+a tad to slow, but X11R5 has no problems, even with the fastest
+animation.
 
--iconic
-	Starts iconified
+Platform:
+Sparc 1 monochrome, 8bit pseudo colour
+Sparc 1+
+Sparc IPC 8bit pseudo colour
+Sparc 2
+Sparc classic
+DECstation 5000
+pmax 3100 8bit greyscale
+pmax 5000 colour
+HP 9000/720
+i386 PC
 
--mris
--msit
-	So not to be accused of gender bias, xmris can also be run as
-xmsit.  The gender of the game is taken from the program name (mris or
-msit) and may be over ridden by two of the following switches.  The game
-is known as Mr Is because the arcade game was masculine.  (Happy now
-Geoff?)
+OS:
+Sunos 4.1, 4.1.1, 4.1.2
+Solaris 2.1, 2.2
+Ultrix 4.0, 4.2a
+RiscOS 5.0B
+Mach 2.5
+HP-UX 7.05, 8.05, 8.07
+linux
 
-The argument list is also fed to XSetStandardProperties, I don't know
-what this does.
-
-PLAYING THE GAME
-
-The game works best with all other processes asleep.  If another process
-gets too much processor the animation will be jerky, and the load line
-along the bottom will start to grow.  Because an interrupt is used to
-control the frame rate, the animation is smoother than with xchomp.
-
-You probably want to position the pointer at the bottom of the window,
-so that it doesn't interfere with the board.  You'll notice it flicker
-if one of the sprites moves under it.
-
-BUGS
-
-The game is always in black and white, I haven't got round to doing
-colour sprites yet, so the -bw argument is superfluous.
-
-The -iconic argument has no effect.  (I don't know how to get it to
-work.)
-
-Fatal XIO errors are not handled gracefully.  Quiting the game by using
-your window manager results in big error message.  I don't know how to
-trap this.
-
-The program was written with a folding editor, it might be hard to find
-your way around without one.
-
-In order to get it to compile correctly with both K&R C and ANSI C, I've
-used several macros to deal with the differences in function prototyping
-and argument lists.  These produce either proper K&R declarations or
-proper ANSI ones.  I did have mixed declarations, with the correct
-promotions taken care of, but that doesn't work well for the one varargs
-function.  It might make it hard for things like ctags to work.  Maybe
-I'll revert to the mixed declarations.
-
-Please report modifications and other bugs, so that they can be
-considered for inclusion in later releases (especially true of syste
- specific stuff).
-
-email to nathan@inmos.co.uk
+compiler:
+gcc 1.38
+cc
+sun cc
+sun c++
+gcc 2.3.3
 
 Have fun.
 
-Nathan Sidwell  INMOS UK |                 | nathan@inmos.co.uk       DoD#0390
+nathan

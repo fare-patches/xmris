@@ -1,0 +1,151 @@
+/* 
+ * A set of bizzare and puzzling gardens
+ * Copyright 1993 Nathan Sidwell
+ */
+/*!
+ * Here's one with all the cherries
+ */
+{
+  0, 0, 0,
+  {
+    "HGGGGGGGGGGF",
+    "GF@@@@@@@@HE",
+    "@GF@@@@@@HE@",
+    "@@GF@@@@HE@@",
+    "@@@GF@@HE@@@",
+    "@@@@GFHE@@@@",
+    "@@@@@LJ@@@@@",
+    "@@@@HEGF@@@@",
+    "@@@HE@@GF@@@",
+    "@@HE@@@@GF@@",
+    "@HE@@@@@@GF@",
+    "HE@@@@@@@@GF",
+    "GGGGGOGGGGGE",
+  }
+},
+/*!
+ * we all fall down
+ */
+{
+  1, 1, 7,
+  {
+    "HGCCGGGGCCGF",
+    "HGCCGGGGCCGF",
+    "F@++ppp+++@F",
+    "GGCBCCADCCGE",
+    "DCCAEEECCCCB",
+    "CCCBEEEDCCCB",
+    "DCCAEIECCCCB",
+    "CCCCBADCCCCA",
+    "@@++BpB+++@@",
+    "@@++BpB+++@@",
+    "@@++BpB+++@@",
+    "@@++BpB+++@@",
+    "++++COA+++++",
+  }
+},
+/*!
+ * Run away! Run away!
+ */
+{
+  3, 2, 6,
+  {
+    "...jCDCAb...",
+    "..c@@B@@c...",
+    "e.i@@B@@e...",
+    "...@@B@@i...",
+    "...@@B@@.bc.",
+    "++++LLJ+++++",
+    "CCCCLPLCCCCA",
+    "b.icKLI.@@@@",
+    "...ejB.g@@@@",
+    "..e@@B@@ide.",
+    "...@@B@@....",
+    "...@@B@@....",
+    "+++@@A@@++++",
+  }
+},
+/*!
+ * Help, let me out!
+ */
+{
+  2, 0, 6,
+  {
+    "@@@@DCCB@@@@",
+    "@@@@B@@B@@@@",
+    "@@@@B@@B@@@@",
+    "@@@@B@@B@@@@",
+    "++++B@@B++++",
+    "DCDCDCDCDCDA",
+    "BIBIBIBIBIBI",
+    "CCCCCCCCCCCA",
+    ".ei.e..e..e.",
+    ".bc.d.cbecbi",
+    "i..k...i.i..",
+    "..b..+.ebc..",
+    "+++++M++++++",
+  }
+},
+/*!
+ * can you dig it?
+ */
+{
+  2, 2, 12,
+  {
+    "pCB+CPDA+DAp",
+    "+pCB+BB+DAp+",
+    "++pCBBBDAp++",
+    "+++pCBDAp+++",
+    "++++pKAp++++",
+    "+++++pp+++++",
+    "+@+@+@+@+@+@",
+    "@+@+@+@+@+@+",
+    "+@+@+@+@+@+@",
+    "@+@+@+@+@+@+",
+    "+@+@+@+@+@+@",
+    "@+@+@+@+@+@+",
+    "+@+@+@+@+@+@",
+  }
+},
+/*!
+ * The world is an onion
+ */
+{
+  1, 1, 0,
+  {
+    "HGGGCCCCGGGF",
+    "FHGGCCCCGGFF",
+    "BBDCCCCCCBBB",
+    "BBBDCCCCBBBB",
+    "BBBBDCCBBBBB",
+    "BFFFFDBFFFFB",
+    "BFFFFJBFFFFB",
+    "BBBBBCABBBBB",
+    "BBBBCGGABBBB",
+    "BBBCCGGCABBB",
+    "BBCCCGGCCABB",
+    "BCCCCGGCCCAB",
+    "CCCCCOCCCCCA",
+  }
+},
+/*!
+ * Rain storm
+ */
+{
+  3, 1, 6,
+  {
+    "HHDDDDDDHHHF",
+    "HHDDDDDDHHHF",
+    "HHDDDDDDDDDB",
+    "HHDDDCCDDDDB",
+    "DDDDAgmCHHHF",
+    "DDDAjDBoGHHF",
+    "DDAdDLDBfCDB",
+    "DAmDDDDDBiCB",
+    "AdDDDDDDHFlA",
+    "fDDDDDDDHHBc",
+    "DDDDDDDDHHDB",
+    "HHHHDDDDHHDB",
+    "GGGGCOCCCCCA",
+  }
+},
