@@ -1,0 +1,31 @@
+/**/# I need special include directories for gcc
+STD_INCLUDES = 
+/**/# select your compiler
+CC = gcc -traditional
+/**/#CC = gcc -ansi -pedantic -nostdinc -Wall -Wpointer-arith -Wwrite-strings
+/**/#CC = gcc -traditional -nostdinc -Wall -Wpointer-arith -Wwrite-strings
+/**/# uncomment and fiddle with the following lines if you want
+/**/# default game gender 0 = male, 1 = female
+/**/#GENDER = -DGAME_GENDER=1
+/**/# frame rate in microseconds
+/**/#FRAME = -DFRAME_RATE=37000
+/**/# font name
+/**/#FONT = -DFONT_NAME="-*-courier-*-r-*-*-18-*-*-*-*-*-*-*"
+/**/# do you trust the code?
+/**/# NDEBUG = -DNDEBUG
+/**/# K&R doesn't have __DATE__ so we supply it here
+DATE = -DDATE="\"`date '+%h %d 19%y'`\""
+/**/# Allow debugging?
+/**/#CDEBUGFLAGS = -g
+
+DEFINES = $(DATE) $(GENDER) $(FRAME) $(FONT) $(NDEBUG)
+SRCS = apple.c create.c demo.c draw.c monster.c move.c player.c timer.c xmris.c
+OBJS = apple.o create.o demo.o draw.o monster.o move.o player.o timer.o xmris.o
+LOCAL_LIBRARIES = $(XLIB)
+
+ComplexProgramTarget(xmris)
+
+all :: xmris xmsit
+
+xmsit: xmris
+	ln -s xmris xmsit

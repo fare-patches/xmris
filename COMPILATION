@@ -1,0 +1,53 @@
+			X M R I S V1.01
+
+		    (C) 1992 Nathan Sidwell
+
+Modify the Imakefile as appropriate for your system.  You will have to
+do this to set the compiler, as, by default, Imakefile selects gcc with
+the standard includes not in /usr/include.  Makefile.std doesn't do
+this, but uses the defaults.  The source will compile with both ANSI and
+K&R compilers, provided that they both correctly define and undefine
+__STDC__.  (But you all use ANSI now don't you.)  Compilation should be
+straight forward.  The only thing that might cause problems is the timer
+stuff in timer.c which set up a real-time interrupt to get the frame
+rate constant.  If the frame rate is too high (ie the interrupt occurs
+before the game loop has completed) a load line along the bottom of the
+window will start to grow towards the left of the window.  If this
+always grows, with all other processes dormant, you must slow the game
+down by increasing the frame rate.  This can be done by fiddling with
+the FRAME variable in the Imakefile
+
+To make on your system type
+
+	xmkmf
+	make depend
+	make all
+
+To install into your X bin use make install, but note that this only
+installs xmris, not xmsit.
+
+Please report modifications, so that they can be considered for
+inclusion in later releases (especially true of system specific stuff).
+
+email to nathan@inmos.co.uk
+
+XMRIS has been tested on the following systems
+
+	Platform	OS		X release	Colour
+	Sparcstation 1	Sunos 4.1	X11R4		B/W
+
+NOTES TO PROGRAMMERS
+
+XMRIS uses pure Xlib, without toolkits, widgets, etc.  This is mainly
+because I don't know anything about toolkits, widgets, etc.  In fact,
+this program started out as an experiment in X Window System
+programming, hacking from Xchomp (by Jerry Shekhel), and using the
+header files (I don't even have an X manual!).  There's not much of
+Xchomp code left, infact the only thing is the DEC_icon_atom stuff and
+some bits of create_resources.  I improved the response by using a real
+time interrupt rather than delay for the timing and only updating the
+necessary parts of the display.
+
+Have fun.
+
+Nathan Sidwell  INMOS UK |                 | nathan@inmos.co.uk       DoD#0390

@@ -1,0 +1,4 @@
+#define ball_width 6
+#define ball_height 6
+static char ball_bits[] = {
+   0x0c, 0x1e, 0x3f, 0x3f, 0x1e, 0x0c};

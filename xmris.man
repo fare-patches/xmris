@@ -1,0 +1,136 @@
+.TH XMRIS 6 "15 July 1992" "X Version 11"
+.IX xmris#(n) "" "\fLxmris\fP(n)"
+.SH NAME
+xmris - video arcade game for
+.I X 
+.SH SYNOPSIS
+.B xmris
+[-option ...]
+.LP
+.B xmsit
+[-option ...]
+.IX xmris#(n) "" "\fLxmris\fP(n) \(em video game"
+.SH "DESCRIPTION"
+.PP
+.I xmris
+is a version of the Mr Do video arcade game for the X Window System.
+.PP
+You control a gnome, who can walk around a garden, along paths already
+marked, or create new paths wherever you wish. You also have a ball,
+which can be thrown in the direction you're facing, towards the gnome's
+feet. Points are scored for collecting cherries (if you collect 8
+cherries without stopping, you get a bonus), killing monsters (by
+squashing them, or throwing the ball at them), and collecting the prize
+left when all the monsters have come out of their den.
+.PP
+Extra lives are obtained by filling in the 'EXTRA' monsters at the top
+of the screen. One of these comes out every 5000 points, and also when
+you get the prize, along with 3 drones. Killing the EXTRA will kill the
+drones too. When you collect the prize, the normal monsters freeze,
+until the three drones are dead. Beware things go faster after that!
+When all the normal monsters are killed or all the cherries collected,
+or you have got the final EXTRA monster, you advance to the next
+screen.
+.PP
+You can kill the monsters by throwing the ball at them, or dropping the
+apples on them. You get more points for squashing them. The EXTRA
+monsters and its drones, can eat the apples if they're walking towards
+it when they meet. You die by colliding with a monster (unless its
+eating an apple, in which case no harm done), or by being squashed be a
+falling apple.
+.PP
+The game works best with all other processes asleep. If another process
+gets too much processor the animation will be jerky, and the load line
+along the bottom will start to grow. Because an interrupt is used to
+control the frame rate, the animation is smoother than with xchomp.
+.PP
+You probably want to position the pointer at the bottom of the window, so
+that it doesn't interfere with the board. You'll notice it flicker if one
+of the sprites moves under it.
+.SH GAME CONTROLS
+.PP
+The gnome can be controlled by the mouse or keyboard, this is selected
+when you start a new game. The gnome walks towards the mouse, and
+throws the ball when you press a button. You can move the mouse at
+right angles to the gnome's direction while its walking, the gnome
+continues towards the previous destination, before turning towards the
+new one. Mouse control is not that accurate for fine control of the
+gnome (I don't use it). Keyboard control is by 'z' and 'x' for left and
+right, and '\'' and '/' for up and down. The ball is thrown with the
+space bar. Pressing more than one key, will turn the gnome
+appropriately at the next intersection, so you can go round corners by
+pressing the new direction key before releasing the old one. If you try
+to go in a direction not possible, the gnome will move towards the
+nearest intersection or in the direction it was going, depending on how
+near to an intersection it was.
+.PP
+The game can be paused by iconifying it (when your boss walks in), or
+by pressing 'p'. When de-iconified, the game remains paused. To
+continue press space. When paused, you can abort the game by pressing
+'q'. If the game is displaying the demo screens, 'q' will quit the game
+entirely.
+.SH OPTIONS
+.TP 4
+.B \-help
+Lists the command options and some other info, and does not start the game.
+.TP 4
+.B \-display \fIdisplay\fP
+Specifies which X server to connect to.
+.TP 4
+.B \-font \fIfont\fP
+Specifies which font to use.
+.TP 4
+.B \-rv
+Swap black and white colours.
+.TP 4
+.B \-bw
+Use black and white, even on colour displays.
+.TP 4
+.B \-iconic
+Start up iconized.
+.TP 4
+.B \-mris
+.TP 4
+.B \-msit
+So not to be accused of gender bias, xmris can also be run as xmsit.
+The gender of the game is taken from the program name (mris or msit)
+but may be over ridden by these two switches. The game is known as Mr
+Is because the arcade game was masculine.
+.PP
+The argument list is also fed to XSetStandardProperties, I don't know what
+this does.
+.SH SEE ALSO
+xchomp(6)
+.SH BUGS
+.PP
+The game is always in black and white, I haven't got round to doing
+colour sprites yet, so the -bw argument is superfluous.
+.PP
+The -iconic argument has no effect. (I don't know how to get it to work.)
+.PP
+Fatal XIO errors are not handled gracefully. Quiting the game by using
+your window manager results in big error message. I don't know how to
+trap this.
+.PP
+The program was written with a folding editor, it might be hard to find
+your way around without one.
+.PP
+In order to get it to compile correctly with both K&R C and ANSI C,
+I've used several macros to deal with the differences in function
+prototyping and argument lists. These produce either proper K&R
+declarations or proper ANSI ones. I did have mixed declarations, with
+the correct promotions taken care of, but that doesn't work well for
+the one varargs function. It might make it hard for things like ctags
+to work. Maybe I'll revert to the mixed declarations or maybe I won't
+support K&R.
+.SH COMMENTS
+.PP
+I welcome any comments, suggestions, code, bug reports and fixes, etc.
+Don't forget to include which version of
+.I xmris
+you are using (with xmris -help),
+machine, OS, X release & patch number, window manager etc.
+.SH COPYRIGHT
+Copyright (C) 1992 Nathan Sidwell.
+.SH AUTHOR
+Nathan Sidwell (nathan@inmos.co.uk)

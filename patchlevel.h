@@ -1,0 +1,1 @@
+#define XMRISVERSION "V1.01"
