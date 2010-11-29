@@ -75,7 +75,7 @@
  * signal_release returns the block mask to what it was before signal_hold
  */
 #ifndef TRANSPUTER
-#ifdef POSIX
+#if defined POSIX || defined linux
 #  define MASK sigset_t
 #  define signal_hold(signal, maskp) \
     {\
@@ -85,7 +85,11 @@
       sigprocmask(SIG_BLOCK, &temp, (maskp)); \
     }
 #  define signal_release(maskp) sigprocmask(SIG_SETMASK, maskp, (MASK *)NULL)
-#  define signal_pause(maskp) sigpause(*(maskp))
+#  ifdef linux
+#    define signal_pause(maskp) sigsuspend(maskp)
+#  else
+#    define signal_pause(maskp) sigpause(*(maskp))
+#  endif
 #else
 #  ifdef __hpux /* hpux is a weird mixture of BSD & SYSV */
 /* don't know if this is right */
