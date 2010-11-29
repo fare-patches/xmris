@@ -265,7 +265,7 @@ XtResource resources[] =
 #endif /* TRANSPUTER */
 #endif /* XMRED */
   {XtNfont, XtCFont, XtRFont, sizeof(Font),
-      XtOffsetOf(DATA, font), XtRImmediate, (XtPointer)FONT_NAME},
+      XtOffsetOf(DATA, font), XtRString, (XtPointer)FONT_NAME},
   {XtNreverseVideo, XtCReverseVideo, XtRBoolean, sizeof(Boolean),
       XtOffsetOf(DATA, swap), XtRImmediate, (XtPointer)False},
   {"monochrome", "Monochrome", XtRBoolean, sizeof(Boolean),
