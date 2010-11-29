@@ -38,6 +38,9 @@
 /*}}}*/
 /*{{{  file locking*/
 #ifndef SYSV
+#ifdef linux
+#include <sys/file.h>
+#endif
 #define lock_file(stream) flock(fileno(stream), LOCK_EX)
 #define unlock_file(stream) flock(fileno(stream), LOCK_UN)
 #else
