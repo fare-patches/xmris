@@ -401,14 +401,14 @@ defaults in '[]'.)
 .br
 .ne 11
 .TP
-.B Xmris.Up: \fIkeysym\fP [apostrophe]
+.B Xmris.Up: \fIkeysym\fP [Up]
 .PD 0
 .TP
-.B Xmris.Down: \fIkeysym\fP [slash]
+.B Xmris.Down: \fIkeysym\fP [Down]
 .TP
-.B Xmris.Left: \fIkeysym\fP [z]
+.B Xmris.Left: \fIkeysym\fP [Left]
 .TP
-.B Xmris.Right: \fIkeysym\fP [x]
+.B Xmris.Right: \fIkeysym\fP [Right]
 .TP
 .B Xmris.Throw: \fIkeysym\fP [space]
 .TP
@@ -492,19 +492,6 @@ Set the number of distinct colours allocated from the colour map.
 .TP
 .B Xmris.Static: \fI{yes, no}\fP [no]
 Do not use dynamic background colors.
-.PP
-For example, if you want to use the arrow keys, the following will work
-.br
-.ne 6
-.IP
-Xmris.Up:       Up
-.br
-Xmris.Down:     Down
-.br
-Xmris.Left:     Left
-.br
-Xmris.Right:    Right
-.br
 .PP
 In addition, you have the normal resources such as '*Font'.
 .PP
