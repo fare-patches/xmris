@@ -91,6 +91,8 @@ static char CONST garden_translations[] =
 /*{{{  static char CONST form_translations[] =*/
 static char CONST form_translations[] =
 "\
+<KeyPress>:keypress()\n\
+<KeyRelease>:keyrelease()\n\
 <FocusOut>:pause()\n\
 ";
 /*}}}*/
