@@ -54,12 +54,8 @@
  */
 /*}}}*/
 #include "xmris.h"
-#ifdef TRANSPUTER
-#include <process.h>
-#else
 #include <sys/time.h>
 #include <signal.h>
-#endif
 #ifdef SVR4
 #ifndef SYSV
 #define SYSV
@@ -74,7 +70,6 @@
  *    reblocks the signal
  * signal_release returns the block mask to what it was before signal_hold
  */
-#ifndef TRANSPUTER
 #if defined POSIX || defined linux
 #  define MASK sigset_t
 #  define signal_hold(signal, maskp) \
@@ -125,7 +120,6 @@
 #    endif /* SYSV */
 #  endif /* __hpux */
 #endif /* POSIX */
-#endif /* TRANSPUTER */
 /*}}}*/
 /*{{{  get current time*/
 /* TICKTIME specifies how many microseconds in each timer tick
@@ -133,14 +127,6 @@
  * BUSYWAIT is set if the timer is precise enough for busywait code
  * to work
  */
-#ifdef TRANSPUTER
-# define gettick(ptr) (*(ptr) = ProcTime())
-# define TICKTIME (unsigned long)64
-# define tickdelta(later, earlier) ProcTimeMinus(later, earlier)
-# define tickafter(later, earlier) ProcTimerAfter(later, earlier)
-# define tickadd(time, interval) ProcTimePlus(time, interval)
-  typedef int tick_t;
-#else
 # ifdef USETIME
 #   define gettick(ptr) (*(ptr) = time((time_t *)NULL))
 #   define TICKTIME (unsigned long)1000000
@@ -181,17 +167,12 @@
       (tickdelta(later, earlier) < ~(~(unsigned long)0 >> 1))
     typedef unsigned long tick_t;
 # endif /* USETIME */
-#endif /* TRANSPUTER */
 /*}}}*/
 /*{{{  timer*/
 static struct
 {
   VOIDFUNC  (*handler) PROTOARG((int));   /* original handler */
   unsigned  long usec;              /* interval time in usec */
-#ifdef TRANSPUTER
-  tick_t    delay;                  /* tickdelay waiting */
-  tick_t    timeout;                /* when the next one should timeout */
-#else
   struct itimerval interval;        /* internal interval time */
   unsigned  VOLATILE elapsed;       /* timer elapsed */
   unsigned  VOLATILE waiting;       /* waiting for the interrupt */
@@ -201,7 +182,6 @@ static struct
   tick_t    timeout;                /* timeout */
   tick_t    delay;                  /* interval delay */
 #endif /* BUSYWAIT */
-#endif /* TRANSPUTER */
   unsigned  state;          /* timing state */
   tick_t    game;           /* start of game tick */
   tick_t    start;          /* timing start */
@@ -226,26 +206,11 @@ static unsigned next;
 /*}}}*/
 #endif
 /*{{{  prototypes*/
-#ifndef TRANSPUTER
 static VOIDFUNC timer_alarm PROTOARG((int));
-#endif /* TRANSPUTER */
 #ifndef NDEBUG
 static VOIDFUNC timer_debug PROTOARG((char CONST *));
 #endif
 /*}}}*/
-#ifdef TRANSPUTER
-/*{{{  void sleep(delay)*/
-extern VOIDFUNC sleep
-FUNCARG((delay),
-	unsigned  delay
-)
-{
-  ProcWait((int)(delay * (1000000 / TICKTIME)));
-  return;
-}
-/*}}}*/
-#endif /* TRANSPUTER */
-#ifndef TRANSPUTER
 /*{{{  void timer_alarm(sig)*/
 static VOIDFUNC timer_alarm
 /* ARGSUSED */
@@ -297,14 +262,12 @@ FUNCARG((sig),
   return;
 }
 /*}}}*/
-#endif /* TRANSPUTER */
 /*{{{  void timer_close()*/
 extern VOIDFUNC timer_close FUNCARGVOID
 /*
  * closes the timer stuff
  */
 {
-#ifndef TRANSPUTER
   if(data.busywait == False)
     {
       MASK      mask;
@@ -322,7 +285,6 @@ extern VOIDFUNC timer_close FUNCARGVOID
       signal(SIGALRM, timer.handler);
 #endif /* USESIGSET */
     }
-#endif /* TRANSPUTER */
   return;
 }
 /*}}}*/
@@ -354,10 +316,6 @@ extern VOIDFUNC timer_open FUNCARGVOID
  * and starting the first tick
  */
 {
-#ifdef TRANSPUTER
-  assert(ProcGetPriority());
-  gettick(&timer.timeout);
-#else
   if(data.busywait != False)
 # ifdef BUSYWAIT
     {
@@ -382,7 +340,6 @@ extern VOIDFUNC timer_open FUNCARGVOID
 #endif /* USESIGSET */
   timer.waiting = 0;
   timer.elapsed = 1;
-#endif /* TRANSPUTER */
 #ifndef NDEBUG
   timer_debug("Init");
 #endif
@@ -418,14 +375,10 @@ ARGSEP  unsigned  state
 	assert(t1 || t2);
       }
       timer.usec = tick;
-#ifdef TRANSPUTER
-      timer.delay = (tick_t)(tick / TICKTIME);
-#else
 #ifdef BUSYWAIT
       timer.delay = (tick_t)(tick / TICKTIME);
 #endif /* BUSYWAIT */
       timer.interval.it_value.tv_usec = tick;
-#endif /* TRASNPUTER */
     }
   value = timer.state;
   switch(state)
@@ -501,27 +454,6 @@ extern VOIDFUNC timer_wait FUNCARGVOID
 {
   int       point;
   
-#ifdef TRANSPUTER
-  /*{{{  wait for it*/
-  {
-    tick_t    now;
-    
-    gettick(&now);
-    if(timeafter(now, timer.timeout))
-      {
-	point = 1;
-	timer.timeout = now;
-	timer.missed++;
-      }
-    else
-      {
-	point = -1;
-	ProcAfter(timer.timeout);
-      }
-    timer.timeout = tickadd(timer.timeout, timer.delay);
-  }
-  /*}}}*/
-#else
   {
     MASK      mask;
     
@@ -585,7 +517,6 @@ extern VOIDFUNC timer_wait FUNCARGVOID
     }
   /*}}}*/
 #endif /* BUSYWAIT */
-#endif /* TRANSPUTER */
   if(timer.state != TIMING_ON)
     /* EMPTY */;
   else if(!timer.count)
@@ -603,7 +534,6 @@ extern VOIDFUNC timer_wait FUNCARGVOID
       usec = (unsigned long)tickdelta(timer.stop, timer.start) * TICKTIME;
       dilation = (unsigned)(usec / FRAME_RATIO_UPDATE *
 	  FRAME_SCALE / timer.usec);
-#ifndef TRANSPUTER
 #ifdef BUSYWAIT
       if(!timer.busywait && dilation * 100 < FRAME_SCALE * 97)
 	{
@@ -613,7 +543,6 @@ extern VOIDFUNC timer_wait FUNCARGVOID
 	  timer.busywait = 1;
 	}
 #endif /* BUSYWAIT */
-#endif /* TRANSPUTER */
       if(dilation <= FRAME_SCALE)
 	dilation = FRAME_SCALE;
       else if(timer.missed <= (global.dilation == FRAME_SCALE ?

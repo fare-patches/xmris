@@ -16,9 +16,7 @@
 #include <errno.h>
 #include <ctype.h>
 #include <time.h>
-#ifndef TRANSPUTER
 #include <unistd.h>
-#endif /* TRANSPUTER */
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
@@ -294,9 +292,7 @@ typedef struct Data
   Boolean username; /* use username of user */
   Boolean nodynamic; /* don't take advantage of dynamic visuals */
   Boolean nodisplay; /* don't open the display, even to get X resources */
-#ifndef TRANSPUTER
   Boolean busywait; /* do busy waiting */
-#endif /* TRANSPUTER */
 #endif /* XMRED */
   Boolean gender;   /* he or she? */
   int     distinct; /* distinct colors allocated */

@@ -13,25 +13,17 @@
 #define FUNCANIMATE(name, arg) PROTOVOID(*name(arg)) PROTOVOID(*arg);
 #endif
 /*}}}*/
-#ifdef TRANSPUTER
-#undef USELOCKFILE
-#define USELOCKFILE
-#endif /* TRANSPUTER */
 /*{{{  check score*/
 #ifndef SCORE_DIR
   #error No default score directory
 #endif /* SCORE_DIR */
 /*}}}*/
 /*{{{  set_euid*/
-#ifdef TRANSPUTER
-typedef int uid_t;
-#else
 #ifdef __hpux
 #define set_euid(euid) setresuid((uid_t)-1, euid, (uid_t)-1)
 #else
 #define set_euid(euid) seteuid(euid)
 #endif /* __hpux */
-#endif /* TRANSPUTER */
 /*}}}*/
 /*{{{  defines*/
 /*{{{  board sizes*/
@@ -564,9 +556,6 @@ extern VOIDFUNC high_score PROTOARG((unsigned long, unsigned, unsigned long));
 extern VOIDFUNC init_scores PROTOARG((VOIDARG));
 /*}}}*/
 /*{{{  timer*/
-#ifdef TRANSPUTER
-extern VOIDFUNC sleep PROTOARG((unsigned));
-#endif /* TRANSPUTER */
 extern VOIDFUNC timer_close PROTOARG((VOIDARG));
 extern VOIDFUNC timer_open PROTOARG((VOIDARG));
 extern unsigned timer_set PROTOARG((unsigned long, unsigned));

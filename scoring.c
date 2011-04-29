@@ -26,15 +26,11 @@
 /*}}}*/
 #include "xmris.h"
 /*{{{  other includes*/
-#ifdef TRANSPUTER
-#include <iocntrl.h>
-#else
 #include <pwd.h>
 #include <sys/stat.h>
 #ifdef USELOCKFILE
 #include <fcntl.h>
 #endif /* USELOCKFILE */
-#endif /* TRANSPUTER */
 /*}}}*/
 /*{{{  file locking*/
 #ifndef SYSV
@@ -131,9 +127,6 @@ ARGSEP  uid_t       uid
  * so that we pick up the new scores
  */
 {
-#ifdef TRANSPUTER
-  return 1; /* assume that it has changed */
-#else
   static  time_t last_time[2];
   struct stat buffer;
   unsigned  changed;
@@ -151,7 +144,6 @@ ARGSEP  uid_t       uid
   if(real_uid != current_uid)
     set_euid((current_uid = real_uid));
   return changed;
-#endif /* TRANSPUTER */
 }
 /*}}}*/
 /*{{{  void get_lock(name, flag, uid)*/
@@ -172,34 +164,6 @@ ARGSEP  uid_t     uid
 {
   FILE    *stream;
 
-#ifdef TRANSPUTER
-  if(locking_file && !locks)
-    /*{{{  attempt file lock*/
-    {
-      unsigned  count;
-      FILE      *lock;
-    
-      for(count = 3; count; count--)
-	{
-	  lock = fopen(locking_file, "r");
-	  if(lock)
-	    {
-	      fclose(lock);
-	      sleep(1);
-	    }
-	  else
-	    {
-	      lock = fopen(locking_file, "w");
-	      if(lock)
-		fclose(lock);
-	      else
-		perror(locking_file);
-	      break;
-	    }
-	}
-    }
-    /*}}}*/
-#else
 #ifdef USELOCKFILE
   if(locking_file && !locks)
     /*{{{  attempt exclusive file lock*/
@@ -235,7 +199,6 @@ ARGSEP  uid_t     uid
 #endif /* USELOCKFILE */
   if(uid != current_uid)
     set_euid((current_uid = uid));
-#endif /* TRANSPUTER */
   stream = fopen(name, flag & 1 ? "w+" : "r+");
   if(!stream && !(flag & 2))
     perror(name);
@@ -244,10 +207,8 @@ ARGSEP  uid_t     uid
     locks++;
   else if(locking_file && !locks)
     {
-#ifndef TRANSPUTER
       if(current_uid != effective_uid)
 	set_euid((current_uid = effective_uid));
-#endif /* TRANSPUTER */
       unlink(locking_file);
     }
 #else
@@ -260,12 +221,10 @@ ARGSEP  uid_t     uid
       }
     /*}}}*/
 #endif /* USELOCKFILE */
-#ifndef TRANSPUTER
   if(stream && flag & 4 && effective_uid == real_uid)
     chmod(name, 0666); /* not everyone has fchmod */
   if(current_uid != real_uid)
     set_euid((current_uid = real_uid));
-#endif /* TRANSPUTER */
   return stream;
 }
 /*}}}*/
@@ -284,15 +243,11 @@ FUNCARG((stream),
   locks--;
   if(locking_file && locks)
     {
-#ifndef TRANSPUTER
       if(current_uid != effective_uid)
 	set_euid((current_uid = effective_uid));
-#endif
       unlink(locking_file);
-#ifndef TRANSPUTER
       if(current_uid != real_uid)
 	set_euid((current_uid = real_uid));
-#endif /* TRANSPUTER */
     }
 #else
   rewind(stream);
@@ -342,7 +297,6 @@ extern VOIDFUNC init_scores FUNCARGVOID
   user = NULL;
   home = NULL;
   reallife = NULL;
-#ifndef TRANSPUTER
   /*{{{  read passwd information*/
   {
     struct passwd *ptr;
@@ -409,7 +363,6 @@ extern VOIDFUNC init_scores FUNCARGVOID
       }
   }
   /*}}}*/
-#endif
   scoring.mine.score = 0;
   /*{{{  set username*/
   {
@@ -720,7 +673,6 @@ FUNCARG((insert),
 	  
 	  personal = 0;
 	  truename = home = NULL;
-#ifndef TRANSPUTER
 	  /*{{{  find name & home*/
 	  {
 	    struct passwd *ptr;
@@ -733,7 +685,6 @@ FUNCARG((insert),
 	      }
 	  }
 	  /*}}}*/
-#endif /* TRANSPUTER */
 	  /*{{{  search*/
 	  for(found = index = 0; index != 2; index++)
 	    {

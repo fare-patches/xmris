@@ -219,9 +219,7 @@ XrmOptionDescRec options[] =
   {"-username",".username",     XrmoptionNoArg, (XtPointer)XtEyes},
   {"-realname",".username",     XrmoptionNoArg, (XtPointer)XtEno},
   {"-static",  ".static",       XrmoptionNoArg, (XtPointer)XtEyes},
-#ifndef TRANSPUTER
   {"-busywait", ".busywait",    XrmoptionNoArg, (XtPointer)XtEyes},
-#endif /* TRANSPUTER */
 #endif /* XMRED */
   {NULL}
 };
@@ -259,10 +257,8 @@ XtResource resources[] =
       XtOffsetOf(DATA, username), XtRImmediate, (XtPointer)False},
   {"static", "Static", XtRBoolean, sizeof(Boolean),
       XtOffsetOf(DATA, nodynamic), XtRImmediate, (XtPointer)False},
-#ifndef TRANSPUTER
   {"busywait", "Busywait", XtRBoolean, sizeof(Boolean),
       XtOffsetOf(DATA, busywait), XtRImmediate, (XtPointer)False},
-#endif /* TRANSPUTER */
 #endif /* XMRED */
   {XtNfont, XtCFont, XtRFont, sizeof(Font),
       XtOffsetOf(DATA, font), XtRString, (XtPointer)FONT_NAME},
@@ -394,9 +390,7 @@ HELP CONST help[] =
   {"Remove user's scores",          "-remove",    "", "<name>"},
   {"Do not open display",           "+display", "", ""},
   {"Store date format change",      "-format",    "", ""},
-#ifndef TRANSPUTER
   {"Force busywaiting",             "-busywait",  "Busywait:yes", ""},
-#endif /* TRANSPUTER */
 #endif /* XMRED */
   {NULL}
 };

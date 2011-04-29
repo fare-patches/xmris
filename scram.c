@@ -25,11 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#ifdef TRANSPUTER
-#include <iocntrl.h>
-#else
 #include <unistd.h>
-#endif /* TRANSPUTER */
 /*}}}*/
 #define SUFFIXMONO  ".bw"
 #define SUFFIXCOLOR ".rgb"
