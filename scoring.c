@@ -22,7 +22,6 @@ static char     *score_file = NULL;   /* high score file name */
 static char     *personal_file = NULL;  /* personal in high score dir */
 static char     *personal_home = NULL;  /* personal in home dir */
 static int      personal_make = 2;
-static uid_t    personal_uid = -1;  /* uid for personal file */
 static char     date_format[4] = "   ";
 static char     *alternate = NULL;    /* alternative name */
 static HIGH_SCORE *CONST tables[] =
@@ -30,8 +29,8 @@ static HIGH_SCORE *CONST tables[] =
 /*}}}*/
 /*{{{  prototypes*/
 static unsigned expire PROTOARG((time_t, time_t));
-static unsigned file_changed PROTOARG((char CONST *, uid_t));
-static FILE *get_lock PROTOARG((char CONST *, unsigned, uid_t));
+static unsigned file_changed PROTOARG((char CONST *));
+static FILE *get_lock PROTOARG((char CONST *, unsigned));
 static VOIDFUNC get_unlock PROTOARG((FILE *));
 static unsigned insert_personal PROTOARG((HIGH_SCORE CONST *));
 static unsigned insert_score
@@ -53,9 +52,9 @@ static unsigned long write_table
 extern VOIDFUNC check_scores FUNCARGVOID
 {
   retire_scores();
-  if((score_file && file_changed(score_file, effective_uid)) ||
+  if((score_file && file_changed(score_file)) ||
       (!personal_make && personal_file &&
-      file_changed(personal_file, personal_uid)))
+      file_changed(personal_file)))
     load_check_expire_insert(0);
   return;
 }
@@ -84,11 +83,10 @@ ARGSEP  time_t    then
       then_hour >= 21 && now_hour < 12));
 }
 /*}}}*/
-/*{{{  void file_changed(name, uid)*/
+/*{{{  void file_changed(name)*/
 static unsigned file_changed
-FUNCARG((name, uid),
+FUNCARG((name),
 	char CONST *name
-ARGSEP  uid_t       uid
 )
 /*
  * check if a score file has been changed since last I looked,
@@ -100,8 +98,6 @@ ARGSEP  uid_t       uid
   unsigned  changed;
   
   assert(name);
-  if(uid != current_uid)
-    set_euid((current_uid = uid));
   if(!stat(name, &buffer))
     {
       changed = buffer.st_mtime != last_time[name == score_file];
@@ -109,31 +105,24 @@ ARGSEP  uid_t       uid
     }
   else
     changed = 0;
-  if(real_uid != current_uid)
-    set_euid((current_uid = real_uid));
   return changed;
 }
 /*}}}*/
-/*{{{  void get_lock(name, flag, uid)*/
+/*{{{  void get_lock(name, flag)*/
 static FILE *get_lock
-FUNCARG((name, flag, uid),
+FUNCARG((name, flag),
 	char CONST *name
 ARGSEP  unsigned  flag
-ARGSEP  uid_t     uid
 )
 /*
  * open and locks a high score file
  * flag & 1 == 0 -> "r+"
  * flag & 1 != 0 -> "w+"
  * flag & 2 inhibit error message
- * flag & 4 && effective_uid == real_uid set chmod 666
- * uid required to access
  */
 {
   FILE    *stream;
 
-  if(uid != current_uid)
-    set_euid((current_uid = uid));
   stream = fopen(name, flag & 1 ? "w+" : "r+");
   if(!stream && !(flag & 2))
     perror(name);
@@ -145,10 +134,6 @@ ARGSEP  uid_t     uid
 	  continue;
       }
     /*}}}*/
-  if(stream && flag & 4 && effective_uid == real_uid)
-    chmod(name, 0666); /* not everyone has fchmod */
-  if(current_uid != real_uid)
-    set_euid((current_uid = real_uid));
   return stream;
 }
 /*}}}*/
@@ -212,7 +197,7 @@ extern VOIDFUNC init_scores FUNCARGVOID
   {
     struct passwd *ptr;
     
-    ptr = getpwuid(real_uid);
+    ptr = getpwuid(getuid());
     if(ptr)
       {
 	user = ptr->pw_name;
@@ -344,7 +329,6 @@ extern VOIDFUNC init_scores FUNCARGVOID
       }
   }
   /*}}}*/
-  personal_uid = effective_uid;
   if(data.expire || data.format || data.remove)
     data.scores = True;
   load_check_expire_insert(0);
@@ -448,7 +432,7 @@ FUNCARG((insert),
   /*{{{  score_file?*/
   if(score_file)
     {
-      score_stream = get_lock(score_file, 2, effective_uid);
+      score_stream = get_lock(score_file, 2);
       if(score_stream)
 	do_score = merge_scores(score_stream);
       else
@@ -458,7 +442,7 @@ FUNCARG((insert),
   /*{{{  personal_file?*/
   if(personal_file)
     {
-      personal_stream = get_lock(personal_file, personal_make, personal_uid);
+      personal_stream = get_lock(personal_file, personal_make);
       if(personal_stream)
 	{
 	  personal_make = 0;
@@ -473,7 +457,7 @@ FUNCARG((insert),
   /*{{{  personal_home?*/
   if(personal_home)
     {
-      home_stream = get_lock(personal_home, 2, real_uid);
+      home_stream = get_lock(personal_home, 2);
       if(home_stream)
 	{
 	  merge_personal(home_stream);
@@ -482,7 +466,6 @@ FUNCARG((insert),
 	      personal_file = personal_home;
 	      personal_home = NULL;
 	      personal_make = 0;
-	      personal_uid = real_uid;
 	    }
 	  else
 	    do_personal = 1;
@@ -534,10 +517,12 @@ FUNCARG((insert),
   }
   /*}}}*/
   /* expire person? */
-  if(effective_uid != real_uid)
+  if(getuid() != 0)
     {
-      if(data.remove || data.format)
-	fprintf(stderr, "Not owner");
+      if(data.remove)
+	fprintf(stderr, "Removing a person can only be done by root");
+      if(data.format)
+	fprintf(stderr, "Changing the date format can only be done by root");
       data.remove = data.format = NULL;
     }
   else
@@ -1010,7 +995,7 @@ FUNCARG((insert),
     {
       if(!score_stream && score_file)
 	{
-	  score_stream = get_lock(score_file, 5, effective_uid);
+	  score_stream = get_lock(score_file, 5);
 	  if(!score_stream)
 	    score_file = NULL;
 	}
@@ -1022,7 +1007,7 @@ FUNCARG((insert),
   if(do_personal)
     {
       if(!personal_stream && score_stream && personal_file)
-	personal_stream = get_lock(personal_file, 3, personal_uid);
+	personal_stream = get_lock(personal_file, 3);
       if(personal_stream)
 	{
 	  write_personal(personal_stream);
@@ -1033,12 +1018,11 @@ FUNCARG((insert),
       else
 	{
 	  if(!home_stream)
-	    home_stream = get_lock(personal_home, 1, real_uid);
+	    home_stream = get_lock(personal_home, 1);
 	  if(home_stream)
 	    write_personal(home_stream);
 	  else
 	    personal_home = NULL;
-	  personal_uid = real_uid;
 	  personal_file = personal_home;
 	  personal_home = NULL;
 	}
@@ -1052,9 +1036,9 @@ FUNCARG((insert),
   if(score_stream)
     get_unlock(score_stream);
   if(do_score && score_file)
-    file_changed(score_file, effective_uid);
+    file_changed(score_file);
   if(do_personal && personal_file)
-    file_changed(personal_file, personal_uid);
+    file_changed(personal_file);
   return;
 }
 /*}}}*/

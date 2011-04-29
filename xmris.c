@@ -1260,11 +1260,6 @@ ARGSEP  char CONST **argv
   Atom wm_delete_window;
   
   myname = *argv ? *argv : "Xmris";
-  real_uid = getuid();
-  effective_uid = geteuid();
-  if(real_uid != effective_uid)
-    set_euid(real_uid);
-  current_uid = real_uid;
   open_toolkit(argc, (String *)argv);
   init_scores();
   /*{{{  help?*/

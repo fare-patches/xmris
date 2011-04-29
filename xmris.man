@@ -277,13 +277,9 @@ to use the -dir option too.
 .ne 3
 .TP
 .B \-remove \fIname\fP
-Allows the game's owner to remove someone's scores. The option will only
-work when the real and effective user ids are the same. (ie
-a setuid Mr Is has been run by its owner). After updating the files,
+Allows root to remove someone's scores. After updating the files,
 the score tables are listed, and the game does not start. An X display
-will still need to be opened, to read the X resources, which may override
-the default score directory. The +display option may be used to prevent
-this.
+will still be opened. The +display option may be used to prevent this.
 .br
 .ne 3
 .TP
@@ -324,7 +320,7 @@ and a warning is given. The following are valid unambiguous dates, '11jun93'
 .ne 3
 .TP
 .B \-format \fIformat\fP
-Allows the game's owner to set the date format which is stored with the
+Allows root to set the date format which is stored with the
 score file, for future use disambiguating dates. The format is
 automatically stored if none is set. The format must be a three character
 string containing one each of 'D', 'M' and 'Y'.
@@ -859,10 +855,7 @@ following names.
 The high score file. The directory is system dependent, and may be
 changed by application resource or option.
 This file must either exist and be writable to by Mr Is, or the
-directory containing it must be writable by Mr Is. This
-can be done by chmoding the score file or directory, or by
-setuiding Mr Is appropriately. A non-setuid Mr Is will chmod the score
-file to 666 if creating it.
+directory containing it must be writable by Mr Is.
 .br
 .ne 3
 .TP
@@ -880,9 +873,7 @@ to move it to the score directory. Mr Is
 will attempt to create the personal files in the score directory. If this
 cannot be done, the personal score file is placed in the home directory. In
 order to create the personal score file in the score directory, Mr Is will
-have to have the correct access rights. A setuid Mr Is
-will juggle the effective uid correctly for accessing both the score directory
-and the users' home directories.
+have to have the correct access rights.
 .br
 .ne 5
 .TP

@@ -18,13 +18,6 @@
   #error No default score directory
 #endif /* SCORE_DIR */
 /*}}}*/
-/*{{{  set_euid*/
-#ifdef __hpux
-#define set_euid(euid) setresuid((uid_t)-1, euid, (uid_t)-1)
-#else
-#define set_euid(euid) seteuid(euid)
-#endif /* __hpux */
-/*}}}*/
 /*{{{  defines*/
 /*{{{  board sizes*/
 #define KNOCK_THROUGH /* how far we go to knock through a new cell */\
@@ -355,9 +348,6 @@ EXTERN struct
   unsigned  pressed;    /* keys we had pressed */
 } player;
 /*}}}*/
-EXTERN uid_t real_uid;          /* who I really am */
-EXTERN uid_t effective_uid;     /* who I'm pretending to be */
-EXTERN uid_t current_uid;       /* who I currently am */
 EXTERN CELL garden[(CELLS_DOWN + CELL_TOP * 2) * CELL_STRIDE];
 /*{{{  global*/
 EXTERN struct
