@@ -59,9 +59,6 @@ XCOMM
 XCOMM don't you have gettimeofday?
 TIME =
 XCOMM TIME = -DUSETIME
-XCOMM don't you have lockf or flock?
-LOCK =
-XCOMM LOCK = -DUSELOCKFILE
 
 XCOMM game defaults, you probably only want to alter the SCORE
 XCOMM
@@ -121,7 +118,7 @@ FONT = thefont
 #endif
 
 DEFINES = $(EXTRACCOPTIONS) -DFONT_NAME='$(FONT)' $(NDEBUG) \
-	-DSCORE_DIR='"$(SCORE)"' $(LOCK) $(TIME) $(KNR) -DSCROLLBARBUGFIX
+	-DSCORE_DIR='"$(SCORE)"' $(TIME) $(KNR) -DSCROLLBARBUGFIX
 LOCAL_LIBRARIES = $(XAWLIB) $(XTOOLLIB) $(XMULIB) $(XINTL) $(XLIB) $(MATHSLIB)
 DEPLIBS = $(DEPXLIB)
 

@@ -1,36 +1,8 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: scoring.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
-/*{{{  file locking problems*/
-/*
- * USELOCKFILE file locking as suggested by
- * Daniel Edward Lovinger <del+@cmu.edu>
- * With lockf (or flock), we just use the kernel's locking stuff to lock the
- * entire score file while we read, or update it. But some distributed
- * file systems don't support it and some are broken (SunOS 4.1).
- * USELOCKFILE uses uses open(O_CREAT | O_EXCL) to create
- * a lock file in the same directory as the xmris high score file, with
- * the name "xmris.lock".
- * The personal score files are either in the score file directory
- * with names "xmris-<name>", or in the user's home directory with name
- * ".xmris.scores".
- * In order to work correctly, if xmris is set_euid'd to get the access
- * permissions to the high score directory, we keep juggling
- * the effective user id between the set_euid'd one and the real uid.
- * This ensures that xmris can open the display on servers which use
- * magic cookie and access control (like openwindows), and that the
- * personal file has the correct attributes when created in the user's
- * home directory.
- *
- * Some systems have flock (BSD), and some have lockf (SYSV).
- */
-/*}}}*/
 #include "xmris.h"
 /*{{{  other includes*/
 #include <pwd.h>
 #include <sys/stat.h>
-#ifdef USELOCKFILE
-#include <fcntl.h>
-#endif /* USELOCKFILE */
 /*}}}*/
 /*{{{  file locking*/
 #ifndef SYSV
@@ -53,10 +25,6 @@ static int      personal_make = 2;
 static uid_t    personal_uid = -1;  /* uid for personal file */
 static char     date_format[4] = "   ";
 static char     *alternate = NULL;    /* alternative name */
-#ifdef USELOCKFILE
-static char     *locking_file = NULL;  /* lock file name */
-static unsigned locks;      /* number of locks open */
-#endif /* USELOCKFILE */
 static HIGH_SCORE *CONST tables[] =
   {scoring.high, scoring.today, scoring.personal};
 /*}}}*/
@@ -164,54 +132,11 @@ ARGSEP  uid_t     uid
 {
   FILE    *stream;
 
-#ifdef USELOCKFILE
-  if(locking_file && !locks)
-    /*{{{  attempt exclusive file lock*/
-    {
-      unsigned  count;
-      int       filed;
-    
-      for(count = 3; count;)
-	{
-	  if(current_uid != effective_uid)
-	    set_euid((current_uid = effective_uid));
-	  filed = open(locking_file, O_CREAT | O_EXCL, 0666);
-	  if(filed >= 0)
-	    break;
-	  if(errno == EINTR)
-	    continue;
-	  else if(errno == EEXIST)
-	    {
-	      sleep(1);
-	      if(!file_changed(name, uid))
-		count--;
-	    }
-	  else
-	    {
-	      perror(locking_file);
-	      break;
-	    }
-	}
-      if(filed >= 0)
-	close(filed);
-    }
-    /*}}}*/
-#endif /* USELOCKFILE */
   if(uid != current_uid)
     set_euid((current_uid = uid));
   stream = fopen(name, flag & 1 ? "w+" : "r+");
   if(!stream && !(flag & 2))
     perror(name);
-#ifdef USELOCKFILE
-  if(stream)
-    locks++;
-  else if(locking_file && !locks)
-    {
-      if(current_uid != effective_uid)
-	set_euid((current_uid = effective_uid));
-      unlink(locking_file);
-    }
-#else
   if(stream)
     /*{{{  get lock on the file*/
     while(lock_file(stream))
@@ -220,7 +145,6 @@ ARGSEP  uid_t     uid
 	  continue;
       }
     /*}}}*/
-#endif /* USELOCKFILE */
   if(stream && flag & 4 && effective_uid == real_uid)
     chmod(name, 0666); /* not everyone has fchmod */
   if(current_uid != real_uid)
@@ -238,22 +162,9 @@ FUNCARG((stream),
  */
 {
   fflush(stream);
-#ifdef USELOCKFILE
-  fclose(stream);
-  locks--;
-  if(locking_file && locks)
-    {
-      if(current_uid != effective_uid)
-	set_euid((current_uid = effective_uid));
-      unlink(locking_file);
-      if(current_uid != real_uid)
-	set_euid((current_uid = real_uid));
-    }
-#else
   rewind(stream);
   unlock_file(stream);
   fclose(stream);
-#endif /* USELOCKFILE */
   return;
 }
 /*}}}*/
@@ -394,19 +305,6 @@ extern VOIDFUNC init_scores FUNCARGVOID
   dirlen = data.dir ? strlen(data.dir) : 0;
   if(dirlen && data.dir[dirlen - 1] == '/')
     dirlen--;
-#ifdef USELOCKFILE
-  /*{{{  lock file?*/
-  if(dirlen)
-    {
-      locking_file = malloc(dirlen + 12);
-      if(locking_file)
-	{
-	  strcpy(locking_file, data.dir);
-	  strcpy(&locking_file[dirlen], "/xmris.lock");
-	}
-    }
-  /*}}}*/
-#endif /* USELOCKFILE */
   /*{{{  score directory?*/
   if(dirlen)
     {

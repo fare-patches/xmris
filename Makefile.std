@@ -434,9 +434,6 @@ KNR =
 # don't you have gettimeofday?
 TIME =
 # TIME = -DUSETIME
-# don't you have lockf or flock?
-LOCK =
-LOCK = -DUSELOCKFILE
 
 # game defaults, you probably only want to alter the SCORE
 #
@@ -488,7 +485,7 @@ COFLAGS = -l
 RCSFLAGS =
 
 DEFINES = $(EXTRACCOPTIONS) -DFONT_NAME='$(FONT)' $(NDEBUG) \
-	-DSCORE_DIR='"$(SCORE)"' $(LOCK) $(TIME) $(KNR) -DSCROLLBARBUGFIX
+	-DSCORE_DIR='"$(SCORE)"' $(TIME) $(KNR) -DSCROLLBARBUGFIX
 LOCAL_LIBRARIES = $(XAWLIB) $(XTOOLLIB) $(XMULIB) $(XLIB) $(MATHSLIB)
 DEPLIBS = $(DEPXLIB)
 

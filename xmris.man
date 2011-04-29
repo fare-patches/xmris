@@ -866,14 +866,6 @@ file to 666 if creating it.
 .br
 .ne 3
 .TP
-.B .../xmris.lock
-In some systems, where lockf or flock doesn't work, this temporary file
-is used to perform the locking. The directory containing it must be
-writable by Mr Is. This can be done by chmoding the directory, or
-by setuiding Mr Is appropriately.
-.br
-.ne 4
-.TP
 .PD 0
 .B .../xmris-<name>
 .TP
@@ -888,7 +880,7 @@ to move it to the score directory. Mr Is
 will attempt to create the personal files in the score directory. If this
 cannot be done, the personal score file is placed in the home directory. In
 order to create the personal score file in the score directory, Mr Is will
-have to have the correct access rights, as with the lock file. A setuid Mr Is
+have to have the correct access rights. A setuid Mr Is
 will juggle the effective uid correctly for accessing both the score directory
 and the users' home directories.
 .br
@@ -922,10 +914,6 @@ Some of the garden files.
 .SH SEE ALSO
 .BR xmred (6)
 .SH ERRORS
-.PP
-If you use a lock file, rather than lockf, and an error occurs
-creating the lock file, a message is printed on stderr, and file
-locking is not done for that access. Subsequent accesses may be alright.
 .PP
 If an error occurs opening the score file, a message is printed on
 stderr, and the score file is disabled. Personal score files will
