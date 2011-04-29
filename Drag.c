@@ -510,9 +510,8 @@ FUNCARG((widget),
       int x, y;
       unsigned border;
       unsigned depth;
-      Status status;
       
-      status = XGetGeometry(XtDisplay(widget), widget->drag.pixmap, &root,
+      XGetGeometry(XtDisplay(widget), widget->drag.pixmap, &root,
 	  &x, &y, &widget->drag.width, &widget->drag.height, &border, &depth);
     }
   else

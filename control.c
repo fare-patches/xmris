@@ -373,7 +373,7 @@ ARGSEP  XtPointer call
 {
   int     delta;
   
-  delta = (int)call ? (int)call < 0 ? -1 : 1 : 0;
+  delta = (long)call ? (long)call < 0 ? -1 : 1 : 0;
   if((delta >= 0 || state.counts[5]) && (delta <= 0 ||
       state.counts[5] != APPLE_LIMIT))
     adjust_count(5, delta);
@@ -431,7 +431,7 @@ ARGSEP  XtPointer call
   IconCallback *call_data;
   int       option;
   
-  option = state.button[(unsigned)client];
+  option = state.button[(unsigned long)client];
   call_data = (IconCallback *)call;
   if(option == OPTION_APPLES)
     select_apple(call_data->selection);
@@ -454,13 +454,13 @@ ARGSEP  XtPointer call
 {
   if(state.edit)
     {
-      state.edit->board->colors = (unsigned)client;
+      state.edit->board->colors = (unsigned long)client;
       paint_garden_icon(state.edit);
       paint_garden_image();
       repaint_garden_icon();
       changed_flag |= state.change;
     }
-  set_icon_color((unsigned)client);
+  set_icon_color((unsigned long)client);
   return;
 }
 /*}}}*/
@@ -477,13 +477,13 @@ ARGSEP  XtPointer call
 {
   if(state.edit)
     {
-      state.edit->board->fill = (unsigned)client;
+      state.edit->board->fill = (unsigned long)client;
       paint_garden_icon(state.edit);
       paint_garden_image();
       repaint_garden_icon();
       changed_flag |= state.change;
     }
-  set_icon_fill((unsigned)client);
+  set_icon_fill((unsigned long)client);
   return;
 }
 /*}}}*/
@@ -498,9 +498,9 @@ ARGSEP  XtPointer call
  * change the display mode and update the garden
  */
 {
-  if(state.mode != (unsigned)client)
+  if(state.mode != (unsigned long)client)
     {
-      state.mode = (unsigned)client;
+      state.mode = (unsigned long)client;
       paint_garden_icon(state.edit);
       paint_garden_image();
       repaint_garden_icon();
@@ -525,7 +525,7 @@ ARGSEP  XtPointer call
   IconCallback *call_data;
   unsigned  option;
   
-  option = (unsigned)client;
+  option = (unsigned long)client;
   call_data = (IconCallback *)call;
   if(option == OPTION_APPLES)
     if(select_apple(call_data->selection))
@@ -802,36 +802,35 @@ FUNCARG((root),
   /*{{{  set option callback*/
   for(gptr = &gizmos[GIZMO_OPTIONS + OPTIONS - 1], ix = OPTIONS;
       ix--; gptr--)
-    XtAddCallback(gptr->widget, XtNcallback, command_option, (XtPointer)ix);
+    XtAddCallback(gptr->widget, XtNcallback, command_option, (XtPointer)(unsigned long)ix);
   /*}}}*/
   /*{{{  set fill callback*/
   for(gptr = &gizmos[GIZMO_FILLS + FILLS - 1], ix = FILLS; ix--; gptr--)
-    XtAddCallback(gptr->widget, XtNcallback, command_fill, (XtPointer)ix);
+    XtAddCallback(gptr->widget, XtNcallback, command_fill, (XtPointer)(unsigned long)ix);
   /*}}}*/
   /*{{{  set color callback*/
   for(gptr = &gizmos[GIZMO_COLORS + BACKGROUNDS - 1], ix = BACKGROUNDS;
       ix--; gptr--)
-    XtAddCallback(gptr->widget, XtNcallback, command_color, (XtPointer)ix);
+    XtAddCallback(gptr->widget, XtNcallback, command_color, (XtPointer)(unsigned long)ix);
   /*}}}*/
   /*{{{  set mode callback*/
   for(gptr = &gizmos[GIZMO_DISPLAY_BASE + MODES - 1], ix = MODES;
       ix--; gptr--)
-    XtAddCallback(gptr->widget, XtNcallback, command_mode, (XtPointer)ix);
+    XtAddCallback(gptr->widget, XtNcallback, command_mode, (XtPointer)(unsigned long)ix);
   /*}}}*/
   /*{{{  set button callback*/
   for(gptr = &gizmos[GIZMO_BUTTONS + BUTTONS - 1], ix = BUTTONS;
       ix--; gptr--)
-    XtAddCallback(gptr->widget, XtNcallback, command_button, (XtPointer)ix);
+    XtAddCallback(gptr->widget, XtNcallback, command_button, (XtPointer)(unsigned long)ix);
   /*}}}*/
   /*{{{  setup apple scrollbar*/
   {
-    float     shown;
+    union { float f; XtArgVal xav; } shown;
     Arg       arg[1];
     
     gptr = &gizmos[GIZMO_TOTAL_WARNINGS + 5];
-    shown = (float)1.0;
-    XtSetArg(arg[0], XtNshown, sizeof(float) > sizeof(XtArgVal) ?
-  	(XtArgVal)&shown : *(XtArgVal *)&shown);
+    shown.f = (float)1.0;
+    XtSetArg(arg[0], XtNshown, shown.xav);
     XtSetValues(gptr->widget, arg, 1);
     XtAddCallback(gptr->widget, XtNjumpProc, apple_jump, (XtPointer)NULL);
     XtAddCallback(gptr->widget, XtNscrollProc, apple_scroll, (XtPointer)NULL);

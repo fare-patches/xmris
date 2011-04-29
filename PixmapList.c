@@ -1199,9 +1199,8 @@ ARGSEP  PixmapInfo *pi
       int x, y;
       unsigned border;
       unsigned depth;
-      Status status;
       
-      status = XGetGeometry(XtDisplay(plw), pi->pixmap,
+      XGetGeometry(XtDisplay(plw), pi->pixmap,
 	  &root, &x, &y, (unsigned int *)&pi->width,
 	  (unsigned int *)&pi->height, &border, &depth);
     }
@@ -1359,12 +1358,12 @@ ARGSEP  XtPointer call
   int       length;
   
   plw = (PixmapListWidget)client;
-  if(!(int)call)
+  if(!(long)call)
     return;
   length = plw->pixmap_list.orient == XtorientVertical ?
       plw->core.height : plw->core.width;
   start = length / 2;
-  if((int)call > 0)
+  if((long)call > 0)
     start = -start;
   start -= plw->pixmap_list.orient == XtorientVertical ?
       plw->pixmap_list.y : plw->pixmap_list.x;
@@ -1410,23 +1409,21 @@ FUNCARG((plw),
  *  our geometry changes
  */
 {
-  float     shown, top;
+  union { float f; XtArgVal xav; } shown, top;
   Arg       args[2];
   
   if(!plw->pixmap_list.scroll)
     return;
-  shown = (float)(plw->pixmap_list.orient == XtorientVertical ?
+  shown.f = (float)(plw->pixmap_list.orient == XtorientVertical ?
       plw->core.height + 1 : plw->core.width + 1) /
       (float)plw->pixmap_list.length;
-  if(shown > (float)1.0)
-    shown = (float)1.0;
-  top = (float)(plw->pixmap_list.orient == XtorientVertical ?
+  if(shown.f > (float)1.0)
+    shown.f = (float)1.0;
+  top.f = (float)(plw->pixmap_list.orient == XtorientVertical ?
       -plw->pixmap_list.y : -plw->pixmap_list.x) /
       (float)plw->pixmap_list.length;
-  XtSetArg(args[0], XtNtopOfThumb, sizeof(float) > sizeof(XtArgVal) ?
-      (XtArgVal)&top : *(XtArgVal *)&top);
-  XtSetArg(args[1], XtNshown, sizeof(float) > sizeof(XtArgVal) ?
-      (XtArgVal)&shown : *(XtArgVal *)&shown);
+  XtSetArg(args[0], XtNtopOfThumb, top.xav);
+  XtSetArg(args[1], XtNshown, shown.xav);
   XtSetValues(plw->pixmap_list.scroll, args, 2);
   return;
 }

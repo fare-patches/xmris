@@ -87,7 +87,7 @@ ARGSEP  Cardinal  *argc
     for(optr = dialog_options; optr->text; optr ++)
       if(!strcmp(optr->text, *argv))
 	{
-	  dialog_option(widget, (XtPointer)optr->option, (XtPointer)NULL);
+	  dialog_option(widget, (XtPointer)(unsigned long)optr->option, (XtPointer)NULL);
 	  break;
 	}
   return;
@@ -135,7 +135,7 @@ ARGSEP  XtPointer call
     widget = XtParent(widget);
   if(!widget)
     /* EMPTY */;
-  else if((unsigned)client == DIALOG_CLEAR)
+  else if((unsigned long)client == DIALOG_CLEAR)
     {
       Widget    text;
       
@@ -160,7 +160,7 @@ ARGSEP  XtPointer call
 	if(dptr->dialog == widget)
 	  {
 	    dptr->selection |=
-		(unsigned)client & dptr->options;
+		(unsigned long)client & dptr->options;
 	    if(dptr->selection && dptr->up)
 	      {
 		dptr->up = 0;
@@ -320,7 +320,7 @@ FUNCARG((root),
 	      if(optr->option & (1 << count))
 		{
 		  XawDialogAddButton(dptr->dialog, optr->text,
-		      dialog_option, (XtPointer)(1 << count));
+		      dialog_option, (XtPointer)(unsigned long)(1 << count));
 		  break;
 		}
 	  }

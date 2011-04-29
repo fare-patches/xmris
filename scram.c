@@ -113,7 +113,7 @@ ARGSEP  BITMAP    *bitmap     /* bitmap ptr */
   FILE      *stream;
   unsigned  state;
   char      line[128];
-  SIZE      place;
+  SIZE      place = { 0, 0 };
   unsigned  extra;
   
   stream = fopen(name, "r");

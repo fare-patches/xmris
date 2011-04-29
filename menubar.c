@@ -147,7 +147,7 @@ ARGSEP  XtPointer call
   char  CONST *error;
   int       insert;
   
-  if((unsigned)client == GIZMO_FILE_LOAD - GIZMO_FILE_BASE)
+  if((unsigned long)client == GIZMO_FILE_LOAD - GIZMO_FILE_BASE)
     {
       if(!check_saved(CHANGED_ANY))
 	return;
@@ -166,7 +166,7 @@ ARGSEP  XtPointer call
 	  dialog = DIALOG_FILE_ERROR;
 	  title = "Cannot load";
 	  menu_filename(result);
-	  if((unsigned)client == GIZMO_FILE_LOAD - GIZMO_FILE_BASE)
+	  if((unsigned long)client == GIZMO_FILE_LOAD - GIZMO_FILE_BASE)
 	    free_descriptors();
 	  error = load_boards(filename, insert);
 	}
@@ -174,7 +174,7 @@ ARGSEP  XtPointer call
 	break;
     }
   while(error);
-  if((unsigned)client == GIZMO_FILE_LOAD - GIZMO_FILE_BASE)
+  if((unsigned long)client == GIZMO_FILE_LOAD - GIZMO_FILE_BASE)
     changed_flag = 0;
   return;
 }
@@ -234,7 +234,7 @@ ARGSEP  XtPointer call
   char CONST *error;
   
   XtVaGetValues(widget, XtNlabel, &title, NULL);
-  dialog = filename && *filename && (unsigned)client ==
+  dialog = filename && *filename && (unsigned long)client ==
       GIZMO_FILE_SAVE - GIZMO_FILE_BASE ? -1 : DIALOG_FILENAME;
   error = NULL;
   option = DIALOG_NONE;
@@ -475,10 +475,10 @@ FUNCARG((root),
   create_gizmos(root, gizmos, XtNumber(gizmos));
   for(ix = XtNumber(file_callbacks); ix--;)
     XtAddCallback(gizmos[GIZMO_FILE_BASE + ix].widget,
-	XtNcallback, file_callbacks[ix], (XtPointer)ix);
+	XtNcallback, file_callbacks[ix], (XtPointer)(unsigned long)ix);
   for(ix = XtNumber(garden_callbacks); ix--;)
     XtAddCallback(gizmos[GIZMO_GARDEN_BASE + ix].widget,
-	XtNcallback, garden_callbacks[ix], (XtPointer)ix);
+	XtNcallback, garden_callbacks[ix], (XtPointer)(unsigned long)ix);
   menu_filename(NULL);
   menu_total(0);
   return;

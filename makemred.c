@@ -492,7 +492,7 @@ ARGSEP  String  *argv
 	/* EMPTY */;
       display.toplevel = XtAppInitialize(&display.context, "Xmris",
 	  options, (Cardinal)(ptr - options),
-	  (Cardinal *)&argc, (String *)argv,
+	  &argc, (String *)argv,
 	  (String *)fallback_resources,
 	  toplevel_args, XtNumber(toplevel_args));
       if(argc > 1)

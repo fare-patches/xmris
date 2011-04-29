@@ -8,8 +8,8 @@ extern VOIDFUNC bounce_ball FUNCARGVOID
  * bouncing the ball is rather involved
  */
 {
-  COORD     tl;
-  COORD     br;
+  COORD     tl = { 0, 0 };
+  COORD     br = { 0, 0 };
   CELL      *cptr;
   CELL      *optr;
   

@@ -282,7 +282,7 @@ ARGSEP  String  *argv
 	    /* EMPTY */;
 	  display.toplevel = XtAppInitialize(&display.context, "Xmris",
 	      options, (Cardinal)(ptr - options),
-	      (Cardinal *)&argc, (String *)argv,
+	      &argc, (String *)argv,
 	      (String *)NULL, toplevel_args, XtNumber(toplevel_args));
 	}
       if(argc > 1)
@@ -309,7 +309,7 @@ ARGSEP  String  *argv
 	/*{{{  some more setup*/
 	{
 	  XtResource CONST *ptr;
-	  char CONST *dir;
+	  char *dir;
 	  
 	  XtAppSetTypeConverter(display.context, XtRString, XtRKeySym,
 	      convert_string2keysym, (XtConvertArgRec *)NULL, 0, XtCacheNone,
