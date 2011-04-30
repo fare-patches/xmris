@@ -846,21 +846,9 @@ directory containing it must be writable by Mr Is.
 .br
 .ne 3
 .TP
-.PD 0
-.B .../xmris-<name>
-.TP
 .B ~/.xmris.score
 .PD
-One of these files is used to store the personal best scores.
-Mr Is first looks for the personal score file in the score directory and
-then in the home directory. If a personal
-score file cannot be found, Mr Is attempts to create one. 
-If the file is found in the user's home directory, Mr Is attempts
-to move it to the score directory. Mr Is
-will attempt to create the personal files in the score directory. If this
-cannot be done, the personal score file is placed in the home directory. In
-order to create the personal score file in the score directory, Mr Is will
-have to have the correct access rights.
+This file is used to store the personal best scores.
 .br
 .ne 5
 .TP
