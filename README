@@ -29,16 +29,6 @@ the define USETIME, this will give less accurate timing. Also
 gettimeofday may or may not need a timezone argument, this is checked
 by the system type in timer.c.
 
-Set SCORE to the name of the high score directory.
-The score file uses lockf or flock by default, this doesn't work
-on some distributed filing systems. If so,
-define USELOCKFILE, and a lock file is used to do the locking with
-open(O_CREAT | O_EXCL). The name of the lock file is xmris.lock.
-For this to work the high score directory must be writeable, which
-is not the case with lockf. Personal high score files are also put
-in this directory, if xmris can create them there, otherwise they
-will be put in the users' home directory.
-
 You may need to force static linking, and not use shared libraries, or
 store a library load path with the binary with the linker -R option.
 The EXTRA_LOAD_FLAGS can be used for this. (This may be necessary for

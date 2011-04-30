@@ -60,13 +60,10 @@ XCOMM don't you have gettimeofday?
 TIME =
 XCOMM TIME = -DUSETIME
 
-XCOMM game defaults, you probably only want to alter the SCORE
+XCOMM game defaults, you probably do not want to alter these
 XCOMM
 /* You must specify a fixed width font that exists. */
 /* #define thefont "-*-courier-*-r-*-*-18-*-*-*-m-*-*-*" */
-XCOMM where is the high score file?
-XCOMM SCORE = $(LOCAL)/lib/$(APP)
-SCORE = /var/games/$(APP)
 /* to install default gardens not in /usr/share/$(APP) */
 /* #define InstallDefaultGardens $(DESTDIR)/usr/share/$(APP) */
 
@@ -90,14 +87,10 @@ XCOMM owner and access rights for executable & score directory
 XCOMM these are set for a setuid xmris
 XCOMM OWNER = -o games
 OWNER =
-INSTSCOREFLAGS = $(OWNER) -m 755
 INSTMRISFLAGS = $(OWNER) $(INSTUIDFLAGS)
 XCOMM normal install locations
 THEBINDIR = $(BINDIR)
 THEMANDIR = $(MANDIR)
-XCOMM for open access you want 777 and $(INSTPGMFLAGS),
-XCOMM (the personal score files go in users' home dirs.)
-XCOMM INSTSCOREFLAGS = -m 777
 XCOMM INSTMRISFLAGS = $(INSTPGMFLAGS)
 XCOMM If you're not installing in the default locations
 XCOMM DESTDIR = 
@@ -118,7 +111,7 @@ FONT = thefont
 #endif
 
 DEFINES = $(EXTRACCOPTIONS) -DFONT_NAME='$(FONT)' $(NDEBUG) \
-	-DSCORE_DIR='"$(SCORE)"' $(TIME) $(KNR) -DSCROLLBARBUGFIX
+	$(TIME) $(KNR) -DSCROLLBARBUGFIX
 LOCAL_LIBRARIES = $(XAWLIB) $(XTOOLLIB) $(XMULIB) $(XINTL) $(XLIB) $(MATHSLIB)
 DEPLIBS = $(DEPXLIB)
 
@@ -260,24 +253,7 @@ XCOMM application resource files
 InstallAppDefaults(Xmris)
 
 Xmris.ad : Xmris-ad.src
-	sed -e 's@SCORE@$(SCORE)@' -e s@FONT@$(FONT)@ < Xmris-ad.src > Xmris.ad
-
-XCOMM score directory install
-install ::
-	MakeDir($(SCORE))
-	@#not all $(INSTALL) have a -d flag, have to do it explicitly
-	@echo installing $(INSTSCOREFLAGS) $(SCORE)
-	@set -- $(INSTSCOREFLAGS) ; \
-	while [ $$# -ne 0 ] ; \
-	do \
-	case "$$1" in \
-	"-o") shift ; chown $$1 $(SCORE) ; echo owner is $$1 ;; \
-	"-m") shift ; chmod $$1 $(SCORE) ;; \
-	"-g") shift ; chgrp $$1 $(SCORE) ; echo group is $$1 ;; \
-	*) echo unknown option '$$1' ;; \
-	esac ; \
-	shift ; \
-	done
+	sed -e s@FONT@$(FONT)@ < Xmris-ad.src > Xmris.ad
 
 #ifdef InstallDefaultGardens
 XCOMM install default gardens
@@ -847,9 +823,6 @@ initialize :
 	@echo Checking a few things
 	@if [ `ls -t Makefile Imakefile | sed '2,$$d'` = Imakefile ] ; then \
 	  echo Warning:Makefile is older than Imakefile ; \
-	fi
-	@if [ ! -d `echo '$(SCORE)' | sed 's=/[^/]*$$=='` ] ; then \
-	  echo The parent of $(SCORE) does not exist ; \
 	fi
 	@if [ $(FONT) = "" ] ; then true ; \
 	elif echo $(FONT) | grep -c -- '-m-.*-.*-.*$$' > /dev/null ; then \

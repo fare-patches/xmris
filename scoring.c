@@ -17,6 +17,7 @@
 #endif /* SYSV */
 /*}}}*/
 /*{{{  static*/
+static CONST char *score_dir = "/var/games";
 static CONST char date_formats[4] = "DMY";
 static char     *score_file = NULL;   /* high score file name */
 static char     *personal_file = NULL;  /* personal in high score dir */
@@ -287,25 +288,22 @@ extern VOIDFUNC init_scores FUNCARGVOID
       scoring.alternate = alternate;
   }
   /*}}}*/
-  dirlen = data.dir ? strlen(data.dir) : 0;
-  if(dirlen && data.dir[dirlen - 1] == '/')
-    dirlen--;
   /*{{{  score directory?*/
-  if(dirlen)
     {
       size_t    nlen;
   
+      dirlen = strlen(score_dir);
       score_file = malloc(dirlen + 14);
       if(score_file)
 	{
-	  strcpy(score_file, data.dir);
+	  strcpy(score_file, score_dir);
 	  strcpy(&score_file[dirlen], "/xmris.score");
 	}
       nlen = strlen(user);
       personal_file = malloc(dirlen + 8 + nlen);
       if(personal_file)
 	{
-	  strcpy(personal_file, data.dir);
+	  strcpy(personal_file, score_dir);
 	  strcpy(&personal_file[dirlen], "/xmris-");
 	  strcpy(&personal_file[dirlen + 7], user);
 	}
@@ -591,16 +589,15 @@ FUNCARG((insert),
 	  /*{{{  try personal files too*/
 	  {
 	    /*{{{  score directory?*/
-	    if(data.dir)
 	      {
 		size_t    dirlen;
 		char      *file;
 		
-		dirlen = strlen(data.dir);
+		dirlen = strlen(score_dir);
 		file = malloc(dirlen + 8 + strlen(data.remove));
 		if(file)
 		  {
-		    strcpy(file, data.dir);
+		    strcpy(file, score_dir);
 		    strcpy(&file[dirlen], "/xmris-");
 		    strcpy(&file[dirlen + 7], data.remove);
 		    if(!unlink(file))

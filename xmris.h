@@ -13,11 +13,6 @@
 #define FUNCANIMATE(name, arg) PROTOVOID(*name(arg)) PROTOVOID(*arg);
 #endif
 /*}}}*/
-/*{{{  check score*/
-#ifndef SCORE_DIR
-  #error No default score directory
-#endif /* SCORE_DIR */
-/*}}}*/
 /*{{{  defines*/
 /*{{{  board sizes*/
 #define KNOCK_THROUGH /* how far we go to knock through a new cell */\
@@ -41,9 +36,6 @@
 #define SCORE_SCALE 1024    /* precision of score scaling */
 /*}}}*/
 /*{{{  score file*/
-#ifndef SCORE_DIR
-#define SCORE_DIR NULL
-#endif /* SCORE_DIR */
 #define SCORE_THRESHOLD 10000 /* minimum score for fame */
 #define SCORE_ROUND     5     /* scores are rounded */
 #define HIGH_SCORES (CELLS_DOWN - 2)

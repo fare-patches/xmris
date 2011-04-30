@@ -309,7 +309,6 @@ ARGSEP  String  *argv
 	/*{{{  some more setup*/
 	{
 	  XtResource CONST *ptr;
-	  char *dir;
 	  
 	  XtAppSetTypeConverter(display.context, XtRString, XtRKeySym,
 	      convert_string2keysym, (XtConvertArgRec *)NULL, 0, XtCacheNone,
@@ -320,13 +319,10 @@ ARGSEP  String  *argv
 	      (void (*)PROTOARG((XtAppContext, XrmValue *, XtPointer,
 		  XrmValue *, Cardinal *)))NULL);
 	  display.display = XtDisplay(display.toplevel);
-	  dir = data.dir;
 	  for(ptr = resources; *(char CONST **)ptr; ptr++)
 	    /* EMPTY */;
 	  XtGetApplicationResources(display.toplevel, (XtPointer)&data,
 	      resources, (Cardinal)(ptr - resources), (Arg *)NULL, 0);
-	  if(dir)
-	    data.dir = dir;
 	  gettoplevelresources();
 	  XtVaSetValues(display.toplevel,
 	      XtNtitle, (XtArgVal)names[data.gender != False],
@@ -340,8 +336,6 @@ ARGSEP  String  *argv
 	  }
 	}
 	/*}}}*/
-      if(!data.dir)
-	data.dir = (char *)resources[0].default_addr;
     }
     /*}}}*/
   return;

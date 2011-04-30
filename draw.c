@@ -1039,10 +1039,6 @@ ARGSEP  char CONST *parent
 	      if(!lib)
 		lib = XtResolvePathname(display.display, "app-defaults/xmris",
 		    name, FILE_SUFFIX, NULL, NULL, 0, NULL);
-	      if(!lib && data.dir)
-		lib = XtResolvePathname(display.display, data.dir, name,
-		    FILE_SUFFIX, "%T/%N:%T/%N%S:%T/gardens/%N:%T/gardens/%N%S",
-		    NULL, 0, NULL);
 	      if(lib)
 		{
 		  XtFree(filename);

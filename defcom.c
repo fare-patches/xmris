@@ -193,7 +193,6 @@ CommandOptionDesc command_options[] =
   {"-remove",  1,  XtOffsetOf(DATA, remove)},
   {"-nodisplay",0, XtOffsetOf(DATA, nodisplay)},
   {"+display", 0,  XtOffsetOf(DATA, nodisplay)},
-  {"-dir",     1,  XtOffsetOf(DATA, dir)},
 #endif /* XMRED */
   {NULL}
 };
@@ -228,9 +227,6 @@ XrmOptionDescRec options[] =
 XtResource resources[] =
 {
 #ifndef XMRED
-  /* dir must be first */
-  {"dir", "Dir", XtRString, sizeof(String),
-      XtOffsetOf(DATA, dir), XtRString, (XtPointer)SCORE_DIR},
   {"up", "Up", XtRKeySym, sizeof(KeySym),
       XtOffsetOf(DATA, keysyms[0]), XtRString, (XtPointer)"Up"},
   {"down", "Down", XtRKeySym, sizeof(KeySym),
@@ -371,7 +367,6 @@ HELP CONST help[] =
   {"Modern sprites",                "-msit",      "Gender:she", ""},
 #ifndef XMRED
   {"Random apples",                 "-random",    "Random:yes", ""},
-  {"High score directory",          "-dir",       "Dir:", "<directory>"},
   {"Use username in score",         "-username",  "UserName:yes", ""},
   {"Use realname in score",         "-realname",  "UserName:no", ""},
 #endif /* XMRED */

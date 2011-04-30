@@ -280,7 +280,6 @@ typedef struct Data
 {
   Font    font;     /* font to use */
 #ifndef XMRED
-  String  dir;      /* score directory */
   String  expire;   /* expiration */
   String  remove;   /* removal */
   String  boards;   /* board definitions */

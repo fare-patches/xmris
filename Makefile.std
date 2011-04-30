@@ -435,12 +435,8 @@ KNR =
 TIME =
 # TIME = -DUSETIME
 
-# game defaults, you probably only want to alter the SCORE
+# game defaults, you probably do not want to alter these
 #
-
-# where is the high score file?
-# SCORE = $(LOCAL)/lib/$(APP)
-SCORE = $(LIBDIR)/$(APP)
 
 # The following defines are needed for some implementations and/or sites.
 # It is xmkmf's job to get these right in the first place.
@@ -462,14 +458,10 @@ SCORE = $(LIBDIR)/$(APP)
 # owner and access rights for executable & score directory
 # these are set for a setuid xmris
 OWNER = -o games
-INSTSCOREFLAGS = $(OWNER) -m 755
 INSTMRISFLAGS = $(OWNER) $(INSTUIDFLAGS)
 # normal install locations
 THEBINDIR = $(BINDIR)
 THEMANDIR = $(MANDIR)
-# for open access you want 777 and $(INSTPGMFLAGS),
-# (the personal score files go in users' home dirs.)
-# INSTSCOREFLAGS = -m 777
 # INSTMRISFLAGS = $(INSTPGMFLAGS)
 # If you're not installing in the default locations
 # DESTDIR =
@@ -485,7 +477,7 @@ COFLAGS = -l
 RCSFLAGS =
 
 DEFINES = $(EXTRACCOPTIONS) -DFONT_NAME='$(FONT)' $(NDEBUG) \
-	-DSCORE_DIR='"$(SCORE)"' $(TIME) $(KNR) -DSCROLLBARBUGFIX
+	$(TIME) $(KNR) -DSCROLLBARBUGFIX
 LOCAL_LIBRARIES = $(XAWLIB) $(XTOOLLIB) $(XMULIB) $(XLIB) $(MATHSLIB)
 DEPLIBS = $(DEPXLIB)
 
@@ -665,25 +657,7 @@ install:: Xmris.ad
 	$(INSTALL) $(INSTALLFLAGS) $(INSTAPPFLAGS) Xmris.ad $(DESTDIR)$(XAPPLOADDIR)/Xmris
 
 Xmris.ad : Xmris-ad.src
-	sed -e 's@SCORE@$(SCORE)@' -e s@FONT@$(FONT)@ < Xmris-ad.src > Xmris.ad
-
-# score directory install
-install ::
-	@if [ -d $(SCORE) ]; then set +x; \
-	else (set -x; $(MKDIRHIER) $(SCORE)); fi
-	@#not all $(INSTALL) have a -d flag, have to do it explicitly
-	@echo installing $(INSTSCOREFLAGS) $(SCORE)
-	@set -- $(INSTSCOREFLAGS) ; \
-	while [ $$# -ne 0 ] ; \
-	do \
-	case "$$1" in \
-	"-o") shift ; chown $$1 $(SCORE) ; echo owner is $$1 ;; \
-	"-m") shift ; chmod $$1 $(SCORE) ;; \
-	"-g") shift ; chgrp $$1 $(SCORE) ; echo group is $$1 ;; \
-	*) echo unknown option '$$1' ;; \
-	esac ; \
-	shift ; \
-	done
+	sed -e s@FONT@$(FONT)@ < Xmris-ad.src > Xmris.ad
 
 # install default gardens
 install :: $(GARDENS)
@@ -1256,9 +1230,6 @@ initialize :
 	@echo Checking a few things
 	@if [ `ls -t Makefile Imakefile | sed '2,$$d'` = Imakefile ] ; then \
 	  echo Warning:Makefile is older than Imakefile ; \
-	fi
-	@if [ ! -d `echo '$(SCORE)' | sed 's=/[^/]*$$=='` ] ; then \
-	  echo The parent of $(SCORE) does not exist ; \
 	fi
 	@if [ $(FONT) = "" ] ; then true ; \
 	elif echo $(FONT) | grep -c -- '-m-.*-.*-.*$$' > /dev/null ; then \

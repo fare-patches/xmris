@@ -231,17 +231,12 @@ is still being used for the initial part of the frame delay.
 .br
 .ne 3
 .TP
-.B \-dir \fIscore-directory\fP
-Specify a different score directory.
-.br
-.ne 4
-.TP
 .PD 0
 .B \-username
 .TP
 .B \-realname
 .PD
-The name for the score file can be either the username or the real name.
+The name inside the score file can be either the username or the real name.
 These options select which to use. The default is to use the real name.
 If the real name is unobtainable, the username will
 be used anyway. If the current score file has an entry by the other
@@ -257,10 +252,8 @@ the Mr Is subdirectory of app-defaults. These are explained below.
 .ne 3
 .TP
 .B \-scores
-List the high scores to stdout. Does not start the game. Note that this
-will still need to open an X display, in order to read the X resources
-(which may affect the score directory). If you don't want the defaults
-read, use the +display option too.
+List the high scores to stdout. Does not start the game. An X display
+will still be opened. The +display option may be used to prevent this.
 .br
 .ne 4
 .TP
@@ -419,11 +412,6 @@ defaults in '[]'.)
 These give the logical key bindings. If the key symbol is unknown, the
 default will be used, and a warning printed. Note that these are case
 sensitive.
-.br
-.ne 3
-.TP
-.B Xmris.Dir: \fIscore-directory\fP
-The name of the high score directory.
 .br
 .ne 3
 .TP
@@ -851,9 +839,8 @@ following names.
 .br
 .ne 3
 .TP
-.B .../xmris.score
-The high score file. The directory is system dependent, and may be
-changed by application resource or option.
+.B /var/games/xmris.score
+The high score file.
 This file must either exist and be writable to by Mr Is, or the
 directory containing it must be writable by Mr Is.
 .br
@@ -888,12 +875,7 @@ See X for information about how these are searched.
 .br
 .ne 6
 .TP
-.PD 0
 .B .../app-defaults/xmris/<gardens>
-.TP
-.B <score-dir>/<gardens>
-.TP
-.B <score-dir>/gardens/<gardens>
 .PD
 Search path for loadable gardens. The suffix ".gdn" is appended to the
 filename, if required.
