@@ -20,7 +20,7 @@
 static CONST char *score_dir = "/var/games";
 static CONST char date_formats[4] = "DMY";
 static char     *score_file = NULL;   /* high score file name */
-static char     *personal_home = NULL;  /* personal in home dir */
+static char     *personal_file = NULL;  /* personal in home dir */
 static char     date_format[4] = "   ";
 static char     *alternate = NULL;    /* alternative name */
 static HIGH_SCORE *CONST tables[] =
@@ -52,7 +52,7 @@ extern VOIDFUNC check_scores FUNCARGVOID
 {
   retire_scores();
   if((score_file && file_changed(score_file)) ||
-     (personal_home && file_changed(personal_home)))
+     (personal_file && file_changed(personal_file)))
     load_check_expire_insert(0);
   return;
 }
@@ -305,11 +305,11 @@ extern VOIDFUNC init_scores FUNCARGVOID
 	size_t    length;
 	
 	length = strlen(home);
-	personal_home = malloc(length + 15);
-	if(personal_home)
+	personal_file = malloc(length + 15);
+	if(personal_file)
 	  {
-	    strcpy(personal_home, home);
-	    strcpy(&personal_home[length], "/.xmris.score");
+	    strcpy(personal_file, home);
+	    strcpy(&personal_file[length], "/.xmris.score");
 	  }
       }
   }
@@ -408,10 +408,10 @@ FUNCARG((insert),
  */
 {
   FILE      *score_stream;
-  FILE      *home_stream;
+  FILE      *personal_stream;
   unsigned  do_score, do_personal;
   
-  score_stream = home_stream = NULL;
+  score_stream = personal_stream = NULL;
   do_score = do_personal = 0;
   /*{{{  score_file?*/
   if(score_file)
@@ -423,12 +423,12 @@ FUNCARG((insert),
 	do_score = 1;
     }
   /*}}}*/
-  /*{{{  personal_home?*/
-  if(personal_home)
+  /*{{{  personal_file?*/
+  if(personal_file)
     {
-      home_stream = get_lock(personal_home, 2);
-      if(home_stream)
-	do_personal = merge_personal(home_stream);
+      personal_stream = get_lock(personal_file, 2);
+      if(personal_stream)
+	do_personal = merge_personal(personal_stream);
       else
 	do_personal = 1;
     }
@@ -945,22 +945,22 @@ FUNCARG((insert),
   /*{{{  write personal?*/
   if(do_personal)
     {
-	  if(!home_stream)
-	    home_stream = get_lock(personal_home, 1);
-	  if(home_stream)
-	    write_personal(home_stream);
+	  if(!personal_stream)
+	    personal_stream = get_lock(personal_file, 1);
+	  if(personal_stream)
+	    write_personal(personal_stream);
 	  else
-	    personal_home = NULL;
+	    personal_file = NULL;
     }
   /*}}}*/
-  if(home_stream)
-    get_unlock(home_stream);
+  if(personal_stream)
+    get_unlock(personal_stream);
   if(score_stream)
     get_unlock(score_stream);
   if(do_score && score_file)
     file_changed(score_file);
-  if(do_personal && personal_home)
-    file_changed(personal_home);
+  if(do_personal && personal_file)
+    file_changed(personal_file);
   return;
 }
 /*}}}*/
@@ -1028,7 +1028,7 @@ FUNCARG((stream),
   if(failed)
     {
       fprintf(stderr, "%s:Your personal score file '%s' has been corrupted.\n",
-	  myname, personal_home);
+	  myname, personal_file);
       scoring.personal[0].score = 0;
     }
   return failed;
