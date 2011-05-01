@@ -536,6 +536,7 @@ extern unsigned move_player PROTOARG((VOIDARG));
 extern VOIDFUNC check_scores PROTOARG((VOIDARG));
 extern VOIDFUNC high_score PROTOARG((unsigned long, unsigned, unsigned long));
 extern VOIDFUNC init_scores PROTOARG((VOIDARG));
+extern VOIDFUNC cleanup_scores PROTOARG((VOIDARG));
 /*}}}*/
 /*{{{  timer*/
 extern VOIDFUNC timer_close PROTOARG((VOIDARG));

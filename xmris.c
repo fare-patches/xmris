@@ -1348,6 +1348,7 @@ ARGSEP  char CONST **argv
       assert(monster.normals < 20);
     }
   timer_close();
+  cleanup_scores();
   return 0;
 }
 /*}}}*/
