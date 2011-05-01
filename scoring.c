@@ -1,4 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
+#define _GNU_SOURCE /* for setresuid / setresgid */
 #include "xmris.h"
 /*{{{  other includes*/
 #include <pwd.h>
@@ -169,6 +170,37 @@ ARGSEP  unsigned long msec
   return;
 }
 /*}}}*/
+/*{{{  void init_scores_early()*/
+extern VOIDFUNC init_scores_early FUNCARGVOID
+/*
+ * To be called asap from main, open the global highscore file and drop
+ * sgid rights
+ */
+{
+  /* Figure out who we really are. */
+  gid_t realgid = getgid();
+  uid_t realuid = getuid();
+
+  score_stream = fopen(score_file, "r+");
+  /* If we cannot open it, try creating it */
+  if(!score_stream)
+    score_stream = fopen(score_file, "w+");
+  if(!score_stream)
+    score_file = NULL;
+
+  /* This is where we drop our setuid/setgid privileges. */
+  if(setresgid(-1, realgid, realgid) != 0)
+    {
+      perror("Could not drop setgid privileges.  Aborting.");
+      exit(1);
+    }
+  if(setresuid(-1, realuid, realuid) != 0)
+    {
+      perror("Could not drop setuid privileges.  Aborting.");
+      exit(1);
+    }
+}
+/*}}}*/
 /*{{{  void init_scores()*/
 extern VOIDFUNC init_scores FUNCARGVOID
 /*
@@ -276,16 +308,6 @@ extern VOIDFUNC init_scores FUNCARGVOID
     if(data.username == False)
       scoring.alternate = alternate;
   }
-  /*}}}*/
-  /*{{{  score directory?*/
-    {
-      score_stream = fopen(score_file, "r+");
-      /* If we cannot open it, try creating it */
-      if(!score_stream)
-	score_stream = fopen(score_file, "w+");
-      if (!score_stream)
-	score_file = NULL;
-    }
   /*}}}*/
   /*{{{  personal file*/
   {

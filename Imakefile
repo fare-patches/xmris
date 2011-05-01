@@ -85,9 +85,9 @@ XCOMM install parameters
 XCOMM
 XCOMM owner and access rights for executable & score directory
 XCOMM these are set for a setuid xmris
-XCOMM OWNER = -o games
+XCOMM OWNER = -g games
 OWNER =
-INSTMRISFLAGS = $(OWNER) $(INSTUIDFLAGS)
+INSTMRISFLAGS = $(OWNER) $(INSTGIDFLAGS)
 XCOMM normal install locations
 THEBINDIR = $(BINDIR)
 THEMANDIR = $(MANDIR)

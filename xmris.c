@@ -1259,6 +1259,8 @@ ARGSEP  char CONST **argv
   PROTOANIMATE((*animate));
   Atom wm_delete_window;
   
+  init_scores_early();
+  
   myname = *argv ? *argv : "Xmris";
   open_toolkit(argc, (String *)argv);
   init_scores();
