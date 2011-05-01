@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=X Mr Ed
+Comment=Level Editor for X Mr Is
+Exec=xmred
+Icon=xmris
+Terminal=false
+StartupNotify=false
+Type=Application
+Categories=Game;ArcadeGame;

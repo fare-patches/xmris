@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=X Ms It
+Comment=Maze digging and cherry eating game
+Exec=xmsit
+Icon=xmsit
+Terminal=false
+StartupNotify=false
+Type=Application
+Categories=Game;ArcadeGame;
