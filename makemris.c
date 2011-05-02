@@ -274,13 +274,14 @@ ARGSEP  String  *argv
       if(data.nodisplay == False)
 	{
 	  XrmOptionDescRec CONST *ptr;
+	  const char *myclass = default_gender ? "Xmsit" : "Xmris";
     
 	  /* as options is an extern of unknown size, I can't use
 	   * XtNumber() to get its size, so I've done it this way
 	   */
 	  for(ptr = options; *(char CONST **)ptr; ptr++)
 	    /* EMPTY */;
-	  display.toplevel = XtAppInitialize(&display.context, "Xmris",
+	  display.toplevel = XtAppInitialize(&display.context, myclass,
 	      options, (Cardinal)(ptr - options),
 	      &argc, (String *)argv,
 	      (String *)NULL, toplevel_args, XtNumber(toplevel_args));

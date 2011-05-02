@@ -209,7 +209,7 @@ all :: initialize
 all :: xmris xmred
 	@#keep gnumake happy
 
-all :: README.xmris README.xmred Xmris.ad
+all :: README.xmris README.xmred Xmris.ad Xmsit.ad
 	@#keep gnumake happy
 
 XCOMM rules to make sure the initialize thing is done
@@ -251,9 +251,13 @@ InstallManPage(xmred,$(THEMANDIR))
 
 XCOMM application resource files
 InstallAppDefaults(Xmris)
+InstallAppDefaults(Xmsit)
 
 Xmris.ad : Xmris-ad.src
 	sed -e s@FONT@$(FONT)@ < Xmris-ad.src > Xmris.ad
+
+Xmsit.ad : Xmris.ad
+	sed -e "s@Gender:\t\the@Gender:\t\tshe@" < Xmris.ad > Xmsit.ad
 
 #ifdef InstallDefaultGardens
 XCOMM install default gardens
@@ -273,6 +277,7 @@ NormalProgramTarget(scram,$(SCRAMOBJS),,,)
 clean ::
 	$(RM) $(MRISOBJS)
 	$(RM) Xmris.ad
+	$(RM) Xmsit.ad
 	$(RM) $(MREDOBJS)
 	$(RM) $(WIDGETOBJS)
 	$(RM) $(SCRAMOBJS)
