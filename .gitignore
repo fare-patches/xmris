@@ -1,0 +1,15 @@
+xmris
+xmsit
+xmred
+scram
+
+Makefile
+Makefile.bak
+
+*.o
+*._man
+*.ad
+
+bitmaps/*/*.h
+bitmaps/sprites
+bitmaps/*/sprites
