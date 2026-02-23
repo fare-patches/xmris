@@ -1,9 +1,9 @@
-/* Copyright (C) 1993 Nathan Sidwell */
-/* RCS $Id: xmred.h,v 4.28 1995/12/14 13:53:27 nathan Exp $ */
+/* Copyright (C) 1993,1999 Nathan Sidwell */
+/* RCS $Id: xmred.h 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 #define XMRED 1
 #define BUTTONS         5
 #include "common.h"
-#define COPYRIGHT "Copyright (C) 1994,1993 Nathan Sidwell"
+#define COPYRIGHT "Copyright (C) 1993,1994,1999 Nathan Sidwell"
 /*{{{  defines*/
 #define UNDO_DEPTH  8
 #define ICON_WIDTH  (CELLS_ACROSS * 3 - 1)
@@ -117,19 +117,6 @@ typedef struct _GardenClassRec *GardenWidgetClass;
 typedef struct _GardenRec *GardenWidget;
 /*}}}*/
 /*{{{  prototypes*/
-/*{{{  all*/
-extern VOIDFUNC all_garden_comment PROTOARG((DESCRIPTOR *, unsigned));
-extern unsigned check_saved PROTOARG((unsigned));
-extern unsigned check_exists PROTOARG((char CONST *));
-extern VOIDFUNC free_descriptors PROTOARG((VOIDARG));
-extern VOIDFUNC free_dup PROTOARG((char **, char CONST *));
-extern VOIDFUNC install_all PROTOARG((Widget));
-extern char CONST *load_boards PROTOARG((char CONST *, unsigned));
-extern VOIDFUNC new_descriptors PROTOARG((VOIDARG));
-extern VOIDFUNC repaint_garden_icon PROTOARG((VOIDARG));
-extern char CONST *save_boards PROTOARG((char CONST *));
-extern DESCRIPTOR *unique_garden PROTOARG((VOIDARG));
-/*}}}*/
 /*{{{  control*/
 extern VOIDFUNC adjust_count PROTOARG((unsigned, int));
 extern VOIDFUNC install_control PROTOARG((Widget));
@@ -168,6 +155,19 @@ extern VOIDFUNC menu_garden PROTOARG((char CONST *));
 extern VOIDFUNC menu_total PROTOARG((unsigned));
 extern VOIDFUNC reset_garden_stack PROTOARG((VOIDARG));
 extern VOIDFUNC save_garden PROTOARG((VOIDARG));
+/*}}}*/
+/*{{{  whole*/
+extern VOIDFUNC all_garden_comment PROTOARG((DESCRIPTOR *, unsigned));
+extern unsigned check_saved PROTOARG((unsigned));
+extern unsigned check_exists PROTOARG((char CONST *));
+extern VOIDFUNC free_descriptors PROTOARG((VOIDARG));
+extern VOIDFUNC free_dup PROTOARG((char **, char CONST *));
+extern VOIDFUNC install_all PROTOARG((Widget));
+extern char CONST *load_boards PROTOARG((char CONST *, unsigned));
+extern VOIDFUNC new_descriptors PROTOARG((VOIDARG));
+extern VOIDFUNC repaint_garden_icon PROTOARG((VOIDARG));
+extern char CONST *save_boards PROTOARG((char CONST *));
+extern DESCRIPTOR *unique_garden PROTOARG((VOIDARG));
 /*}}}*/
 /*{{{  xmred*/
 extern size_t itoa PROTOARG((char *, unsigned long, unsigned));

@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: common.h,v 4.29 1995/12/14 13:53:27 nathan Exp $ */
+/* RCS $Id: common.h 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 /* common header stuff for xmris and xmred
  * included from xmris.h or xmred.h
  */

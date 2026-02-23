@@ -1,5 +1,9 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: patchlevel.h,v 4.11 1995/12/22 11:56:52 nathan Exp $ */
-#define XMRISVERSION "V4.04"
-#define XMREDVERSION "V1.03"
-#define DATE "21 December 1995"
+/* RCS $Id: patchlevel.h 1.4 Mon, 22 Nov 1999 14:02:23 +0000 nathan $ */
+
+/* $Format: "#define XMRISVERSION \"V$ReleaseVersion$\""$ */
+#define XMRISVERSION "V4.0.5"
+/* $Format: "#define XMREDVERSION \"V$ReleaseVersion$\""$ */
+#define XMREDVERSION "V4.0.5"
+/* $Format: "#define DATE \"$ProjectDate$\""$ */
+#define DATE "Mon, 22 Nov 1999 14:02:23 +0000"

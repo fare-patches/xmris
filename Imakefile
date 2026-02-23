@@ -2,15 +2,12 @@
 #define XCOMM #
 #endif
 
-XCOMM Copyright (C) 1993 Nathan Sidwell
-XCOMM RCS $Id: Imakefile,v 4.57 1995/12/22 11:32:07 nathan Exp $
+XCOMM Copyright (C) 1993,1999 Nathan Sidwell
+XCOMM RCS $Id: Imakefile 1.4 Mon, 22 Nov 1999 13:56:06 +0000 nathan $
 
-XCOMM specify if this is a transputer target
-XCOMM #define transputerbuild 1
-
-XCOMM For full details of the switches herein, read the README file
-XCOMM Imake file for xmris V4.04 23 July 1995
-VERSION = 4.04
+XCOMM $Format: "VERSION = $ReleaseVersion$"$
+VERSION = 4.0.5
+XCOMM $Format: "APP = $Project$"$
 APP = xmris
 
 /* Imake compatibility */
@@ -38,6 +35,7 @@ EXTRACCOPTIONS = -Wall -Wpointer-arith -Wwrite-strings -Wtraditional
 #endif /* HasGcc */
 #if defined(LinuxArchitecture)
 #define STATICDEBUG -static
+XCOMM XINTL=-lXintl
 #else
 #define STATICDEBUG
 #endif
@@ -48,7 +46,7 @@ XCOMM do you trust the code?
 XCOMM NDEBUG =
 XCOMM NDEBUG = -DNDEBUG
 XCOMM Allow debugging?
-XCOMM CDEBUGFLAGS = -g STATICDEBUG
+CDEBUGFLAGS = -g STATICDEBUG
 XCOMM debug event loop?
 XCOMM CDEBUGFLAGS += -DDEBUGEVENTLOOP
 #ifdef HPArchitecture
@@ -71,7 +69,7 @@ XCOMM
 /* #define thefont "-*-courier-*-r-*-*-18-*-*-*-m-*-*-*" */
 XCOMM where is the high score file?
 XCOMM SCORE = $(LOCAL)/lib/$(APP)
-SCORE = $(LIBDIR)/$(APP)
+SCORE = /var/lib/games/$(APP)
 /* to install default gardens not in app_defaults/$(APP)
 /* #define InstallDefaultGardens $(SCORE)/gardens */
 
@@ -91,10 +89,6 @@ XCOMM MATHSLIB = -lm
 
 XCOMM install parameters
 XCOMM
-#if transputerbuild
-XCOMM open access on the score file, 'cos transputers can't do setuid
-INSTSCOREFLAGS = -m 777
-#else
 XCOMM owner and access rights for executable & score directory
 XCOMM these are set for a setuid xmris
 OWNER = -o games
@@ -111,7 +105,6 @@ XCOMM If you're not installing in the default locations
 XCOMM DESTDIR = 
 XCOMM THEBINDIR = $(LOCAL)/bin
 XCOMM THEMANDIR = $(LOCAL)/man/man6
-#endif /* transputerbuild */
 
 #ifndef thefont
 #define thefont "-*-courier-*-r-*-*-18-*-*-*-m-*-*-*"
@@ -126,42 +119,9 @@ FONT = thefont
 #endif
 #endif
 
-#if transputerbuild
-#define object tco
-XCOMM transputer tools
-TOOLSET = /inmos/prod/d4314a
-ICC = $(TOOLSET)/tools/icc -WT
-ILINK = $(TOOLSET)/tools/ilink
-ICOLLECT = $(TOOLSET)/tools/icollect
-ILINKOPT = -f startup.lnk
-IINCLUDE = $(TOOLSET)/libs/
-IXINCLUDE = /inmos/prod/iq/f011a/libs/ /inmos/prod/iq/f011a/include/
-ITCPIPINCLUDE = /inmos/swgprod/s507b/libs/c/
-ISEARCH = $(IINCLUDE) $(IXINCLUDE) $(ITCPIPINCLUDE)
-IXLIBS = iXt.lib iXmu.lib iXext.lib iXlib.lib iXau.lib iXc.lib
-ILIBS = isockc.lib libc.lib
-TRANSPUTER = -t8
-ICFLAGS = -DTRANSPUTER $(ICDEBUGFLAGS) $(DEFINES)
-XCOMM Unfortunately -O for the inmos compiler specifies output file, not optimize
-XCOMM ICDEBUGFLAGS = -g
-.SUFFIXES : .tco
-
-.c.tco :
-	ISEARCH="$(ISEARCH)" $(ICC) $(TRANSPUTER) $(ICFLAGS) $(OUTPUT_OPTION) $<
-
-#else
-#define object o
-#endif /* transputerbuild */
-
-XCOMM default args for RCS ci and co
-XCOMM override from the command line to do other things
-CIFLAGS = -u
-COFLAGS = -l
-RCSFLAGS =
-
 DEFINES = $(EXTRACCOPTIONS) -DFONT_NAME='$(FONT)' $(NDEBUG) \
 	-DSCORE_DIR='"$(SCORE)"' $(LOCK) $(TIME) $(KNR) -DSCROLLBARBUGFIX
-LOCAL_LIBRARIES = $(XAWLIB) $(XTOOLLIB) $(XMULIB) $(XLIB) $(MATHSLIB)
+LOCAL_LIBRARIES = $(XAWLIB) $(XTOOLLIB) $(XMULIB) $(XINTL) $(XLIB) $(MATHSLIB)
 DEPLIBS = $(DEPXLIB)
 
 XCOMM filenames or stems
@@ -170,20 +130,20 @@ MRISHDRS = xmris.h defmris.h
 MREDHDRS = xmred.h defmred.h
 COMMONSRCS = defcom.c makecom.c
 GARDENS = alphabet.gdn digits.gdn puzzle.gdn xmred.gdn
-FILES = CHANGES CHANGES.4.01 CHANGES.4.02 CHANGES.4.03 CHANGES.4.04 \
-	README COPYRIGHT Imakefile \
+FILES = ChangeLog CHANGES CHANGES.4.01 CHANGES.4.02 CHANGES.4.03 CHANGES.4.04 \
+	README COPYRIGHT COPYING-2.0 Imakefile \
 	xmris.man xmred.man Xmris-ad.src
 MRISSRCS = apple.c defmris.c demo.c draw.c makemris.c \
 	monster.c move.c player.c scoring.c timer.c xmris.c
-MRISOBJS = $(MRISSRCS:.c=.object)
+MRISOBJS = $(MRISSRCS:.c=.o)
 SCRAMSRCS = scram.c
 SCRAMOBJS = $(SCRAMSRCS:.c=.o)
 WIDGETSRCS = Drag.c Icon.c PixmapList.c
-WIDGETOBJS = $(WIDGETSRCS:.c=.object)
+WIDGETOBJS = $(WIDGETSRCS:.c=.o)
 WIDGETHDRS = $(WIDGETSRCS:.c=.h)
-MREDSRCS = all.c control.c defmred.c dialogs.c garden.c makemred.c \
-	menubar.c xmred.c
-MREDOBJS = $(MREDSRCS:.c=.object)
+MREDSRCS = control.c defmred.c dialogs.c garden.c makemred.c \
+	menubar.c whole.c xmred.c
+MREDOBJS = $(MREDSRCS:.c=.o)
 XCOMM name all the sprites -- these are root names
 APPLE = bitmaps/apple/apldcy.r bitmaps/apple/aplnorm.r \
 	bitmaps/apple/aplrock.r bitmaps/apple/aplrot.r \
@@ -259,15 +219,9 @@ all :: initialize
 	@echo "NOTE:Xresource.h and String in Intrinsic.h by adding an _Xconst."
 	@#keep gnumake happy
 
-#if transputerbuild
-all :: xmris.btl xmred.btl
-	@#keep gnumake happy
-
-#else
 all :: xmris xmred
 	@#keep gnumake happy
 
-#endif /* transputerbuild */
 all :: README.xmris README.xmred Xmris.ad
 	@#keep gnumake happy
 
@@ -279,18 +233,6 @@ install :: initialize
 	@#keep gnumake happy
 
 XCOMM xmris build
-#if transputerbuild
-xmris.btl : xmris.lku
-	$(ICOLLECT) -t xmris.lku
-
-xmris.lku : $(MRISOBJS)
-	$(ILINK) $(TRANSPUTER) $(MRISOBJS) $(ILINKOPT) -o xmris.lku \
-	  $(IXLIBS) $(ILIBS)
-
-clean ::
-	$(RM) xmris.lku xmris.cfb
-
-#else
 NormalProgramTarget(xmris,$(MRISOBJS),$(DEPLIBS),$(LOCAL_LIBRARIES),)
 
 
@@ -300,27 +242,11 @@ install :: $(THEBINDIR)/xmris
 	$(RM) $(THEBINDIR)/xmsit
 	$(LN) ./xmris $(THEBINDIR)/xmsit
 
-#endif /* transputerbuild */
-
 XCOMM xmred build
-#if transputerbuild
-xmred.btl : xmred.lku
-	$(ICOLLECT) -t xmred.lku
-
-xmred.lku : $(MREDOBJS)
-	$(ILINK) $(TRANSPUTER) $(MREDOBJS) $(ILINKOPT) -o xmred.lku \
-	  $(IXLIBS) $(ILIBS)
-
-clean ::
-	$(RM) xmred.lku xmred.cfb
-
-#else
 NormalProgramTarget(xmred,$(MREDOBJS) $(WIDGETOBJS),$(DEPLIBS),$(LOCAL_LIBRARIES) -lm,)
 
 InstallProgram(xmred,$(THEBINDIR))
 
-#endif /* transputerbuild */
-#if !transputerbuild
 XCOMM manual pages
 README.xmris : xmris.man
 	$(RM) README.xmris
@@ -336,7 +262,6 @@ InstallManPageAliases(xmris,$(THEMANDIR),xmsit)
 
 InstallManPage(xmred,$(THEMANDIR))
 
-#endif /* transputerbuild */
 XCOMM application resource files
 InstallAppDefaults(Xmris)
 
@@ -390,13 +315,6 @@ XCOMM prefix tacked on. But we don't know the directory name we're in so
 XCOMM we have to determine that, and if it is already what we want, then
 XCOMM don't make a link
 tar : $(ALLFILES) README.xmris README.xmred
-	@if [ ! -f Makefile.std ] ; then \
-	  echo No Makefile.std, winging it ; \
-	  cp Makefile Makefile.std ; \
-	elif [ `ls -t Makefile Makefile.std | \
-	    sed '2,$$d'` = Makefile ] ; then \
-	  echo Warning:Makefile.std is older than Makefile ; \
-	fi
 	@echo Tarring \& feathering into $(APP).$(VERSION).tgz
 	@DIR=`pwd | sed "s+/.*/++"` ; rm="" ; \
 	if [ ! -x ../$(APP).$(VERSION) ] ; then \
@@ -411,132 +329,60 @@ tar : $(ALLFILES) README.xmris README.xmred
 	gzip -f > $(APP).$(VERSION).tgz ; \
 	$$rm
 
-XCOMM checkin all the checked out files
-XCOMM you can use MSG to set the checkin message
-checkin : $(ALLFILES)
-	@ARGS='$(CIFLAGS)' ; \
-	echo Checking in locked files with $${ARGS:-'no options'}
-	@ARGS='$(MSG)' ; \
-	FILELIST=`set $(ALLFILES) ; \
-	  (while [ $$# -ne 0 ] ; \
-	  do if [ -w $$1 ] ; then echo $$1 ; fi ; \
-	    shift ; \
-	  done) | sort` ; \
-	if [ -z "$$FILELIST" ] ; then \
-	  echo Nothing to do, all up to date ; \
-	elif [ 0$${ARGS:+1} -ne 0 ] ; then \
-	  echo Label \''$(MSG)'\' ; \
-	  ci $(CIFLAGS) -m"$(MSG)" $$FILELIST ; \
-	else \
-	  ci $(CIFLAGS) $$FILELIST ; \
-	fi ; \
-
-XCOMM checkout all the files, with COFLAGS args
-checkout :
-	@ARGS='$(COFLAGS)' ; \
-	echo Checking out all files with $${ARGS:-'no options'}
-	@co $(COFLAGS) `set $(ALLFILES) ; \
-	  while [ $$# -ne 0 ] ; \
-	  do if [ ! -w $$1 ] ; then echo $$1 ; fi ; \
-	    shift ; \
-	  done`
-
-rcs : checkin
-	@ARGS='$(RCSFLAGS)' ; \
-	echo RCSing all files with $${ARGS:-'no options'}
-	rcs $(RCSFLAGS) $(ALLFILES)
-
-XCOMM upload a tar file into this directory
-upload :
-	@arc=$(APP).$(VERSION).tgz ; \
-	if [ ! -r $$arc ] ; then \
-	  arc=$(APP).tgz ; \
-	fi ; \
-	echo Uploading from tar file $$arc ; \
-	echo Locking files about to be uploaded ; \
-	for file in `gunzip -c $$arc | tar tf -` ; \
-	do \
-	  base=`echo $$file | sed 's+^[^/]*/++'` ; \
-	  if [ ! -w $$base ] ; then \
-	    if [ -r `echo ./$$base | sed 's+/[^/]*$$++'`/RCS/`echo $$base | sed 's+.*/++'`,v ] ; then \
-	      co -l $$base ; \
-	    fi ; \
-	  fi ; \
-	done ; \
-	echo Commencing upload from $$arc ; \
-	DIR=`pwd | sed "s+/.*/++"` ; rm="" ; \
-	if [ ! -x ../$(APP).$(VERSION) ] ; then \
-	  rm="$(RM) ../$(APP).$(VERSION)" ; \
-	  $(LN) ./$$DIR ../$(APP).$(VERSION) ; \
-	fi ; \
-	(cd .. ; gunzip -c $(APP).$(VERSION)/$$arc | tar xvf -) ; \
-	$$rm ; \
-	echo Chmoding files which were uploaded ; \
-	for file in `gunzip -c $$arc | tar tf -` ; \
-	do \
-	  chmod +w `echo $$file | sed 's+^[^/]*/++'` ; \
-	done ; \
-	echo Upload from $$arc complete ; \
-	echo Don\'t for get to check them all in now
-
-Makefile.std :: initialize
-	cp Makefile Makefile.std
-	@echo You may want to edit Makefile.std now
-
-XCOMM these are the object dependencies
+XCOMM these are the o dependencies
 $(MRISOBJS) : xmris.h common.h ansiknr.h patchlevel.h
 
-makemris.object : defmris.h defcom.h makecom.c
+makemris.o : defmris.h defcom.h makecom.c
 
-defmris.object : defmris.h defcom.h defcom.c bitmaps/sprites
+defmris.o : defmris.h defcom.h defcom.c bitmaps/sprites
 
-draw.object : digits.gdn
+draw.o : digits.gdn
 
 $(MREDOBJS) : xmred.h common.h ansiknr.h patchlevel.h
 
-all.object : Drag.h Icon.h PixmapList.h
+whole.o : Drag.h Icon.h PixmapList.h
 
-control.object : Drag.h Icon.h
+control.o : Drag.h Icon.h
 
-defmred.object : defmred.h defcom.h defcom.c bitmaps/sprites xmred.gdn
+defmred.o : defmred.h defcom.h defcom.c bitmaps/sprites xmred.gdn
 
-makemred.object : defmred.h defcom.h makecom.c Icon.h PixmapList.h
+makemred.o : defmred.h defcom.h makecom.c Icon.h PixmapList.h
 
 $(SCRAMOBJS) : ansiknr.h
 
-Drag.object : Drag.h
+Drag.o : Drag.h
 
-Icon.object : Drag.h Icon.h
+Icon.o : Drag.h Icon.h
 
-PixmapList.object : PixmapList.h Drag.h
+PixmapList.o : PixmapList.h Drag.h
 
 XCOMM dependencies for single files
 XCOMM can't use $(@:.o=.c) or similar clever thing, 'cos its incompatible
 XCOMM gnumake is clever enough to perform a check out using implicit rules
 #define SINGLEDEPEND(root,target,depend) root.target : root.depend @@
-SINGLEDEPEND(apple,object,c)
-SINGLEDEPEND(defmris,object,c)
-SINGLEDEPEND(demo,object,c)
-SINGLEDEPEND(draw,object,c)
-SINGLEDEPEND(makemris,object,c)
-SINGLEDEPEND(monster,object,c)
-SINGLEDEPEND(move,object,c)
-SINGLEDEPEND(player,object,c)
-SINGLEDEPEND(scoring,object,c)
-SINGLEDEPEND(timer,object,c)
-SINGLEDEPEND(xmris,object,c)
-SINGLEDEPEND(scram,object,c)
-SINGLEDEPEND(Drag,object,c)
-SINGLEDEPEND(Icon,object,c)
-SINGLEDEPEND(PixmapList,object,c)
-SINGLEDEPEND(all,object,c)
-SINGLEDEPEND(control,object,c)
-SINGLEDEPEND(defmred,object,c)
-SINGLEDEPEND(dialogs,object,c)
-SINGLEDEPEND(garden,object,c)
-SINGLEDEPEND(makemred,object,c)
-SINGLEDEPEND(menubar,object,c)
-SINGLEDEPEND(xmred,object,c)
+SINGLEDEPEND(apple,o,c)
+SINGLEDEPEND(defmris,o,c)
+SINGLEDEPEND(demo,o,c)
+SINGLEDEPEND(draw,o,c)
+SINGLEDEPEND(makemris,o,c)
+SINGLEDEPEND(monster,o,c)
+SINGLEDEPEND(move,o,c)
+SINGLEDEPEND(player,o,c)
+SINGLEDEPEND(scoring,o,c)
+SINGLEDEPEND(timer,o,c)
+SINGLEDEPEND(xmris,o,c)
+SINGLEDEPEND(scram,o,c)
+SINGLEDEPEND(Drag,o,c)
+SINGLEDEPEND(Icon,o,c)
+SINGLEDEPEND(PixmapList,o,c)
+SINGLEDEPEND(whole,o,c)
+SINGLEDEPEND(control,o,c)
+SINGLEDEPEND(defmred,o,c)
+SINGLEDEPEND(dialogs,o,c)
+SINGLEDEPEND(garden,o,c)
+SINGLEDEPEND(makemred,o,c)
+SINGLEDEPEND(menubar,o,c)
+SINGLEDEPEND(xmred,o,c)
 XCOMM sprite rules
 SPRITEMARKERS = bitmaps/apple/sprites bitmaps/board/sprites \
 	bitmaps/icon/sprites bitmaps/player/sprites bitmaps/normal/sprites \
@@ -1033,14 +879,3 @@ initialize :
 	  echo Warning:Font $(FONT) is not fixed width ; \
 	fi
 	@echo "Geronimo!"
-
-XCOMM default rule looks for an RCS file to check out
-XCOMM not required for gmake, as that already has a rule for it
-.DEFAULT :
-	@if echo $@ | grep -cv '^/' > /dev/null && \
-	  [ -f `echo ./$@ | sed 's+^\(.*/\)\([^/]*\)$$+\1RCS/\2,v+'` ] ; then \
-	    co $(COFLAGS) $@ ; \
-	else \
-	  echo Cannot make $@ and cannot find one made. ; \
-	  exit 1 ; \
-	fi

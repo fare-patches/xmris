@@ -1,5 +1,5 @@
-/* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: all.c,v 4.18 1995/12/14 13:53:27 nathan Exp $ */
+/* Copyright (C) 1992,1993,1999 Nathan Sidwell */
+/* RCS $Id: whole.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 /*{{{  includes*/
 #include "xmred.h"
 #include <X11/StringDefs.h>
@@ -7,6 +7,7 @@
 #include <X11/Xaw/Form.h>
 #include <X11/Xaw/Scrollbar.h>
 #include <sys/stat.h>
+#include <string.h>
 #include "Drag.h"
 #include "Icon.h"
 #include "PixmapList.h"
@@ -197,10 +198,10 @@ ARGSEP  XtPointer call
       /*{{{  static Arg args[] =*/
       static Arg args[] =
       {
-	{XtNx, (XtArgVal)&x},
-	{XtNy, (XtArgVal)&y},
-	{XtNwidth, (XtArgVal)&width},
-	{XtNheight, (XtArgVal)&height},
+      	{XtNx, (XtArgVal)&x},
+      	{XtNy, (XtArgVal)&y},
+      	{XtNwidth, (XtArgVal)&width},
+      	{XtNheight, (XtArgVal)&height},
       };
       /*}}}*/
       
@@ -209,7 +210,7 @@ ARGSEP  XtPointer call
       dc->offset_x -= x;
       dc->offset_y -= y;
       dst = PixmapListQueryOffset(gizmos[GIZMO_GARDENS].widget,
-	  dc->offset_x, dc->offset_y, True);
+  	  dc->offset_x, dc->offset_y, True);
       assert(dst >= 0);
     }
   /*}}}*/
@@ -222,7 +223,7 @@ ARGSEP  XtPointer call
     {
       src = PixmapListQueryDrag(gizmos[GIZMO_GARDENS].widget);
       if(src < 0)
-	return;
+  	return;
     }
   else
     return;
@@ -237,73 +238,73 @@ ARGSEP  XtPointer call
       DESCRIPTOR *dptr;
       
       if(dst == SOURCE_UNIQUE)
-	return;
+    	return;
       for(ix = 0; ix != 3; ix++)
-	if(dc->invoker == gizmos[GIZMO_EDIT_BASE + ix].widget)
-	  {
-	    dptr = dup_descriptor(board.edit[ix]);
-	    if(dst != SOURCE_BUFFER)
-	      changed_flag &= ~(1 << ix);
-	    insert_descriptor(dptr, dst, 1);
-	    break;
-	  }
+    	if(dc->invoker == gizmos[GIZMO_EDIT_BASE + ix].widget)
+    	  {
+    	    dptr = dup_descriptor(board.edit[ix]);
+    	    if(dst != SOURCE_BUFFER)
+    	      changed_flag &= ~(1 << ix);
+    	    insert_descriptor(dptr, dst, 1);
+    	    break;
+    	  }
     }
     /*}}}*/
   else if(src == SOURCE_BUFFER)
     /*{{{  from buffer*/
     {
       if(board.insert.list)
-	{
-	  if(dst >= 0)
-	    {
-	      unsigned  ix;
-	      
-	      for(ix = board.insert.descriptors; ix--;)
-		{
-		  insert_descriptor(board.insert.list[ix], dst, 0);
-		  board.insert.list[ix] = NULL;
-		}
-	      free_descriptor(remove_descriptor(SOURCE_BUFFER));
-	    }
-	}
+    	{
+    	  if(dst >= 0)
+    	    {
+    	      unsigned  ix;
+    	      
+    	      for(ix = board.insert.descriptors; ix--;)
+    		{
+    		  insert_descriptor(board.insert.list[ix], dst, 0);
+    		  board.insert.list[ix] = NULL;
+    		}
+    	      free_descriptor(remove_descriptor(SOURCE_BUFFER));
+    	    }
+    	}
       else if(dst == SOURCE_UNIQUE)
-	edit_descriptor(SOURCE_BUFFER, 1);
+    	edit_descriptor(SOURCE_BUFFER, 1);
       else if(dst == SOURCE_BUFFER)
-	return;
+    	return;
       else if(board.buffer)
-	{
-	  DESCRIPTOR *dptr;
-	  
-	  dptr = dup_descriptor(board.buffer);
-	  insert_descriptor(dptr, dst,
-	      board.source[dptr->type] == SOURCE_BUFFER);
-	}
+    	{
+    	  DESCRIPTOR *dptr;
+    	  
+    	  dptr = dup_descriptor(board.buffer);
+    	  insert_descriptor(dptr, dst,
+    	      board.source[dptr->type] == SOURCE_BUFFER);
+    	}
     }
     /*}}}*/
   else
     /*{{{  from gardens*/
     {
       if(dst == SOURCE_UNIQUE)
-	edit_descriptor(src, 0);
+    	edit_descriptor(src, 0);
       else if(dst == SOURCE_BUFFER || (src + 1 != dst && src != dst))
-	{
-	  unsigned  copy;
-	  DESCRIPTOR *dptr;
-	  
-	  if(dst == SOURCE_BUFFER)
-	    {
-	      for(copy = 0; copy != 3; copy++)
-		if(board.source[copy] == SOURCE_BUFFER)
-		  break;
-	      if(copy == 3 && !check_saved(CHANGED_BUFFER))
-		return;
-	    }
-	  copy = board.source[board.list.list[src]->type] == src;
-	  dptr = remove_descriptor(src);
-	  if(dst > src)
-	    dst--;
-	  insert_descriptor(dptr, dst, copy);
-	}
+    	{
+    	  unsigned  copy;
+    	  DESCRIPTOR *dptr;
+    	  
+    	  if(dst == SOURCE_BUFFER)
+    	    {
+    	      for(copy = 0; copy != 3; copy++)
+    		if(board.source[copy] == SOURCE_BUFFER)
+    		  break;
+    	      if(copy == 3 && !check_saved(CHANGED_BUFFER))
+    		return;
+    	    }
+    	  copy = board.source[board.list.list[src]->type] == src;
+    	  dptr = remove_descriptor(src);
+    	  if(dst > src)
+    	    dst--;
+    	  insert_descriptor(dptr, dst, copy);
+    	}
     }
     /*}}}*/
   return;
@@ -448,12 +449,12 @@ FUNCARG((map),
     
     for(ix = CELLS_DOWN; ix--;)
       for(cptr = map->map[ix]; *cptr; cptr++)
-	if(*cptr != GARDEN_RANDOM && *cptr != GARDEN_NOAPPLE &&
-	    *cptr != GARDEN_CHERRY && !ISPATH(*cptr) && !ISAPPLE(*cptr))
-	  {
-	    error |= ERROR_CHAR;
-	    *cptr = GARDEN_RANDOM;
-	  }
+  	if(*cptr != GARDEN_RANDOM && *cptr != GARDEN_NOAPPLE &&
+  	    *cptr != GARDEN_CHERRY && !ISPATH(*cptr) && !ISAPPLE(*cptr))
+  	  {
+  	    error |= ERROR_CHAR;
+  	    *cptr = GARDEN_RANDOM;
+  	  }
   }
   /*}}}*/
   /*{{{  check fill*/
@@ -483,37 +484,37 @@ FUNCARG((map),
     
     for(cptr = map->map[CELLS_DOWN - 1]; *cptr; cptr++)
       if(ISAPPLE(*cptr) || *cptr == GARDEN_RANDOM)
-	{
-	  *cptr = GARDEN_NOAPPLE;
-	  error |= ERROR_APPLE_POSITION;
-	}
+  	{
+  	  *cptr = GARDEN_NOAPPLE;
+  	  error |= ERROR_APPLE_POSITION;
+  	}
   }
   /*}}}*/
   /*{{{  check required paths*/
   {
     static CONST unsigned path[][2] =
       {
-	{4, 0x2}, {5, 0x2}, {6, 0x2}, {7, 0x0},
+  	{4, 0x2}, {5, 0x2}, {6, 0x2}, {7, 0x0},
       };
     unsigned  ix;
     
     for(ix = XtNumber(path); ix--;)
       {
-	char      *cptr;
-	unsigned  c;
-	
-	cptr = (char *)(map->map) + path[ix][0];
-	c = *cptr;
-	if(!ISPATH(c))
-	  {
-	    error |= ERROR_PATH;
-	    *cptr = GARDEN_PATH + path[ix][1];
-	  }
-	else if((GARDENPATH(c) & path[ix][1]) != path[ix][1])
-	  {
-	    error |= ERROR_PATH;
-	    *cptr = (GARDENPATH(c) | path[ix][1]) + GARDEN_PATH;
-	  }
+  	char      *cptr;
+  	unsigned  c;
+  	
+  	cptr = (char *)(map->map) + path[ix][0];
+  	c = *cptr;
+  	if(!ISPATH(c))
+  	  {
+  	    error |= ERROR_PATH;
+  	    *cptr = GARDEN_PATH + path[ix][1];
+  	  }
+  	else if((GARDENPATH(c) & path[ix][1]) != path[ix][1])
+  	  {
+  	    error |= ERROR_PATH;
+  	    *cptr = (GARDENPATH(c) | path[ix][1]) + GARDEN_PATH;
+  	  }
       }
   }
   /*}}}*/
@@ -558,26 +559,26 @@ FUNCARG((map),
     for(count = 8; count--;)
       totals[count] = 0;
     for(count = (CELLS_ACROSS + 1) * CELLS_DOWN,
-	cptr = (char *)map->map; count--; cptr++)
+  	cptr = (char *)map->map; count--; cptr++)
       if(ISPATHCHERRY(*cptr) || *cptr == GARDEN_CHERRY)
-	totals[4]++;
+  	totals[4]++;
       else if(ISPATHDEN(*cptr))
-	totals[5]++;
+  	totals[5]++;
       else if(ISPATHPLAYER(*cptr))
-	totals[6]++;
+  	totals[6]++;
       else if(ISAPPLE(*cptr))
-	{
-	  unsigned  value;
-	  unsigned  ix;
-	  
-	  value = GARDENAPPLE(*cptr);
-	  for(ix = 4; ix--; value >>= 1)
-	    if(value & 1)
-	      totals[ix]++;
-	  totals[7]++;
-	}
+  	{
+  	  unsigned  value;
+  	  unsigned  ix;
+  	  
+  	  value = GARDENAPPLE(*cptr);
+  	  for(ix = 4; ix--; value >>= 1)
+  	    if(value & 1)
+  	      totals[ix]++;
+  	  totals[7]++;
+  	}
       else if(*cptr == GARDEN_RANDOM)
-	totals[7]++;
+  	totals[7]++;
     if(!totals[5])
       error |= ERROR_NO_DEN;
     if(!totals[6])
@@ -588,7 +589,7 @@ FUNCARG((map),
       error |= ERROR_TOO_FEW_APPLES;
     for(count = 4; count--;)
       if(totals[count] != map->apples)
-	error |= ERROR_BAD_APPLES;
+  	error |= ERROR_BAD_APPLES;
   }
   /*}}}*/
   return error;
@@ -637,10 +638,8 @@ FUNCARG((stream),
  * returns the error string, or NULL
  */
 {
-  extern int sys_nerr;
-  extern char *sys_errlist[];
-  
   int   error;
+  char const *text;
   
   if(!stream)
     error = errno;
@@ -653,7 +652,10 @@ FUNCARG((stream),
     error = errno;
   else
     return NULL;
-  return error >= 0 && error < sys_nerr ? sys_errlist[error] : "Unknown error";
+  text = strerror(error);
+  if(!text)
+    text = "Unknown error";
+  return text;
 }
 /*}}}*/
 /*{{{  DESCRIPTOR *dup_descriptor(src)*/
@@ -862,7 +864,7 @@ FUNCARG((root),
     char      *text;
     
     text = XtMalloc(strlen(initial_text) +
-	strlen(XMREDVERSION) + strlen(DATE) + 1);
+  	strlen(XMREDVERSION) + strlen(DATE) + 1);
     sprintf(text, initial_text, XMREDVERSION, DATE);
     initial_text = text;
   }
@@ -880,19 +882,19 @@ FUNCARG((root),
     for(ix = XtNumber(list); ix--;)
       list[ix] = gizmos[GIZMO_DRAG_BASE + ix].widget;
     XtVaSetValues(gizmos[GIZMO_DRAG].widget,
-	MredNwidgetChoices, (XtArgVal)list,
-	MredNnumWidgetChoices, (XtArgVal)XtNumber(list), NULL);
+  	MredNwidgetChoices, (XtArgVal)list,
+  	MredNnumWidgetChoices, (XtArgVal)XtNumber(list), NULL);
     XtAddCallback(gizmos[GIZMO_DRAG].widget, XtNcallback,
-	all_drag, (XtPointer)NULL);
+  	all_drag, (XtPointer)NULL);
   }
   /*}}}*/
   /*{{{  add edit callbacks*/
   {
     for(gptr = &gizmos[GIZMO_EDIT_BASE + XtNumber(edit_callbacks) - 1],
-	ix = XtNumber(edit_callbacks); ix--; gptr--)
+  	ix = XtNumber(edit_callbacks); ix--; gptr--)
       if(edit_callbacks[ix])
-	XtAddCallback(gptr->widget, XtNcallback, edit_callbacks[ix],
-	    (XtPointer)NULL);
+  	XtAddCallback(gptr->widget, XtNcallback, edit_callbacks[ix],
+  	    (XtPointer)NULL);
   }
   /*}}}*/
   XtAddCallback(gizmos[GIZMO_BUFFER].widget, XtNcallback,
@@ -976,7 +978,7 @@ ARGSEP  unsigned  insert    /* insert flag */
 	    start = line + 1;
 	    do
 	      {
-		char      *ptr;
+	  	char      *ptr;
 	    
 		/*{{{  read line*/
 		{
@@ -993,9 +995,9 @@ ARGSEP  unsigned  insert    /* insert flag */
 		      ptr += strlen(ptr);
 		      length = ptr - text;
 		      if(length && *(ptr - 1) == '\n')
-			break;
+		  	break;
 		      if(length + 1 < limit)
-			break;
+		  	break;
 		      limit += 128;
 		      text = XtRealloc(text, limit);
 		      ptr = text + length;
@@ -1005,9 +1007,9 @@ ARGSEP  unsigned  insert    /* insert flag */
 		  if(!lptr)
 		    {
 		      if(feof(stream))
-			*text = 0;
+		  	*text = 0;
 		      else
-			error |= ERROR_READING;
+		  	error |= ERROR_READING;
 		    }
 		  /*}}}*/
 		  if(!error)
@@ -1016,17 +1018,17 @@ ARGSEP  unsigned  insert    /* insert flag */
 		    break;
 		}
 		/*}}}*/
-		ptr = text;
-		if(!*ptr)
-		  {
-		    if(state)
-		      error |= ERROR_EOF;
-		    break;
-		  }
-		while(*ptr == ' ' || *ptr == '\t')
-		  ptr++;
-		if(*ptr == '\n')
-		  continue;
+	  	ptr = text;
+	  	if(!*ptr)
+	  	  {
+	  	    if(state)
+	  	      error |= ERROR_EOF;
+	  	    break;
+	  	  }
+	  	while(*ptr == ' ' || *ptr == '\t')
+	  	  ptr++;
+	  	if(*ptr == '\n')
+	  	  continue;
 		/*{{{  new block*/
 		if(state == 0)
 		  {
@@ -1048,25 +1050,25 @@ ARGSEP  unsigned  insert    /* insert flag */
 		    else if(!strncmp(ptr, "#include", 8))
 		      /*{{{  include*/
 		      {
-			ptr += 8;
-			while(*ptr == ' ' || *ptr == '\t')
-			  ptr++;
-			if(*ptr == '\"')
-			  {
-			    char      *name;
-			
-			    name = ++ptr;
-			    while(*ptr && *ptr != '\"')
-			      ptr++;
-			    *ptr = 0;
-			    free_dup(&tptr, name);
-			    type = DESCRIPTOR_INCLUDE;
-			  }
-			else
-			  {
-			    error = ERROR_SYNTAX;
-			    break;
-			  }
+		      	ptr += 8;
+		      	while(*ptr == ' ' || *ptr == '\t')
+		      	  ptr++;
+		      	if(*ptr == '\"')
+		      	  {
+		      	    char      *name;
+		      	
+		      	    name = ++ptr;
+		      	    while(*ptr && *ptr != '\"')
+		      	      ptr++;
+		      	    *ptr = 0;
+		      	    free_dup(&tptr, name);
+		      	    type = DESCRIPTOR_INCLUDE;
+		      	  }
+		      	else
+		      	  {
+		      	    error = ERROR_SYNTAX;
+		      	    break;
+		      	  }
 		      }
 		      /*}}}*/
 		    else if(*ptr == '{')
@@ -1149,25 +1151,25 @@ ARGSEP  unsigned  insert    /* insert flag */
 			    value = strtol(ptr, &eptr, 0);
 			    if(eptr == ptr)
 			      {
-				error = ERROR_SYNTAX;
-				state = 7;
+			  	error = ERROR_SYNTAX;
+			  	state = 7;
 			      }
 			    else
 			      {
-				switch(state)
-				{
-				  case 2:
-				    bptr->fill = value;
-				    /* CASCADE */
-				  case 3:
-				    bptr->colors = value;
-				    /* CASCADE */
-				  case 4:
-				    bptr->apples = value;
-				    /* CASCADE */
-				}
-				ptr = eptr;
-				state++;
+			  	switch(state)
+			  	{
+			  	  case 2:
+			  	    bptr->fill = value;
+			  	    /* CASCADE */
+			  	  case 3:
+			  	    bptr->colors = value;
+			  	    /* CASCADE */
+			  	  case 4:
+			  	    bptr->apples = value;
+			  	    /* CASCADE */
+			  	}
+			  	ptr = eptr;
+			  	state++;
 			      }
 			    break;
 			  }
@@ -1176,13 +1178,13 @@ ARGSEP  unsigned  insert    /* insert flag */
 			  case 5:
 			    if(*ptr == '{')
 			      {
-				state = 10;
-				ptr++;
+			  	state = 10;
+			  	ptr++;
 			      }
 			    else
 			      {
-				state = 7;
-				error = ERROR_SYNTAX;
+			  	state = 7;
+			  	error = ERROR_SYNTAX;
 			      }
 			    break;
 			  /*}}}*/
@@ -1190,26 +1192,26 @@ ARGSEP  unsigned  insert    /* insert flag */
 			  case 6:
 			    if(*ptr == '}')
 			      {
-				ptr++;
-				state = 7;
+			  	ptr++;
+			  	state = 7;
 			      }
 			    else if(*ptr == '"')
 			      {
-				char      *eptr;
-				
-				eptr = strchr(ptr + 1, '\"');
-				if(eptr)
-				  ptr = eptr + 1;
-				else
-				  {
-				    ptr++;
-				    error = ERROR_SYNTAX;
-				  }
+			  	char      *eptr;
+			  	
+			  	eptr = strchr(ptr + 1, '\"');
+			  	if(eptr)
+			  	  ptr = eptr + 1;
+			  	else
+			  	  {
+			  	    ptr++;
+			  	    error = ERROR_SYNTAX;
+			  	  }
 			      }
 			    else
 			      {
-				ptr++;
-				error = ERROR_SYNTAX;
+			  	ptr++;
+			  	error = ERROR_SYNTAX;
 			      }
 			    break;
 			  /*}}}*/
@@ -1217,10 +1219,10 @@ ARGSEP  unsigned  insert    /* insert flag */
 			  case 7:
 			    if(*ptr == '}')
 			      {
-				state = 0;
-				if(!(error & ERROR_FATAL_MASK))
-				  type = DESCRIPTOR_GARDEN;
-				ptr++;
+			  	state = 0;
+			  	if(!(error & ERROR_FATAL_MASK))
+			  	  type = DESCRIPTOR_GARDEN;
+			  	ptr++;
 			      }
 			    else if(*ptr++ == '{')
 			      state = 6;
@@ -1237,30 +1239,30 @@ ARGSEP  unsigned  insert    /* insert flag */
 			    eptr = strchr(ptr + 1, '\"');
 			    if(*ptr != '\"' || !eptr)
 			      {
-				error = ERROR_SYNTAX;
-				state = 6;
+			  	error = ERROR_SYNTAX;
+			  	state = 6;
 			      }
 			    else
 			      {
-				*eptr = 0;
-				if(eptr - ptr > CELLS_ACROSS + 1)
-				  {
-				    error = ERROR_STRING;
-				    ptr[1 + CELLS_ACROSS] = 0;
-				  }
-				strcpy(bptr->map[state - 10], ptr + 1);
-				if(eptr - ptr < CELLS_ACROSS + 1)
-				  {
-				    error = ERROR_STRING;
-				    memset(&bptr->map[state - 10]
-					[eptr - ptr - 1], '.',
-					CELLS_ACROSS + 1 - (eptr - ptr));
-				  }
-				bptr->map[state - 10][CELLS_ACROSS] = 0;
-				state++;
-				ptr = eptr + 1;
-				if(state == 10 + CELLS_DOWN)
-				  state = 6;
+			  	*eptr = 0;
+			  	if(eptr - ptr > CELLS_ACROSS + 1)
+			  	  {
+			  	    error = ERROR_STRING;
+			  	    ptr[1 + CELLS_ACROSS] = 0;
+			  	  }
+			  	strcpy(bptr->map[state - 10], ptr + 1);
+			  	if(eptr - ptr < CELLS_ACROSS + 1)
+			  	  {
+			  	    error = ERROR_STRING;
+			  	    memset(&bptr->map[state - 10]
+			  		[eptr - ptr - 1], '.',
+			  		CELLS_ACROSS + 1 - (eptr - ptr));
+			  	  }
+			  	bptr->map[state - 10][CELLS_ACROSS] = 0;
+			  	state++;
+			  	ptr = eptr + 1;
+			  	if(state == 10 + CELLS_DOWN)
+			  	  state = 6;
 			      }
 			    break;
 			  }
@@ -1291,21 +1293,21 @@ ARGSEP  unsigned  insert    /* insert flag */
 	      
 	      dptr = malloc_descriptor(type, tptr, bptr);
 	      if(type == DESCRIPTOR_GARDEN)
-		paint_garden_icon(dptr);
+	  	paint_garden_icon(dptr);
 	      if(insert)
-		{
-		  board.insert.descriptors++;
-		  if(board.insert.descriptors > board.insert.limit)
-		    {
-		      board.insert.limit += 128;
-		      board.insert.list =
-			  (DESCRIPTOR **)XtRealloc((VOID *)board.insert.list,
-			  board.insert.limit * sizeof(DESCRIPTOR *));
-		    }
-		  board.insert.list[board.insert.descriptors - 1] = dptr;
-		}
+	  	{
+	  	  board.insert.descriptors++;
+	  	  if(board.insert.descriptors > board.insert.limit)
+	  	    {
+	  	      board.insert.limit += 128;
+	  	      board.insert.list =
+	  		  (DESCRIPTOR **)XtRealloc((VOID *)board.insert.list,
+	  		  board.insert.limit * sizeof(DESCRIPTOR *));
+	  	    }
+	  	  board.insert.list[board.insert.descriptors - 1] = dptr;
+	  	}
 	      else
-		insert_descriptor(dptr, board.list.descriptors, 0);
+	  	insert_descriptor(dptr, board.list.descriptors, 0);
 	      last = type == DESCRIPTOR_COMMENT ? dptr : NULL;
 	    }
 	  /*}}}*/
@@ -1319,29 +1321,29 @@ ARGSEP  unsigned  insert    /* insert flag */
 	      sprintf(string, "Line %d", error_line);
 	      length = strlen(string);
 	      if(start != line)
-		{
-		  sprintf(&string[length], " garden %d (lines %d-%d)",
-		      (insert ? board.insert.descriptors :
-		      board.list.descriptors) - 1, start, line);
-		  length += strlen(&string[length]);
-		}
+	  	{
+	  	  sprintf(&string[length], " garden %d (lines %d-%d)",
+	  	      (insert ? board.insert.descriptors :
+	  	      board.list.descriptors) - 1, start, line);
+	  	  length += strlen(&string[length]);
+	  	}
 	      string[length++] = '\n';
 	      string[length] = 0;
 	      /*{{{  pop up error box?*/
 	      if(!popped)
-		{
-		  dialog_popup(DIALOG_LOAD_ERROR, NULL, "", NULL, XtGrabNone);
-		  popped = 1;
-		}
+	      	{
+	      	  dialog_popup(DIALOG_LOAD_ERROR, NULL, "", NULL, XtGrabNone);
+	      	  popped = 1;
+	      	}
 	      /*}}}*/
 	      dialog_append(DIALOG_LOAD_ERROR, string);
 	      for(ix = 16; ix--;)
-		if(error & 1 << ix)
-		  {
-		    sprintf(string, "%s%s\n", text_error[ix],
-			(1 << ix) & ERROR_FIX_MASK ? " (fixed)" : ""); 
-		    dialog_append(DIALOG_LOAD_ERROR, string);
-		  }
+	  	if(error & 1 << ix)
+	  	  {
+	  	    sprintf(string, "%s%s\n", text_error[ix],
+	  		(1 << ix) & ERROR_FIX_MASK ? " (fixed)" : ""); 
+	  	    dialog_append(DIALOG_LOAD_ERROR, string);
+	  	  }
 	      error &= ERROR_KEEP_MASK;
 	    }
 	  /*}}}*/
@@ -1570,12 +1572,12 @@ FUNCARG((filename),
 	    if(dptr->comment)
 	      save_comment(stream, dptr->comment, 1);
 	    fprintf(stream, "{\n  %d, %d, %d,\n  {\n",
-		bptr->fill, bptr->colors, bptr->apples);
+	  	bptr->fill, bptr->colors, bptr->apples);
 	    for(row = 0; row != CELLS_DOWN; row++)
 	      {
-		fputs("    \"", stream);
-		fputs(bptr->map[row], stream);
-		fputs("\",\n", stream);
+	  	fputs("    \"", stream);
+	  	fputs(bptr->map[row], stream);
+	  	fputs("\",\n", stream);
 	      }
 	    fputs("  }\n},\n", stream);
 	    break;

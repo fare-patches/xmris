@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: demo.c,v 4.17 1995/12/22 11:56:52 nathan Exp $ */
+/* RCS $Id: demo.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 #include "xmris.h"
 #define SCORING_LEN 22
 /*{{{  static*/
@@ -51,7 +51,7 @@ static FUNCANIMATE(animate_board, next)
     /*{{{  end*/
     {
       if(global.throw == 1 && state > 1)
-	global.pedestal = global.screen - 1;
+    	global.pedestal = global.screen - 1;
       timer_set((unsigned long)0, TIMING_OFF);
       assert(rts != (PROTOANIMATE((*)))NULL);
       then = (*rts)((PROTOVOID(*))NULL);
@@ -101,28 +101,28 @@ static FUNCANIMATE(animate_board, next)
       bounce_ball();
       /*{{{  plonk on M R I S*/
       {
-	unsigned  ix;
+      	unsigned  ix;
       
-	calc_extra_home(0);
-	for(ix = 4; ix--;)
-	  {
-	    unsigned  x, y;
-	    unsigned  j;
-	    CELL      *cptr;
-	    
-	    do
-	      {
-		do
-		  j = chaotic();
-		while(j >= CELLS_ACROSS * CELLS_DOWN);
-		x = j % CELLS_ACROSS;
-		y = j / CELLS_ACROSS;
-		cptr = BOARDCELL(x, y);
-	      }
-	    while(!cptr->xtra || cptr->xtra == 255);
-	    spawn_monster(0, SPRITE_MRIS + ix + (chaotic() & 4), 0, 0,
-		(int)x, (int)y, 0, 0);
-	  }
+      	calc_extra_home(0);
+      	for(ix = 4; ix--;)
+      	  {
+      	    unsigned  x, y;
+      	    unsigned  j;
+      	    CELL      *cptr;
+      	    
+      	    do
+      	      {
+      		do
+      		  j = chaotic();
+      		while(j >= CELLS_ACROSS * CELLS_DOWN);
+      		x = j % CELLS_ACROSS;
+      		y = j / CELLS_ACROSS;
+      		cptr = BOARDCELL(x, y);
+      	      }
+      	    while(!cptr->xtra || cptr->xtra == 255);
+      	    spawn_monster(0, SPRITE_MRIS + ix + (chaotic() & 4), 0, 0,
+      		(int)x, (int)y, 0, 0);
+      	  }
       }
       /*}}}*/
       global.count = DISPLAY_HOLD;
@@ -135,74 +135,74 @@ static FUNCANIMATE(animate_board, next)
     {
       /*{{{  set den?*/
       while(cell_y != CELLS_DOWN)
-	{
-	  cell_x++;
-	  if(cell_x == CELLS_ACROSS)
-	    {
-	      cell_x = 0;
-	      cell_y++;
-	    }
-	  if(BOARDCELL(cell_x, cell_y)->den)
-	    {
-	      set_back_sprite(SPRITE_DEN, cell_x, cell_y);
-	      break;
-	    }
-	}
+      	{
+      	  cell_x++;
+      	  if(cell_x == CELLS_ACROSS)
+      	    {
+      	      cell_x = 0;
+      	      cell_y++;
+      	    }
+      	  if(BOARDCELL(cell_x, cell_y)->den)
+      	    {
+      	      set_back_sprite(SPRITE_DEN, cell_x, cell_y);
+      	      break;
+      	    }
+      	}
       /*}}}*/
       /*{{{  calc distances?*/
       if(monster.den && monster.normals != monster.drones)
-	{
-	  unsigned  ix;
-	  
-	  monster.drones = monster.normals;
-	  ix = choose_direction(monster.den);
-	  monster.den ^= 1 << ix;
-	  calc_extra_home(4 + ix);
-	}
+      	{
+      	  unsigned  ix;
+      	  
+      	  monster.drones = monster.normals;
+      	  ix = choose_direction(monster.den);
+      	  monster.den ^= 1 << ix;
+      	  calc_extra_home(4 + ix);
+      	}
       /*}}}*/
       if(!extra.count--)
-	new_xtra();
+    	new_xtra();
       if(player.ball.state)
-	bounce_ball();
+    	bounce_ball();
       else if(!monster.delay && chaotic() < 4)
-	{
-	  unsigned  throw;
-	  
-	  throw = global.throw;
-	  global.throw = 1;
-	  bounce_ball();
-	  global.throw = throw;
-	}
+    	{
+    	  unsigned  throw;
+    	  
+    	  throw = global.throw;
+    	  global.throw = 1;
+    	  bounce_ball();
+    	  global.throw = throw;
+    	}
       /*{{{  show a diamond?*/
       if(!global.diamond && !monster.delay && !chaotic())
-	{
-	  unsigned  j;
-	  int       x, y;
-	  CELL      *cptr;
-		
-	  do
-	    {
-	      do
-		{
-		  j = chaotic();
-		  x = j % CELLS_ACROSS;
-		  y = j / CELLS_ACROSS;
-		  cptr = BOARDCELL(x, y);
-		}
-	      while(j >= CELLS_DOWN * CELLS_ACROSS ||
-		  (x == global.start.x && y == global.start.y) ||
-		  cptr->sprite);
-	    }
-	  while(!cptr->visit || cptr[CELL_STRIDE].visit);
-	  global.diamond = 1;
-	  spawn_monster(0, 6, 0, 0, x, y, 0, 0)->count = DIAMOND_DELAY;
-	}
+      	{
+      	  unsigned  j;
+      	  int       x, y;
+      	  CELL      *cptr;
+      		
+      	  do
+      	    {
+      	      do
+      		{
+      		  j = chaotic();
+      		  x = j % CELLS_ACROSS;
+      		  y = j / CELLS_ACROSS;
+      		  cptr = BOARDCELL(x, y);
+      		}
+      	      while(j >= CELLS_DOWN * CELLS_ACROSS ||
+      		  (x == global.start.x && y == global.start.y) ||
+      		  cptr->sprite);
+      	    }
+      	  while(!cptr->visit || cptr[CELL_STRIDE].visit);
+      	  global.diamond = 1;
+      	  spawn_monster(0, 6, 0, 0, x, y, 0, 0)->count = DIAMOND_DELAY;
+      	}
       /*}}}*/
       if(!monster.delay--)
-	monster.delay = 31;
+    	monster.delay = 31;
       move_mris();
       if(monster.monsters == 1)
-	global.count--;
+    	global.count--;
     }
     /*}}}*/
   return then;
@@ -238,19 +238,19 @@ static FUNCANIMATE(animate_def_keys, next)
       player.old_ball.state = 0;
       player.old_ball.count = 16;
       XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
-	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+    	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
       back_mris(0);
       monster.den = 0;
       monster.delay = 0;
       while(!strchr(title_text[monster.delay].text, '%'))
-	{
-	  back_title(&title_text[monster.delay], monster.delay);
-	  monster.delay++;
-	}
+    	{
+    	  back_title(&title_text[monster.delay], monster.delay);
+    	  monster.delay++;
+    	}
       for(ix = monster.delay; strchr(title_text[ix + 1].text, '%'); ix++)
-	back_title(&title_text[ix], ix);
+    	back_title(&title_text[ix], ix);
       XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
-	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
+    	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
       global.count = 0;
     }
     /*}}}*/
@@ -259,46 +259,46 @@ static FUNCANIMATE(animate_def_keys, next)
     {
       TITLE CONST *tptr;
       unsigned  lookup;
-      KeyCode   key;
+      KeySym    key;
       
       tptr = &title_text[monster.delay + global.count];
       key = global.key;
       if(key == data.keysyms[KEY_THROW])
-	key = data.keysyms[tptr->ix];
+    	key = data.keysyms[tptr->ix];
       for(lookup = 0; lookup != KEYS; lookup++)
-	if((monster.den & 1 << lookup) && data.keysyms[lookup] == key)
-	  break;
+    	if((monster.den & 1 << lookup) && data.keysyms[lookup] == key)
+    	  break;
       if(lookup == KEYS)
-	{
-	  data.keysyms[tptr->ix] = key;
-	  monster.den |= 1 << tptr->ix;
-	  XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
-	      0, PIXELY(monster.delay + global.count, 0),
-	      WINDOW_WIDTH, CELL_HEIGHT);
-	  back_title(tptr, monster.delay + global.count);
-	  XCopyArea(display.display, display.back, display.copy,
-	      GCN(GC_COPY), 0, PIXELY(monster.delay + global.count, 0),
-	      WINDOW_WIDTH, CELL_HEIGHT,
-	      0, PIXELY(monster.delay + global.count, 0));
-	  while(lookup--)
-	    if(!(monster.den & 1 << lookup) && data.keysyms[lookup] == key)
-	      {
-		unsigned  ix;
-		
-		for(ix = monster.delay; title_text[ix].ix != lookup; ix++)
-		  /* EMPTY */;
-		XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
-		    CENTER_X + (font.width + 1) / 2, PIXELY(ix, 0),
-		    WINDOW_WIDTH / 2, CELL_HEIGHT);
-		XCopyArea(display.display, display.back, display.copy,
-		    GCN(GC_COPY), CENTER_X + (font.width + 1) / 2,
-		    PIXELY(ix, 0), WINDOW_WIDTH / 2,
-		    CELL_HEIGHT, CENTER_X + (font.width + 1) / 2,
-		    PIXELY(ix, 0));
-		monster.den |= 1 << lookup;
-	      }
-	  global.count++;
-	}
+    	{
+    	  data.keysyms[tptr->ix] = key;
+    	  monster.den |= 1 << tptr->ix;
+    	  XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+    	      0, PIXELY(monster.delay + global.count, 0),
+    	      WINDOW_WIDTH, CELL_HEIGHT);
+    	  back_title(tptr, monster.delay + global.count);
+    	  XCopyArea(display.display, display.back, display.copy,
+    	      GCN(GC_COPY), 0, PIXELY(monster.delay + global.count, 0),
+    	      WINDOW_WIDTH, CELL_HEIGHT,
+    	      0, PIXELY(monster.delay + global.count, 0));
+    	  while(lookup--)
+    	    if(!(monster.den & 1 << lookup) && data.keysyms[lookup] == key)
+    	      {
+    		unsigned  ix;
+    		
+    		for(ix = monster.delay; title_text[ix].ix != lookup; ix++)
+    		  /* EMPTY */;
+    		XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+    		    CENTER_X + (font.width + 1) / 2, PIXELY(ix, 0),
+    		    WINDOW_WIDTH / 2, CELL_HEIGHT);
+    		XCopyArea(display.display, display.back, display.copy,
+    		    GCN(GC_COPY), CENTER_X + (font.width + 1) / 2,
+    		    PIXELY(ix, 0), WINDOW_WIDTH / 2,
+    		    CELL_HEIGHT, CENTER_X + (font.width + 1) / 2,
+    		    PIXELY(ix, 0));
+    		monster.den |= 1 << lookup;
+    	      }
+    	  global.count++;
+    	}
     }
     /*}}}*/
   global.pause = 0;
@@ -307,37 +307,37 @@ static FUNCANIMATE(animate_def_keys, next)
     {
       /*{{{  help line*/
       {
-	TITLE CONST *tptr;
-	char    buffer[49];
-	size_t  length;
-	    
-	XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
-	    0, PIXELY(CELLS_DOWN - 1, 0), WINDOW_WIDTH,
-	    CELL_HEIGHT * 2 + GAP_HEIGHT);
-	strcpy(buffer, "Press new ");
-	tptr = &title_text[monster.delay + global.count];
-	strncat(buffer, tptr->text, strchr(tptr->text, ' ') - tptr->text);
-	strcat(buffer, " key");
-	length = strlen(buffer);
-	assert(length < sizeof(buffer));
-	XDrawImageString(display.display, display.back, GCN(GC_TEXT),
-	    CENTER_X - (int)(length * font.width / 2),
-	    PIXELY(CELLS_DOWN - 1, CELL_HEIGHT / 2) + font.center,
-	    buffer, (int)length);
-	if(!(monster.den & 1 << tptr->ix))
-	  {
-	    sprintf(buffer, "%s for current binding",
-		XKeysymToString(data.keysyms[KEY_THROW]));
-	    length = strlen(buffer);
-	    assert(length < sizeof(buffer));
-	    XDrawImageString(display.display, display.back, GCN(GC_TEXT),
-		CENTER_X - (int)(length * font.width / 2),
-		PIXELY(CELLS_DOWN, CELL_HEIGHT / 2) + font.center,
-		buffer, (int)length);
-	  }
-	XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
-	    0, PIXELY(CELLS_DOWN - 1, 0), WINDOW_WIDTH,
-	    CELL_HEIGHT * 2 + GAP_HEIGHT, 0, PIXELY(CELLS_DOWN - 1, 0));
+      	TITLE CONST *tptr;
+      	char    buffer[49];
+      	size_t  length;
+      	    
+      	XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+      	    0, PIXELY(CELLS_DOWN - 1, 0), WINDOW_WIDTH,
+      	    CELL_HEIGHT * 2 + GAP_HEIGHT);
+      	strcpy(buffer, "Press new ");
+      	tptr = &title_text[monster.delay + global.count];
+      	strncat(buffer, tptr->text, strchr(tptr->text, ' ') - tptr->text);
+      	strcat(buffer, " key");
+      	length = strlen(buffer);
+      	assert(length < sizeof(buffer));
+      	XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+      	    CENTER_X - (int)(length * font.width / 2),
+      	    PIXELY(CELLS_DOWN - 1, CELL_HEIGHT / 2) + font.center,
+      	    buffer, (int)length);
+      	if(!(monster.den & 1 << tptr->ix))
+      	  {
+      	    sprintf(buffer, "%s for current binding",
+      		XKeysymToString(data.keysyms[KEY_THROW]));
+      	    length = strlen(buffer);
+      	    assert(length < sizeof(buffer));
+      	    XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+      		CENTER_X - (int)(length * font.width / 2),
+      		PIXELY(CELLS_DOWN, CELL_HEIGHT / 2) + font.center,
+      		buffer, (int)length);
+      	  }
+      	XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
+      	    0, PIXELY(CELLS_DOWN - 1, 0), WINDOW_WIDTH,
+      	    CELL_HEIGHT * 2 + GAP_HEIGHT, 0, PIXELY(CELLS_DOWN - 1, 0));
       }
       /*}}}*/
       refresh_window();
@@ -425,12 +425,12 @@ extern FUNCANIMATE(animate_diamond, next)
       player.ball.count = 8;
       add_background(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT - 1);
       XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
-	  BORDER_LEFT + 1, BORDER_TOP + 1, BOARD_WIDTH - 2, BOARD_HEIGHT - 2);
+    	  BORDER_LEFT + 1, BORDER_TOP + 1, BOARD_WIDTH - 2, BOARD_HEIGHT - 2);
       spawn_monster(0, 4, 3, 3, CELLS_ACROSS + 1, CELLS_DOWN / 2,
-	  -(CELL_WIDTH + GAP_WIDTH) * CELLS_ACROSS, 0);
+    	  -(CELL_WIDTH + GAP_WIDTH) * CELLS_ACROSS, 0);
       spawn_monster(0, 6, 0, 0, CELLS_ACROSS / 2, CELLS_DOWN / 2, 0, 0);
       if(!global.lives)
-	monster.list[0].ghosting = GHOSTING;
+    	monster.list[0].ghosting = GHOSTING;
       draw_extra_letter(extra.select);
       global.state = MODE_GAME_DEMO;
       global.count = 3;
@@ -455,16 +455,16 @@ extern FUNCANIMATE(animate_diamond, next)
     /*{{{  animate*/
     {
       if(monster.list[0].offset.x == VEL_X - (CELL_WIDTH + GAP_WIDTH) *
-	  (CELLS_ACROSS + 2 - CELLS_ACROSS / 2))
-	{
-	  monster.list[0].pushing = 1;
-	  new_face(&monster.list[0]);
-	  monster.list[1].cell.x = CELLS_ACROSS + 1;
-	  monster.list[1].offset.x = -(CELL_WIDTH + GAP_WIDTH) *
-	    (CELLS_ACROSS + 1 - CELLS_ACROSS / 2);
-	}
+    	  (CELLS_ACROSS + 2 - CELLS_ACROSS / 2))
+    	{
+    	  monster.list[0].pushing = 1;
+    	  new_face(&monster.list[0]);
+    	  monster.list[1].cell.x = CELLS_ACROSS + 1;
+    	  monster.list[1].offset.x = -(CELL_WIDTH + GAP_WIDTH) *
+    	    (CELLS_ACROSS + 1 - CELLS_ACROSS / 2);
+    	}
       if(!move_demo(MONSTER_CYCLES))
-	global.count--;
+    	global.count--;
     }
     /*}}}*/
   return then;
@@ -495,69 +495,69 @@ extern FUNCANIMATE(animate_extra_life, next)
       player.old_ball.count = 16;
       add_background(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT - 1);
       XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
-	  BORDER_LEFT + 1, BORDER_TOP + 1, BOARD_WIDTH - 2, BOARD_HEIGHT - 2);
+    	  BORDER_LEFT + 1, BORDER_TOP + 1, BOARD_WIDTH - 2, BOARD_HEIGHT - 2);
       /*{{{  display some text*/
       {
-	unsigned  line;
-	char CONST **tptr;
-	    
-	line = BORDER_TOP + CELL_HEIGHT;
-	for(tptr = text; *tptr; tptr++)
-	  {
-	    size_t    length;
-	    
-	    length = strlen(*tptr);
-	    XDrawImageString(display.display, display.back, GCN(GC_TEXT),
-		CENTER_X - (int)(length * font.width / 2),
-		(int)line + font.ascent, *tptr, (int)length);
-	    line += font.ascent + font.descent;
-	  }
+      	unsigned  line;
+      	char CONST **tptr;
+      	    
+      	line = BORDER_TOP + CELL_HEIGHT;
+      	for(tptr = text; *tptr; tptr++)
+      	  {
+      	    size_t    length;
+      	    
+      	    length = strlen(*tptr);
+      	    XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+      		CENTER_X - (int)(length * font.width / 2),
+      		(int)line + font.ascent, *tptr, (int)length);
+      	    line += font.ascent + font.descent;
+      	  }
       }
       /*}}}*/
       spawn_monster(0, 4, 3, 3, 3, CELLS_DOWN / 2,
-	  -(CELL_WIDTH + GAP_WIDTH) * 3, 0);
+    	  -(CELL_WIDTH + GAP_WIDTH) * 3, 0);
       spawn_monster(0, 0, 2, 2, 0, CELLS_DOWN / 2,
-	  (CELLS_ACROSS - 1) * (CELL_WIDTH + GAP_WIDTH), 0);
+    	  (CELLS_ACROSS - 1) * (CELL_WIDTH + GAP_WIDTH), 0);
       if(!global.lives)
-	monster.list[0].ghosting = GHOSTING;
+    	monster.list[0].ghosting = GHOSTING;
       draw_extra_letter(extra.select);
       /*{{{  add m r i s*/
       {
-	unsigned  i;
-	    
-	for(i = 4; i--;)
-	  {
-	    back_sprite(SPRITE_MRIS + 4 + i, 0,
-		PIXELX(CELLS_ACROSS / 2 - 2 + (int)i, 0), PIXELY(2, 0));
-	    spawn_monster(0, SPRITE_MRIS + i, 1, 1,
-		CELLS_ACROSS / 2 - 2 + (int)i, 2,
-		0, -(CELL_HEIGHT + GAP_HEIGHT) * 3 -
-		  (int)CELL_HEIGHT / 2 * (int)i);
-	  }
+      	unsigned  i;
+      	    
+      	for(i = 4; i--;)
+      	  {
+      	    back_sprite(SPRITE_MRIS + 4 + i, 0,
+      		PIXELX(CELLS_ACROSS / 2 - 2 + (int)i, 0), PIXELY(2, 0));
+      	    spawn_monster(0, SPRITE_MRIS + i, 1, 1,
+      		CELLS_ACROSS / 2 - 2 + (int)i, 2,
+      		0, -(CELL_HEIGHT + GAP_HEIGHT) * 3 -
+      		  (int)CELL_HEIGHT / 2 * (int)i);
+      	  }
       }
       /*}}}*/
       /*{{{  create a path*/
       {
-	unsigned  i;
-	CELL      *cptr;
-	    
-	apple.apples = 0;
-	for(cptr = BOARDCELL(0, CELLS_DOWN / 2), i = CELLS_ACROSS; i--; cptr++)
-	  {
-	    cptr->visit = 1;
-	    cptr->sprite = 0;
-	    cptr->distance = CELLS_ACROSS - i;
-	    cptr->depths[0] = 0;
-	    cptr->depths[1] = 0;
-	    cptr->depths[2] = -(CELL_WIDTH + GAP_WIDTH);
-	    cptr->depths[3] = CELL_WIDTH + GAP_WIDTH;
-	    cptr->holes[0] = 0;
-	    cptr->holes[1] = 0;
-	    cptr->holes[2] = 0;
-	    cptr->holes[3] = 0;
-	  }
-	BOARDCELL(0, CELLS_DOWN / 2)->depths[2] = 0;
-	BOARDCELL(CELLS_ACROSS - 1, CELLS_DOWN / 2)->depths[3] = 0;
+      	unsigned  i;
+      	CELL      *cptr;
+      	    
+      	apple.apples = 0;
+      	for(cptr = BOARDCELL(0, CELLS_DOWN / 2), i = CELLS_ACROSS; i--; cptr++)
+      	  {
+      	    cptr->visit = 1;
+      	    cptr->sprite = 0;
+      	    cptr->distance = CELLS_ACROSS - i;
+      	    cptr->depths[0] = 0;
+      	    cptr->depths[1] = 0;
+      	    cptr->depths[2] = -(CELL_WIDTH + GAP_WIDTH);
+      	    cptr->depths[3] = CELL_WIDTH + GAP_WIDTH;
+      	    cptr->holes[0] = 0;
+      	    cptr->holes[1] = 0;
+      	    cptr->holes[2] = 0;
+      	    cptr->holes[3] = 0;
+      	  }
+      	BOARDCELL(0, CELLS_DOWN / 2)->depths[2] = 0;
+      	BOARDCELL(CELLS_ACROSS - 1, CELLS_DOWN / 2)->depths[3] = 0;
       }
       /*}}}*/
       global.state = MODE_GAME_DEMO;
@@ -579,14 +579,14 @@ extern FUNCANIMATE(animate_extra_life, next)
       extra.got = 0;
       create_xtra_monster(extra.select);
       for(i = 5; i--;)
-	draw_extra_letter(i);
+    	draw_extra_letter(i);
       x = PIXELX((int)global.lives - 1, 0);
       XCopyArea(display.display, sprites[SPRITE_PLAYER + 6].mask,
-	  display.back, GCN(GC_MASK), 0, 0,
-	  CELL_WIDTH, CELL_HEIGHT, x, PIXELY(CELLS_DOWN, 0));
+    	  display.back, GCN(GC_MASK), 0, 0,
+    	  CELL_WIDTH, CELL_HEIGHT, x, PIXELY(CELLS_DOWN, 0));
       XCopyArea(display.display, sprites[SPRITE_PLAYER + 6].image,
-	  display.back, GCN(GC_OR), 0, 0,
-	  CELL_WIDTH, CELL_HEIGHT, x, PIXELY(CELLS_DOWN, 0));
+    	  display.back, GCN(GC_OR), 0, 0,
+    	  CELL_WIDTH, CELL_HEIGHT, x, PIXELY(CELLS_DOWN, 0));
       add_background(x, PIXELY(CELLS_DOWN, 0), CELL_WIDTH, CELL_HEIGHT);
       global.lives++;
       assert(rts != (PROTOANIMATE((*)))NULL);
@@ -600,31 +600,31 @@ extern FUNCANIMATE(animate_extra_life, next)
       
       throw = global.throw;
       if(!monster.list[0].offset.x && global.count == 3)
-	{
-	  global.count--;
-	  global.throw = 1;
-	}
+    	{
+    	  global.count--;
+    	  global.throw = 1;
+    	}
       bounce_ball();
       global.throw = throw;
       if(player.ball.state == 3)
-	player.ball.state = 4;
+    	player.ball.state = 4;
       else if(player.ball.state == 4)
-	{
-	  player.ball.pixel.x = PIXELX(global.lives - 1, 0) + CELL_WIDTH / 2;
-	  player.ball.pixel.y = BORDER_TOP + BOARD_HEIGHT + 1 +
-	      CELL_HEIGHT / 2 - (CELL_HEIGHT + GAP_HEIGHT) * 3;
-	}
+    	{
+    	  player.ball.pixel.x = PIXELX(global.lives - 1, 0) + CELL_WIDTH / 2;
+    	  player.ball.pixel.y = BORDER_TOP + BOARD_HEIGHT + 1 +
+    	      CELL_HEIGHT / 2 - (CELL_HEIGHT + GAP_HEIGHT) * 3;
+    	}
       else if(!player.ball.state && global.count == 2)
-	{
-	  monster.list[0].face = 10;
-	  spawn_monster(0, SPRITE_PLAYER + 6, 0, 1, (int)global.lives - 1,
-	      CELLS_DOWN, 0, -(CELL_HEIGHT + GAP_HEIGHT) * 3);
-	  global.count--;
-	}
+    	{
+    	  monster.list[0].face = 10;
+    	  spawn_monster(0, SPRITE_PLAYER + 6, 0, 1, (int)global.lives - 1,
+    	      CELLS_DOWN, 0, -(CELL_HEIGHT + GAP_HEIGHT) * 3);
+    	  global.count--;
+    	}
       if(global.count == 1)
-	player.ball.count = 8;
+    	player.ball.count = 8;
       if(!move_demo(MONSTER_CYCLES) && global.count == 1)
-	global.count--;
+    	global.count--;
     }
     /*}}}*/
   return then;
@@ -655,59 +655,59 @@ extern FUNCANIMATE(animate_history, next)
       add_background(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT - 1);
       draw_extra_letter(extra.select);
       XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
-	  BORDER_LEFT + 1, BORDER_TOP + 1, BOARD_WIDTH - 2, BOARD_HEIGHT - 2);
+    	  BORDER_LEFT + 1, BORDER_TOP + 1, BOARD_WIDTH - 2, BOARD_HEIGHT - 2);
       /*{{{  add in the parts*/
       {
-	unsigned  base;
-	unsigned  screens;
-	unsigned  ix;
-	unsigned  sprite;
-	MONSTER   *mptr;
-	char      text[11];
-	size_t    length;
-	static unsigned sprites[4] =
-	    {SPRITE_CHERRY, SPRITE_NORMAL + 4, 4, 6};
-	    
-	screens = global.screen < CELLS_DOWN - 2 ?
-	    global.screen : CELLS_DOWN - 2;
-	base = global.screen - screens;
-	for(ix = screens; ix--;)
-	  {
-	    unsigned long time;
-	    
-	    sprintf(text, "Garden %d", base + ix + 1);
-	    length = strlen(text);
-	    XDrawImageString(display.display, display.back, GCN(GC_TEXT),
-		PIXELX(CELLS_ACROSS / 2 - 1,
-		  -GAP_WIDTH) - (int)(font.width * length),
-		PIXELY((int)(screens - ix),
-		  (CELL_HEIGHT + GAP_HEIGHT) / 2) + font.center,
-		  text, (int)length);
-	    time = history.times[screens - 1 - ix] / 1000;
-	    sprintf(text, "%3u\'%02u\"", (int)(time / 60), (int)(time % 60));
-	    length = strlen(text);
-	    XDrawImageString(display.display, display.back, GCN(GC_TEXT),
-		PIXELX(CELLS_ACROSS / 2 + 2, 0),
-		PIXELY((int)(screens - ix),
-		  (CELL_HEIGHT + GAP_HEIGHT) / 2) + font.center,
-		  text, (int)length);
-	    if(history.prize & 1 << (screens - 1 - ix))
-	      spawn_monster(0, SPRITE_PRIZE_BASE +
-		  (base + ix) % SPRITE_PRIZES, 0, 0,
-		  CELLS_ACROSS / 2 + 1, (int)(screens - ix),
-		  0, (int)ix * (2 * CELL_HEIGHT + GAP_HEIGHT) +
-		  CELLS_DOWN * GAP_HEIGHT + CELL_HEIGHT / 2 + GAP_HEIGHT +
-		  (CELL_HEIGHT + GAP_HEIGHT) *
-		    (2 + CELLS_DOWN - (int)screens));
-	    sprite = sprites[(history.ending >> (screens - 1 - ix) * 2) & 3];
-	    mptr = spawn_monster(0, sprite,
-		0, 0, CELLS_ACROSS / 2 - 1, (int)(screens - ix),
-		0, (int)ix * (2 * CELL_HEIGHT + GAP_HEIGHT) +
-		CELLS_DOWN * GAP_HEIGHT + (CELL_HEIGHT + GAP_HEIGHT) *
-		(2 + CELLS_DOWN - (int)screens));
-	    if(sprite == 4)
-	      mptr->face = 10;
-	  }
+      	unsigned  base;
+      	unsigned  screens;
+      	unsigned  ix;
+      	unsigned  sprite;
+      	MONSTER   *mptr;
+      	char      text[11];
+      	size_t    length;
+      	static unsigned sprites[4] =
+      	    {SPRITE_CHERRY, SPRITE_NORMAL + 4, 4, 6};
+      	    
+      	screens = global.screen < CELLS_DOWN - 2 ?
+      	    global.screen : CELLS_DOWN - 2;
+      	base = global.screen - screens;
+      	for(ix = screens; ix--;)
+      	  {
+      	    unsigned long time;
+      	    
+      	    sprintf(text, "Garden %d", base + ix + 1);
+      	    length = strlen(text);
+      	    XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+      		PIXELX(CELLS_ACROSS / 2 - 1,
+      		  -GAP_WIDTH) - (int)(font.width * length),
+      		PIXELY((int)(screens - ix),
+      		  (CELL_HEIGHT + GAP_HEIGHT) / 2) + font.center,
+      		  text, (int)length);
+      	    time = history.times[screens - 1 - ix] / 1000;
+      	    sprintf(text, "%3u\'%02u\"", (int)(time / 60), (int)(time % 60));
+      	    length = strlen(text);
+      	    XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+      		PIXELX(CELLS_ACROSS / 2 + 2, 0),
+      		PIXELY((int)(screens - ix),
+      		  (CELL_HEIGHT + GAP_HEIGHT) / 2) + font.center,
+      		  text, (int)length);
+      	    if(history.prize & 1 << (screens - 1 - ix))
+      	      spawn_monster(0, SPRITE_PRIZE_BASE +
+      		  (base + ix) % SPRITE_PRIZES, 0, 0,
+      		  CELLS_ACROSS / 2 + 1, (int)(screens - ix),
+      		  0, (int)ix * (2 * CELL_HEIGHT + GAP_HEIGHT) +
+      		  CELLS_DOWN * GAP_HEIGHT + CELL_HEIGHT / 2 + GAP_HEIGHT +
+      		  (CELL_HEIGHT + GAP_HEIGHT) *
+      		    (2 + CELLS_DOWN - (int)screens));
+      	    sprite = sprites[(history.ending >> (screens - 1 - ix) * 2) & 3];
+      	    mptr = spawn_monster(0, sprite,
+      		0, 0, CELLS_ACROSS / 2 - 1, (int)(screens - ix),
+      		0, (int)ix * (2 * CELL_HEIGHT + GAP_HEIGHT) +
+      		CELLS_DOWN * GAP_HEIGHT + (CELL_HEIGHT + GAP_HEIGHT) *
+      		(2 + CELLS_DOWN - (int)screens));
+      	    if(sprite == 4)
+      	      mptr->face = 10;
+      	  }
       }
       /*}}}*/
       global.state = MODE_GAME_DEMO;
@@ -733,7 +733,7 @@ extern FUNCANIMATE(animate_history, next)
     /*{{{  animate*/
     {
       if(!move_demo(MONSTER_CYCLES))
-	global.count--;
+    	global.count--;
     }
     /*}}}*/
   return then;
@@ -763,32 +763,32 @@ static FUNCANIMATE(animate_keys, next)
       player.old_ball.state = 0;
       player.old_ball.count = 16;
       XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
-	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+    	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
       /*{{{  put on M R I S*/
       {
-	unsigned  missing;
-	int       x, y;
-	    
-	missing = chaotic() & 3;
-	back_mris((unsigned)(1 << missing));
-	y = chaotic() % (CELLS_DOWN + 2) * (CELL_HEIGHT + GAP_HEIGHT);
-	x = chaotic() & 1 ? CELLS_ACROSS * (CELL_WIDTH + GAP_WIDTH) :
-	    -CELLS_ACROSS * (CELL_WIDTH + GAP_WIDTH);
-	spawn_monster(0, SPRITE_MRIS + missing, 0, 0,
-	    4 + (int)missing, -1, x, y);
+      	unsigned  missing;
+      	int       x, y;
+      	    
+      	missing = chaotic() & 3;
+      	back_mris((unsigned)(1 << missing));
+      	y = chaotic() % (CELLS_DOWN + 2) * (CELL_HEIGHT + GAP_HEIGHT);
+      	x = chaotic() & 1 ? CELLS_ACROSS * (CELL_WIDTH + GAP_WIDTH) :
+      	    -CELLS_ACROSS * (CELL_WIDTH + GAP_WIDTH);
+      	spawn_monster(0, SPRITE_MRIS + missing, 0, 0,
+      	    4 + (int)missing, -1, x, y);
       }
       /*}}}*/
       XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
       0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
       /*{{{  put on the title text*/
       {
-	TITLE CONST *tptr;
-	unsigned  ix;
-	unsigned  gnome;
-	    
-	gnome = 0;
-	for(tptr = title_text, ix = 0; tptr->text; tptr++, ix++)
-	  if(back_title(tptr, ix))
+      	TITLE CONST *tptr;
+      	unsigned  ix;
+      	unsigned  gnome;
+      	    
+      	gnome = 0;
+      	for(tptr = title_text, ix = 0; tptr->text; tptr++, ix++)
+      	  if(back_title(tptr, ix))
 	    /*{{{  spawn monster*/
 	    {
 	      unsigned  type;
@@ -796,24 +796,24 @@ static FUNCANIMATE(animate_keys, next)
 	      int       offsetx;
 	    
 	      do
-		{
-		  type = chaotic() & 3;
-		  if(type & 2)
-		    type++;
-		}
+	    	{
+	    	  type = chaotic() & 3;
+	    	  if(type & 2)
+	    	    type++;
+	    	}
 	      while(type == 4 && gnome);
 	      if(type == 4)
-		gnome = 1;
+	    	gnome = 1;
 	      if(chaotic() & 1)
-		{
-		  cellx = -2;
-		  offsetx = (CELLS_ACROSS + 2) * (CELL_WIDTH + GAP_WIDTH);
-		}
+	    	{
+	    	  cellx = -2;
+	    	  offsetx = (CELLS_ACROSS + 2) * (CELL_WIDTH + GAP_WIDTH);
+	    	}
 	      else
-		{
-		  cellx = CELLS_ACROSS + 1;
-		  offsetx = -(CELLS_ACROSS + 5) * (CELL_WIDTH + GAP_WIDTH);
-		}
+	    	{
+	    	  cellx = CELLS_ACROSS + 1;
+	    	  offsetx = -(CELLS_ACROSS + 5) * (CELL_WIDTH + GAP_WIDTH);
+	    	}
 	      offsetx += CELL_WIDTH * (chaotic() & 3);
 	      spawn_monster(0, type, 0, 0, cellx, (int)ix, offsetx, 0);
 	    }
@@ -839,7 +839,7 @@ static FUNCANIMATE(animate_keys, next)
     /*{{{  animate*/
     {
       if(!move_demo(MONSTER_CYCLES))
-	global.count--;
+    	global.count--;
     }
     /*}}}*/
   return then;
@@ -864,7 +864,7 @@ static FUNCANIMATE(animate_name, next)
       extra.got = 0x1F;
       blank_board(board.list[chaotic() % board.boards], 0);
       XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
-	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
+    	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
       player.old_ball.count = 16;
       player.ball.count = 16;
       then = animate_zoom((void (*) PROTOARG((VOIDARG)))animate_name);
@@ -917,8 +917,8 @@ static FUNCANIMATE(animate_name, next)
 	}
 	/*}}}*/
       else if(player.ball.state)
-	{
-	  bounce_ball();
+    	{
+    	  bounce_ball();
 	  /*{{{  imploded?*/
 	  if(!player.ball.state)
 	    {
@@ -927,22 +927,22 @@ static FUNCANIMATE(animate_name, next)
 	      
 	      letter = lettering[state][0];
 	      spawn_monster(0, 4, 0, 0,
-		  LETTERX(letter), LETTERY(letter), 0, 0);
+	  	  LETTERX(letter), LETTERY(letter), 0, 0);
 	      cptr = BOARDCELL(LETTERX(letter), LETTERY(letter));
 	      cptr->visit = 1;
 	      update.set = 0;
 	      munch_hole(cptr, PIXELX(LETTERX(letter), 0),
-		  PIXELY(LETTERY(letter), 0));
+	  	  PIXELY(LETTERY(letter), 0));
 	      add_background(update.tl.x, update.tl.y,
-		  (unsigned)(update.br.x - update.tl.x),
-		  (unsigned)(update.br.y - update.tl.y));
+	  	  (unsigned)(update.br.x - update.tl.x),
+	  	  (unsigned)(update.br.y - update.tl.y));
 	      global.count = 1;
 	      player.ball.count = 16;
 	    }
 	  /*}}}*/
-	}
+    	}
       else
-	{
+    	{
 	  /*{{{  new direction?*/
 	  if(!monster.list[0].count)
 	    {
@@ -950,37 +950,37 @@ static FUNCANIMATE(animate_name, next)
 	      
 	      letter = lettering[state][global.count++];
 	      if(letter == LETTEREND)
-		{
-		  monster.list[0].type = 5;
-		  player.ball.pixel.x = monster.list[0].pixel.x +
-		      CELL_WIDTH / 2;
-		  player.ball.pixel.y = monster.list[0].pixel.y +
-		      CELL_HEIGHT / 2;
-		  player.ball.state = 2;
-		  player.ball.count = 0;
-		  global.count = DISPLAY_HOLD *
-		      (unsigned)(FRAME_RATE / NAME_RATE);
-		  state++;
-		}
+	  	{
+	  	  monster.list[0].type = 5;
+	  	  player.ball.pixel.x = monster.list[0].pixel.x +
+	  	      CELL_WIDTH / 2;
+	  	  player.ball.pixel.y = monster.list[0].pixel.y +
+	  	      CELL_HEIGHT / 2;
+	  	  player.ball.state = 2;
+	  	  player.ball.count = 0;
+	  	  global.count = DISPLAY_HOLD *
+	  	      (unsigned)(FRAME_RATE / NAME_RATE);
+	  	  state++;
+	  	}
 	      else
-		{
-		  monster.list[0].dir = LETTERDIR(letter);
-		  monster.list[0].count = LETTERDIST(letter);
-		  new_face(&monster.list[0]);
-		}
+	  	{
+	  	  monster.list[0].dir = LETTERDIR(letter);
+	  	  monster.list[0].count = LETTERDIST(letter);
+	  	  new_face(&monster.list[0]);
+	  	}
 	    }
 	  /*}}}*/
-	  if(!monster.list[0].cycle)
-	    {
-	      monster.list[0].cycle = MONSTER_CYCLES;
-	      monster.list[0].image++;
-	      if(monster.list[0].image == MONSTER_IMAGES)
-		monster.list[0].image = 0;
-	    }
-	  monster.list[0].cycle--;
-	  if(monster.list[0].type != 5 && move_muncher(&monster.list[0]))
-	    monster.list[0].count--;
-	}
+    	  if(!monster.list[0].cycle)
+    	    {
+    	      monster.list[0].cycle = MONSTER_CYCLES;
+    	      monster.list[0].image++;
+    	      if(monster.list[0].image == MONSTER_IMAGES)
+    		monster.list[0].image = 0;
+    	    }
+    	  monster.list[0].cycle--;
+    	  if(monster.list[0].type != 5 && move_muncher(&monster.list[0]))
+    	    monster.list[0].count--;
+    	}
       global.throw = throw;
     }
     /*}}}*/
@@ -1030,27 +1030,27 @@ static FUNCANIMATE(animate_score, next)
   if(cycle)
     {
       static HIGH_SCORE *list[3] =
-	{scoring.today, scoring.high, scoring.personal};
+  	{scoring.today, scoring.high, scoring.personal};
       unsigned  ix;
       unsigned  count;
       
       if(!scoring.display)
-	ix = 0;
+  	ix = 0;
       else
-	for(ix = 3; ix--;)
-	  if(list[ix] == scoring.display)
-	    break;
+  	for(ix = 3; ix--;)
+  	  if(list[ix] == scoring.display)
+  	    break;
       for(count = 3; (ix = (ix + cycle) % 3), count--;)
-	if(list[ix]->score)
-	  {
-	    scoring.display = list[ix];
-	    break;
-	  }
+  	if(list[ix]->score)
+  	  {
+  	    scoring.display = list[ix];
+  	    break;
+  	  }
       if(!scoring.display)
-	{
-	  term = 1;
-	  start = 0;
-	}
+  	{
+  	  term = 1;
+  	  start = 0;
+  	}
     }
   /*}}}*/
   if(start)
@@ -1066,69 +1066,69 @@ static FUNCANIMATE(animate_score, next)
       player.old_ball.state = 0;
       player.old_ball.count = 16;
       XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
-	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+    	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
       XDrawLine(display.display, display.back, GCN(GC_BORDER),
-	BORDER_LEFT, PIXELY(CELLS_DOWN, 0) - 1,
-	BORDER_LEFT + BOARD_WIDTH, PIXELY(CELLS_DOWN, 0) - 1);
+    	BORDER_LEFT, PIXELY(CELLS_DOWN, 0) - 1,
+    	BORDER_LEFT + BOARD_WIDTH, PIXELY(CELLS_DOWN, 0) - 1);
       back_mris(0);
       /*{{{  check if splitting lines*/
       {
-	size_t    length;
-	HIGH_SCORE CONST *sptr;
-	unsigned  ix;
-	    
-	length = 0;
-	for(sptr = scoring.display, ix = 0;
-	    sptr->score && ix != HIGH_SCORES; sptr++, ix++)
-	  {
-	    size_t    temp;
-	    
-	    temp = strlen(sptr->name);
-	    if(temp > length)
-	      length = temp;
-	  }
-	monster.den = (length + SCORING_LEN) * font.width >
-	    PIXELX(CELLS_ACROSS, -GAP_WIDTH) - PIXELX(0, 0);
+      	size_t    length;
+      	HIGH_SCORE CONST *sptr;
+      	unsigned  ix;
+      	    
+      	length = 0;
+      	for(sptr = scoring.display, ix = 0;
+      	    sptr->score && ix != HIGH_SCORES; sptr++, ix++)
+      	  {
+      	    size_t    temp;
+      	    
+      	    temp = strlen(sptr->name);
+      	    if(temp > length)
+      	      length = temp;
+      	  }
+      	monster.den = (length + SCORING_LEN) * font.width >
+      	    PIXELX(CELLS_ACROSS, -GAP_WIDTH) - PIXELX(0, 0);
       }
       /*}}}*/
       /*{{{  heading*/
       {
-	char CONST *string;
-	size_t    length;
-	
-	if(scoring.display == scoring.personal)
-	  string = scoring.mine.name;
-	else
-	  string = table_names[scoring.display != scoring.high];
-	length = strlen(string);
-	XDrawImageString(display.display, display.back, GCN(GC_TEXT),
-	    PIXELX(CELLS_ACROSS / 2, 0) - (int)(length * font.width / 2),
-	    PIXELY(0, CELL_HEIGHT / 2) + font.center,
-	    string, (int)length);
-	if(scoring.display == scoring.personal)
-	  string = "   Score Garden Time  Date";
-	else
-	  string = "   Score Garden Time  Name";
-	length = strlen(string);
-	XDrawImageString(display.display, display.back, GCN(GC_TEXT),
-	    PIXELX(0, 0), PIXELY(1, CELL_HEIGHT / 2) + font.center,
-	    string, (int)length);
-	if(scoring.mine.score)
-	  back_score(&scoring.mine, CELLS_DOWN, 0);
+      	char CONST *string;
+      	size_t    length;
+      	
+      	if(scoring.display == scoring.personal)
+      	  string = scoring.mine.name;
+      	else
+      	  string = table_names[scoring.display != scoring.high];
+      	length = strlen(string);
+      	XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+      	    PIXELX(CELLS_ACROSS / 2, 0) - (int)(length * font.width / 2),
+      	    PIXELY(0, CELL_HEIGHT / 2) + font.center,
+      	    string, (int)length);
+      	if(scoring.display == scoring.personal)
+      	  string = "   Score Garden Time  Date";
+      	else
+      	  string = "   Score Garden Time  Name";
+      	length = strlen(string);
+      	XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+      	    PIXELX(0, 0), PIXELY(1, CELL_HEIGHT / 2) + font.center,
+      	    string, (int)length);
+      	if(scoring.mine.score)
+      	  back_score(&scoring.mine, CELLS_DOWN, 0);
       }
       /*}}}*/
       XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
-	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
+    	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
       /*{{{  put on the scores*/
       {
-	HIGH_SCORE CONST *sptr;
-	unsigned  ix;
-	    
-	for(sptr = scoring.display, ix = 0;
-	    sptr->score && ix != HIGH_SCORES; sptr++, ix++)
-	  back_score(sptr, 2 + ix, monster.den);
-	spawn_monster(0, 4, 3, 3, 0, (int)ix + 2,
-	    -2 * (CELL_WIDTH + GAP_WIDTH), 0);
+      	HIGH_SCORE CONST *sptr;
+      	unsigned  ix;
+      	    
+      	for(sptr = scoring.display, ix = 0;
+      	    sptr->score && ix != HIGH_SCORES; sptr++, ix++)
+      	  back_score(sptr, 2 + ix, monster.den);
+      	spawn_monster(0, 4, 3, 3, 0, (int)ix + 2,
+      	    -2 * (CELL_WIDTH + GAP_WIDTH), 0);
       }
       /*}}}*/
       global.count = SCORE_HOLD;
@@ -1148,20 +1148,20 @@ static FUNCANIMATE(animate_score, next)
     /*{{{  animate*/
     {
       add_background(PIXELX(monster.list[0].cell.x, monster.list[0].offset.x +
-	  (monster.list[0].offset.x > 0 ? CELL_WIDTH - VEL_X : 0)),
-	  PIXELY(monster.list[0].cell.y, monster.list[0].offset.y -
-	  (monster.list[0].offset.y < 0 ? 0 : GAP_HEIGHT / 2)),
-	  monster.list[0].offset.x ? VEL_X : CELL_WIDTH,
-	  CELL_HEIGHT + GAP_HEIGHT);
+    	  (monster.list[0].offset.x > 0 ? CELL_WIDTH - VEL_X : 0)),
+    	  PIXELY(monster.list[0].cell.y, monster.list[0].offset.y -
+    	  (monster.list[0].offset.y < 0 ? 0 : GAP_HEIGHT / 2)),
+    	  monster.list[0].offset.x ? VEL_X : CELL_WIDTH,
+    	  CELL_HEIGHT + GAP_HEIGHT);
       if(!move_demo(SCORE_CYCLES))
-	global.count--;
+    	global.count--;
       /*{{{  turn player?*/
       if(monster.list[0].offset.x == 0 &&
-	  monster.list[0].offset.y == 0 && monster.list[0].cell.y > 0)
-	{
-	  if(monster.list[0].dir == 0)
-	    {
-	      if(monster.list[0].cell.x)
+      	  monster.list[0].offset.y == 0 && monster.list[0].cell.y > 0)
+      	{
+      	  if(monster.list[0].dir == 0)
+      	    {
+      	      if(monster.list[0].cell.x)
 		/*{{{  go left*/
 		{
 		  monster.list[0].offset.x =
@@ -1169,7 +1169,7 @@ static FUNCANIMATE(animate_score, next)
 		  monster.list[0].cell.x = 0;
 		}
 		/*}}}*/
-	      else
+      	      else
 		/*{{{  go right*/
 		{
 		  size_t    length;
@@ -1197,22 +1197,22 @@ static FUNCANIMATE(animate_score, next)
 		      -(length * (CELL_WIDTH + GAP_WIDTH));
 		}
 		/*}}}*/
-	    }
-	  else if(monster.list[0].cell.y != 2)
+      	    }
+      	  else if(monster.list[0].cell.y != 2)
 	    /*{{{  go up 1*/
 	    {
 	      monster.list[0].cell.y--;
 	      monster.list[0].offset.y = CELL_HEIGHT + GAP_HEIGHT;
 	    }
 	    /*}}}*/
-	  else
+      	  else
 	    /*{{{  go off screen*/
 	    {
 	      monster.list[0].cell.y = -2;
 	      monster.list[0].offset.y = 4 * (CELL_HEIGHT + GAP_HEIGHT);
 	    }
 	    /*}}}*/
-	}
+      	}
       /*}}}*/
     }
     /*}}}*/
@@ -1247,185 +1247,185 @@ static FUNCANIMATE(animate_sprites, next)
       extra.select = 0;
       extra.got = 0;
       XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
-	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+    	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
       /*{{{  M R I S*/
       {
-	unsigned  ix;
-	
-	for(ix = 4; ix--;)
-	  {
-	    back_sprite(SPRITE_MRIS + ix, 0, PIXELX(4 + (int)ix, 0),
-		PIXELY(-1, 0));
-	    back_sprite(SPRITE_MRIS + 4 + ix, 0, PIXELX((int)ix, 0),
-		PIXELY(-1, 0));
-	    back_sprite(SPRITE_MRIS + 4 + ix, 0, PIXELX(8 + (int)ix, 0),
-		PIXELY(-1, 0));
-	  }
+      	unsigned  ix;
+      	
+      	for(ix = 4; ix--;)
+      	  {
+      	    back_sprite(SPRITE_MRIS + ix, 0, PIXELX(4 + (int)ix, 0),
+      		PIXELY(-1, 0));
+      	    back_sprite(SPRITE_MRIS + 4 + ix, 0, PIXELX((int)ix, 0),
+      		PIXELY(-1, 0));
+      	    back_sprite(SPRITE_MRIS + 4 + ix, 0, PIXELX(8 + (int)ix, 0),
+      		PIXELY(-1, 0));
+      	  }
       }
       /*}}}*/
       /*{{{  normal, munch, drone, player*/
       {
-	unsigned  ix;
-	
-	for(ix = 12; ix--;)
-	  {
-	    back_sprite(SPRITE_NORMAL + ix, 0,
-		PIXELX(0, 0), PIXELY((int)ix, 0));
-	    back_sprite(SPRITE_MUNCHER + ix, 0,
-		PIXELX(1, 0), PIXELY((int)ix, 0));
-	    back_sprite(SPRITE_DRONE + ix, 0,
-		PIXELX(3, 0), PIXELY((int)ix, 0));
-	    back_sprite(SPRITE_PLAYER + ix, 0,
-		PIXELX(4, 0), PIXELY((int)ix, 0));
-	  }
+      	unsigned  ix;
+      	
+      	for(ix = 12; ix--;)
+      	  {
+      	    back_sprite(SPRITE_NORMAL + ix, 0,
+      		PIXELX(0, 0), PIXELY((int)ix, 0));
+      	    back_sprite(SPRITE_MUNCHER + ix, 0,
+      		PIXELX(1, 0), PIXELY((int)ix, 0));
+      	    back_sprite(SPRITE_DRONE + ix, 0,
+      		PIXELX(3, 0), PIXELY((int)ix, 0));
+      	    back_sprite(SPRITE_PLAYER + ix, 0,
+      		PIXELX(4, 0), PIXELY((int)ix, 0));
+      	  }
       }
       /*}}}*/
       /*{{{  xtra*/
       {
-	unsigned  ix;
-	
-	for(ix = 10; ix--;)
-	  {
-	    if(ix & 1)
-	      create_xtra_monster(ix >> 1);
-	    back_sprite(SPRITE_XTRA + ix, 0,
-		PIXELX(2, 0), PIXELY((int)ix, 0));
-	  }
+      	unsigned  ix;
+      	
+      	for(ix = 10; ix--;)
+      	  {
+      	    if(ix & 1)
+      	      create_xtra_monster(ix >> 1);
+      	    back_sprite(SPRITE_XTRA + ix, 0,
+      		PIXELX(2, 0), PIXELY((int)ix, 0));
+      	  }
       }
       /*}}}*/
       back_sprite(SPRITE_CHOMP, 0, PIXELX(2, 0), PIXELY(10, 0));
       back_sprite(SPRITE_CHOMP + 1, 0, PIXELX(2, 0), PIXELY(11, 0));
       /*{{{  squished*/
       {
-	unsigned  ix;
-	
-	for(ix = 5; ix--;)
-	  {
-	    back_sprite(SPRITE_SQUISHED + (ix << 1), 0,
-		PIXELX((int)ix, 0), PIXELY(12, 0));
-	    back_sprite(SPRITE_SQUISHED + 1 + (ix << 1), 0,
-		PIXELX((int)ix, 0), PIXELY(12, CELL_HEIGHT / 2));
-	  }
+      	unsigned  ix;
+      	
+      	for(ix = 5; ix--;)
+      	  {
+      	    back_sprite(SPRITE_SQUISHED + (ix << 1), 0,
+      		PIXELX((int)ix, 0), PIXELY(12, 0));
+      	    back_sprite(SPRITE_SQUISHED + 1 + (ix << 1), 0,
+      		PIXELX((int)ix, 0), PIXELY(12, CELL_HEIGHT / 2));
+      	  }
       }
       /*}}}*/
       /*{{{  push, pause, happy, dead*/
       {
-	unsigned  ix;
-	
-	for(ix = 4; ix--;)
-	  back_sprite(SPRITE_PLAYER_PUSH + ix, 0,
-	      PIXELX(5, 0), PIXELY((int)ix, 0));
-	for(ix = 4; ix--;)
-	  back_sprite(SPRITE_PLAYER_REST + ix, 0,
-	      PIXELX(5, 0), PIXELY((int)ix + 4, 0));
-	for(ix = 2; ix--;)
-	  back_sprite(SPRITE_PLAYER_HAPPY + ix, 0,
-	      PIXELX(5, 0), PIXELY((int)ix + 8, 0));
-	if(data.gender != False)
-	  for(ix = 2; ix--;)
-	    back_sprite(SPRITE_PLAYER_DEAD + ix, 0,
-	      PIXELX(5, 0), PIXELY((int)ix + 10, 0));
+      	unsigned  ix;
+      	
+      	for(ix = 4; ix--;)
+      	  back_sprite(SPRITE_PLAYER_PUSH + ix, 0,
+      	      PIXELX(5, 0), PIXELY((int)ix, 0));
+      	for(ix = 4; ix--;)
+      	  back_sprite(SPRITE_PLAYER_REST + ix, 0,
+      	      PIXELX(5, 0), PIXELY((int)ix + 4, 0));
+      	for(ix = 2; ix--;)
+      	  back_sprite(SPRITE_PLAYER_HAPPY + ix, 0,
+      	      PIXELX(5, 0), PIXELY((int)ix + 8, 0));
+      	if(data.gender != False)
+      	  for(ix = 2; ix--;)
+      	    back_sprite(SPRITE_PLAYER_DEAD + ix, 0,
+      	      PIXELX(5, 0), PIXELY((int)ix + 10, 0));
       }
       /*}}}*/
       back_sprite(SPRITE_BALL, 0, PIXELX(6, CELL_WIDTH / 2 - BALL_WIDTH / 2),
-	  PIXELY(0, CELL_HEIGHT / 4 - BALL_HEIGHT / 2));
+    	  PIXELY(0, CELL_HEIGHT / 4 - BALL_HEIGHT / 2));
       back_sprite(SPRITE_SEAT, 0, PIXELX(6, 0), PIXELY(0, CELL_HEIGHT / 2));
       back_sprite(SPRITE_DEN, 0, PIXELX(6, 0), PIXELY(1, 0));
       back_sprite(SPRITE_CHERRY, 0, PIXELX(6, 0), PIXELY(2, 0));
       /*{{{  prizes*/
       {
-	unsigned  ix;
-	
-	for(ix = SPRITE_PRIZES; ix--;)
-	  back_sprite(SPRITE_PRIZE_BASE + ix, 0,
-	      PIXELX(6, 0), PIXELY((int)ix + 3, 0));
-	for(ix = 3; ix--;)
-	  back_sprite(SPRITE_DIAMOND + ix, 0, 
-	      PIXELX(10, CELL_WIDTH / 2), PIXELY((int)ix + 8, 0));
+      	unsigned  ix;
+      	
+      	for(ix = SPRITE_PRIZES; ix--;)
+      	  back_sprite(SPRITE_PRIZE_BASE + ix, 0,
+      	      PIXELX(6, 0), PIXELY((int)ix + 3, 0));
+      	for(ix = 3; ix--;)
+      	  back_sprite(SPRITE_DIAMOND + ix, 0, 
+      	      PIXELX(10, CELL_WIDTH / 2), PIXELY((int)ix + 8, 0));
       }
       /*}}}*/
       /*{{{  lettering*/
       {
-	back_sprite(SPRITE_DIGITS, 0, PIXELX(5, GAP_WIDTH +
-	    (int)sprites[SPRITE_EXTRA].size.x),
-	    PIXELY(CELLS_DOWN - 1, CELL_HEIGHT / 2 - DIGIT_HEIGHT / 2));
-	back_sprite(SPRITE_EXTRA, 0, PIXELX(5, 0), PIXELY(CELLS_DOWN - 1,
-	    CELL_HEIGHT / 2 - (int)sprites[SPRITE_EXTRA].size.y / 2));
-	back_sprite(SPRITE_EXTRA + 1, 0,
-	    PIXELX(CELLS_ACROSS - 1, CELL_WIDTH) -
-	      (int)sprites[SPRITE_EXTRA + 1].size.x,
-	    PIXELY(CELLS_DOWN - 1,
-	      CELL_HEIGHT / 2 - (int)sprites[SPRITE_EXTRA + 1].size.y / 2));
+      	back_sprite(SPRITE_DIGITS, 0, PIXELX(5, GAP_WIDTH +
+      	    (int)sprites[SPRITE_EXTRA].size.x),
+      	    PIXELY(CELLS_DOWN - 1, CELL_HEIGHT / 2 - DIGIT_HEIGHT / 2));
+      	back_sprite(SPRITE_EXTRA, 0, PIXELX(5, 0), PIXELY(CELLS_DOWN - 1,
+      	    CELL_HEIGHT / 2 - (int)sprites[SPRITE_EXTRA].size.y / 2));
+      	back_sprite(SPRITE_EXTRA + 1, 0,
+      	    PIXELX(CELLS_ACROSS - 1, CELL_WIDTH) -
+      	      (int)sprites[SPRITE_EXTRA + 1].size.x,
+      	    PIXELY(CELLS_DOWN - 1,
+      	      CELL_HEIGHT / 2 - (int)sprites[SPRITE_EXTRA + 1].size.y / 2));
       }
       /*}}}*/
       /*{{{  apples*/
       {
-	unsigned  ix;
-	
-	for(ix = 2; ix--;)
-	  back_sprite(SPRITE_GHOST + ix, 0,
-	      PIXELX(10, CELL_WIDTH / 2), PIXELY((int)ix, 0));
-	for(ix = 6; ix--;)
-	  back_sprite(SPRITE_APPLE + ix, 0,
-	      PIXELX(10, apple_sizes[ix].offset.x + CELL_WIDTH / 2),
-	      PIXELY((int)ix + 2, apple_sizes[ix].offset.y));
+      	unsigned  ix;
+      	
+      	for(ix = 2; ix--;)
+      	  back_sprite(SPRITE_GHOST + ix, 0,
+      	      PIXELX(10, CELL_WIDTH / 2), PIXELY((int)ix, 0));
+      	for(ix = 6; ix--;)
+      	  back_sprite(SPRITE_APPLE + ix, 0,
+      	      PIXELX(10, apple_sizes[ix].offset.x + CELL_WIDTH / 2),
+      	      PIXELY((int)ix + 2, apple_sizes[ix].offset.y));
       }
       /*}}}*/
       /*{{{  backgrounds*/
       {
-	unsigned  ix;
-	
-	color_set((int)0);
-	for(ix = BACKGROUNDS * FILLS; ix--;)
-	  {
-	    XGCValues gcv;
+      	unsigned  ix;
+      	
+      	color_set((int)0);
+      	for(ix = BACKGROUNDS * FILLS; ix--;)
+      	  {
+      	    XGCValues gcv;
       
-	    gcv.fill_style = FillOpaqueStippled;
-	    gcv.background = data.mono != False ? display.white :
-		colors[display.dynamic ? COLOR_DYNAMIC :
-		backgrounds[ix % BACKGROUNDS][0]].pixel;
-	    gcv.stipple = fills[ix / BACKGROUNDS].mask;
-	    gcv.foreground = data.mono != False ?
-		display.black : colors[display.dynamic ?
-		COLOR_DYNAMIC + 1 : backgrounds[ix % BACKGROUNDS][1]].pixel;
-	    XChangeGC(display.display, GCN(GC_BOARD),
-		GCFillStyle | GCForeground | GCBackground | GCStipple, &gcv);
-	    XFillRectangle(display.display, display.back, GCN(GC_BOARD),
-		PIXELX(7, -(GAP_WIDTH / 2)),
-		PIXELY((int)ix, -(GAP_HEIGHT / 2)),
-		(CELL_WIDTH + GAP_WIDTH) * 3, CELL_HEIGHT + GAP_HEIGHT);
-	    XDrawRectangle(display.display, display.back, GCN(GC_SET),
-		PIXELX(7, -(GAP_WIDTH / 2)),
-		PIXELY((int)ix, -(GAP_HEIGHT / 2)),
-		(CELL_WIDTH + GAP_WIDTH) * 3 - 1,
-		CELL_HEIGHT + GAP_HEIGHT - 1);
-	  }
-	for(ix = BACKGROUNDS * FILLS; ix--;)
-	  {
-	    back_sprite(SPRITE_APPLE, 1, PIXELX(8,
-		(CELL_WIDTH + GAP_WIDTH) / 2), PIXELY((int)ix, 0));
-	    back_sprite(SPRITE_CHERRY, 1, PIXELX(8,
-		-(CELL_WIDTH + GAP_WIDTH) / 2), PIXELY((int)ix, 0));
-	  }
-	global.count = 1;
+      	    gcv.fill_style = FillOpaqueStippled;
+      	    gcv.background = data.mono != False ? display.white :
+      		colors[display.dynamic ? COLOR_DYNAMIC :
+      		backgrounds[ix % BACKGROUNDS][0]].pixel;
+      	    gcv.stipple = fills[ix / BACKGROUNDS].mask;
+      	    gcv.foreground = data.mono != False ?
+      		display.black : colors[display.dynamic ?
+      		COLOR_DYNAMIC + 1 : backgrounds[ix % BACKGROUNDS][1]].pixel;
+      	    XChangeGC(display.display, GCN(GC_BOARD),
+      		GCFillStyle | GCForeground | GCBackground | GCStipple, &gcv);
+      	    XFillRectangle(display.display, display.back, GCN(GC_BOARD),
+      		PIXELX(7, -(GAP_WIDTH / 2)),
+      		PIXELY((int)ix, -(GAP_HEIGHT / 2)),
+      		(CELL_WIDTH + GAP_WIDTH) * 3, CELL_HEIGHT + GAP_HEIGHT);
+      	    XDrawRectangle(display.display, display.back, GCN(GC_SET),
+      		PIXELX(7, -(GAP_WIDTH / 2)),
+      		PIXELY((int)ix, -(GAP_HEIGHT / 2)),
+      		(CELL_WIDTH + GAP_WIDTH) * 3 - 1,
+      		CELL_HEIGHT + GAP_HEIGHT - 1);
+      	  }
+      	for(ix = BACKGROUNDS * FILLS; ix--;)
+      	  {
+      	    back_sprite(SPRITE_APPLE, 1, PIXELX(8,
+      		(CELL_WIDTH + GAP_WIDTH) / 2), PIXELY((int)ix, 0));
+      	    back_sprite(SPRITE_CHERRY, 1, PIXELX(8,
+      		-(CELL_WIDTH + GAP_WIDTH) / 2), PIXELY((int)ix, 0));
+      	  }
+      	global.count = 1;
       }
       /*}}}*/
       /*{{{  spawn things*/
       {
-	unsigned  ix;
-	
-	for(ix = 5; ix--;)
-	  spawn_monster(0, ix, 3, 3, (int)ix, CELLS_DOWN, 0, 0);
-	spawn_monster(0, 4, 3, 7, 5, CELLS_DOWN, 0, 0)->pushing = 1;
-	spawn_monster(0, 4, 3, 9, 6, CELLS_DOWN, 0, 0);
-	happy = spawn_monster(0, 4, 3, 10, 7, CELLS_DOWN, 0, 0);
-	spawn_monster(0, 3, 3, 6, 8, CELLS_DOWN, 0, 0)->chew = 1;
-	spawn_monster(0, 6, 0, 0, 9, CELLS_DOWN, 0, 0);
-	spawn_apple(10, CELLS_DOWN, CELL_WIDTH / 2, 0)->count = 0;
+      	unsigned  ix;
+      	
+      	for(ix = 5; ix--;)
+      	  spawn_monster(0, ix, 3, 3, (int)ix, CELLS_DOWN, 0, 0);
+      	spawn_monster(0, 4, 3, 7, 5, CELLS_DOWN, 0, 0)->pushing = 1;
+      	spawn_monster(0, 4, 3, 9, 6, CELLS_DOWN, 0, 0);
+      	happy = spawn_monster(0, 4, 3, 10, 7, CELLS_DOWN, 0, 0);
+      	spawn_monster(0, 3, 3, 6, 8, CELLS_DOWN, 0, 0)->chew = 1;
+      	spawn_monster(0, 6, 0, 0, 9, CELLS_DOWN, 0, 0);
+      	spawn_apple(10, CELLS_DOWN, CELL_WIDTH / 2, 0)->count = 0;
       }
       /*}}}*/
       XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
-	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
+    	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
       refresh_window();
       timer_set(FRAME_RATE * 2, TIMING_OFF);
     }
@@ -1446,33 +1446,33 @@ static FUNCANIMATE(animate_sprites, next)
       
       dir = global.pressed & ~pressed & 0xF;
       if(dir)
-	dir = choose_direction(dir) | 4;
+    	dir = choose_direction(dir) | 4;
       /*{{{  throw?*/
       if(global.throw == 1)
-	{
-	  global.throw = 2;
+      	{
+      	  global.throw = 2;
 	  /*{{{  new backgrounds*/
 	  {
 	    if(global.count == BACKGROUNDS)
 	      {
-		color_set(BACKGROUND_DRONES);
-		global.count = 0;
+	  	color_set(BACKGROUND_DRONES);
+	  	global.count = 0;
 	      }
 	    else
 	      color_set((int)global.count++ % BACKGROUNDS);
 	  }
 	  /*}}}*/
-	  if(happy->type == 4)
-	    {
-	      unsigned ix;
-	      
-	      for(ix = 8; ix--;)
-		if(monster.list[0].face == player_dies[ix])
-		  break;
-	      happy->type = SPRITE_PLAYER_DEAD + ix * 2;
-	    }
-	  else
-	    happy->type = 4;
+      	  if(happy->type == 4)
+      	    {
+      	      unsigned ix;
+      	      
+      	      for(ix = 8; ix--;)
+      		if(monster.list[0].face == player_dies[ix])
+      		  break;
+      	      happy->type = SPRITE_PLAYER_DEAD + ix * 2;
+      	    }
+      	  else
+      	    happy->type = 4;
 	  /*{{{  xtra*/
 	  {
 	    unsigned  ix;
@@ -1482,85 +1482,85 @@ static FUNCANIMATE(animate_sprites, next)
 	    extra.got = happy->type != 4 ? 0x1F : 0;
 	    for(ix = 10; ix--;)
 	      {
-		if(ix & 1)
-		  create_xtra_monster(ix >> 1);
-		back_sprite(SPRITE_XTRA + ix, 1,
-		    PIXELX(2, 0), PIXELY((int)ix, 0));
+	  	if(ix & 1)
+	  	  create_xtra_monster(ix >> 1);
+	  	back_sprite(SPRITE_XTRA + ix, 1,
+	  	    PIXELX(2, 0), PIXELY((int)ix, 0));
 	      }
 	    add_background(PIXELX(2, 0), PIXELY(0, 0),
-		CELL_WIDTH, CELL_HEIGHT * 10 + GAP_HEIGHT * 9);
+	  	CELL_WIDTH, CELL_HEIGHT * 10 + GAP_HEIGHT * 9);
 	    extra.got = got;
 	    create_xtra_monster(extra.select);
 	  }
 	  /*}}}*/
-	}
+      	}
       /*}}}*/
       for(mptr = monster.list, count = monster.monsters; count--; mptr++)
-	{
+    	{
 	  /*{{{  new face?*/
 	  if(dir)
 	    {
 	      if(mptr->type < 5 && mptr->face < 10)
-		{
-		  if(mptr->face < 6 || dir >= 6)
-		    {
-		      unsigned  shift;
-		      
-		      shift = mptr->face > 7;
-		      mptr->dir = dir & 0x3;
-		      new_face(mptr);
-		      if(shift)
-			mptr->face += 6;
-		      if(mptr->type == 2)
-			{
-			  extra.select++;
-			  if(extra.select == 5)
-			    {
-			      extra.select = 0;
-			      extra.got ^= 0x1F;
-			    }
-			  create_xtra_monster(extra.select);
-			}
-		    }
-		}
+	  	{
+	  	  if(mptr->face < 6 || dir >= 6)
+	  	    {
+	  	      unsigned  shift;
+	  	      
+	  	      shift = mptr->face > 7;
+	  	      mptr->dir = dir & 0x3;
+	  	      new_face(mptr);
+	  	      if(shift)
+	  		mptr->face += 6;
+	  	      if(mptr->type == 2)
+	  		{
+	  		  extra.select++;
+	  		  if(extra.select == 5)
+	  		    {
+	  		      extra.select = 0;
+	  		      extra.got ^= 0x1F;
+	  		    }
+	  		  create_xtra_monster(extra.select);
+	  		}
+	  	    }
+	  	}
 	      else if(happy->type != 4)
-		{
-		  unsigned ix;
-		  
-		  for(ix = 8; ix--;)
-		    if(monster.list[0].face == player_dies[ix])
-		      break;
-		  happy->type = SPRITE_PLAYER_DEAD + ix * 2;
-		}
+	  	{
+	  	  unsigned ix;
+	  	  
+	  	  for(ix = 8; ix--;)
+	  	    if(monster.list[0].face == player_dies[ix])
+	  	      break;
+	  	  happy->type = SPRITE_PLAYER_DEAD + ix * 2;
+	  	}
 	    }
 	  /*}}}*/
-	  if(!mptr->cycle)
+    	  if(!mptr->cycle)
 	    /*{{{  next image*/
 	    {
 	      mptr->cycle = mptr->type == 6 ? DIAMOND_CYCLES : MONSTER_CYCLES;
 	      mptr->image++;
 	      if(mptr->image == (mptr->type != 6 ?
-		  MONSTER_IMAGES : DIAMOND_IMAGES))
-		mptr->image = 0;
+	    	  MONSTER_IMAGES : DIAMOND_IMAGES))
+	    	mptr->image = 0;
 	      if(mptr == happy && mptr->type != 4)
-		{
-		  mptr->type++;
-		  if(mptr->type == SPRITE_PLAYER_DEAD + 8)
-		    mptr->type = SPRITE_PLAYER_DEAD;
-		  else if(mptr->type == SPRITE_PLAYER_DEAD + 16)
-		    mptr->type = SPRITE_PLAYER_DEAD + 8;
-		}
+	    	{
+	    	  mptr->type++;
+	    	  if(mptr->type == SPRITE_PLAYER_DEAD + 8)
+	    	    mptr->type = SPRITE_PLAYER_DEAD;
+	    	  else if(mptr->type == SPRITE_PLAYER_DEAD + 16)
+	    	    mptr->type = SPRITE_PLAYER_DEAD + 8;
+	    	}
 	    }
 	    /*}}}*/
-	  mptr->cycle--;
-	}
+    	  mptr->cycle--;
+    	}
       if(!apple.list[0].count)
-	{
-	  apple.list[0].count = MONSTER_CYCLES;
-	  apple.list[0].state++;
-	  if(apple.list[0].state == 6)
-	    apple.list[0].state = 0;
-	}
+    	{
+    	  apple.list[0].count = MONSTER_CYCLES;
+    	  apple.list[0].state++;
+    	  if(apple.list[0].state == 6)
+    	    apple.list[0].state = 0;
+    	}
       apple.list[0].count--;
       pressed = global.pressed;
     }
@@ -1623,20 +1623,20 @@ ARGSEP  unsigned  split
       ptr = name;
       while(*ptr)
       {
-	for(name = ptr; *name == ' '; name++)
-	  /* EMPTY */;
-	ptr = strchr(name, ' ');
-	if(!ptr)
-	  break;
-	if(ptr[-1] != '.' && ptr > name + 1)
-	  break;
+  	for(name = ptr; *name == ' '; name++)
+  	  /* EMPTY */;
+  	ptr = strchr(name, ' ');
+  	if(!ptr)
+  	  break;
+  	if(ptr[-1] != '.' && ptr > name + 1)
+  	  break;
       }
       length = ptr ? ptr - name : strlen(name);
       if(!length)
-	{
-	  name = scoring.alternate;
-	  length = strlen(name);
-	}
+  	{
+  	  name = scoring.alternate;
+  	  length = strlen(name);
+  	}
     }
   /*}}}*/
   XDrawString(display.display, display.back, GCN(GC_TEXT),
@@ -1665,7 +1665,7 @@ ARGSEP  unsigned  ix
   /*{{{  insert key string?*/
   {
     char CONST *ptr;
-	
+  	
     ptr = strchr(tptr->text, '%');
     if(!ptr)
       strcpy(buffer, tptr->text);
@@ -1758,22 +1758,22 @@ unsigned  cycle
 	    
 	      moved++;
 	      if(mptr->offset.x > 0)
-		{
-		  dir = 2;
-		  mptr->offset.x -= VEL_X;
-		  mptr->pixel.x -= VEL_X;
-		}
+	    	{
+	    	  dir = 2;
+	    	  mptr->offset.x -= VEL_X;
+	    	  mptr->pixel.x -= VEL_X;
+	    	}
 	      else
-		{
-		  dir = 3;
-		  mptr->offset.x += VEL_X;
-		  mptr->pixel.x += VEL_X;
-		}
+	    	{
+	    	  dir = 3;
+	    	  mptr->offset.x += VEL_X;
+	    	  mptr->pixel.x += VEL_X;
+	    	}
 	      if(dir != mptr->dir)
-		{
-		  mptr->dir = dir;
-		  new_face(mptr);
-		}
+	    	{
+	    	  mptr->dir = dir;
+	    	  new_face(mptr);
+	    	}
 	    }
 	    /*}}}*/
 	  else if(mptr->offset.y)
@@ -1783,22 +1783,22 @@ unsigned  cycle
 	    
 	      moved++;
 	      if(mptr->offset.y > 0)
-		{
-		  dir = 0;
-		  mptr->offset.y -= VEL_Y;
-		  mptr->pixel.y -= VEL_Y;
-		}
+	    	{
+	    	  dir = 0;
+	    	  mptr->offset.y -= VEL_Y;
+	    	  mptr->pixel.y -= VEL_Y;
+	    	}
 	      else
-		{
-		  dir = 1;
-		  mptr->offset.y += VEL_Y;
-		  mptr->pixel.y += VEL_Y;
-		}
+	    	{
+	    	  dir = 1;
+	    	  mptr->offset.y += VEL_Y;
+	    	  mptr->pixel.y += VEL_Y;
+	    	}
 	      if(dir != mptr->dir)
-		{
-		  mptr->dir = dir;
-		  new_face(mptr);
-		}
+	    	{
+	    	  mptr->dir = dir;
+	    	  new_face(mptr);
+	    	}
 	    }
 	    /*}}}*/
 	  else
@@ -1835,62 +1835,62 @@ static VOIDFUNC move_mris FUNCARGVOID
     if(mptr->type == 6)
       /*{{{  diamond*/
       {
-	if(!mptr->count--)
-	  {
-	    global.diamond = 2;
-	    mptr->type = 5;
-	  }
-	if(mptr->count == DIAMOND_GHOSTING)
-	  mptr->ghosting = GHOSTING;
-	if(!mptr->cycle)
-	  {
-	    mptr->cycle = mptr->type == 6 ? DIAMOND_CYCLES : MONSTER_CYCLES;
-	    mptr->image++;
-	    if(mptr->image == (mptr->type == 6 ?
-		DIAMOND_IMAGES : MONSTER_IMAGES))
-	      mptr->image = 0;
-	  }
-	mptr->cycle--;
+      	if(!mptr->count--)
+      	  {
+      	    global.diamond = 2;
+      	    mptr->type = 5;
+      	  }
+      	if(mptr->count == DIAMOND_GHOSTING)
+      	  mptr->ghosting = GHOSTING;
+      	if(!mptr->cycle)
+      	  {
+      	    mptr->cycle = mptr->type == 6 ? DIAMOND_CYCLES : MONSTER_CYCLES;
+      	    mptr->image++;
+      	    if(mptr->image == (mptr->type == 6 ?
+      		DIAMOND_IMAGES : MONSTER_IMAGES))
+      	      mptr->image = 0;
+      	  }
+      	mptr->cycle--;
       }
       /*}}}*/
     else
       /*{{{  letter*/
       {
-	CELL      *cptr;
-	unsigned  chosen;
-	
-	assert(mptr->type >= SPRITE_MRIS && mptr->type < SPRITE_MRIS + 8);
-	cptr = BOARDCELL(mptr->cell.x, mptr->cell.y);
-	chosen = !(monster.den & 1 << ((mptr->type - SPRITE_MRIS) & 3));
-	if(mptr->offset.x || mptr->offset.y)
-	  move_movable(mptr, cptr);
-	else if(!mptr->cell.y && chosen &&
-	    mptr->cell.x == ((mptr->type - SPRITE_MRIS) & 3) + 4)
-	  {
-	    back_sprite(mptr->type, 0, mptr->old_pixel.x, mptr->old_pixel.y);
-	    mptr->type = 5;
-	    monster.normals--;
-	  }
-	else
-	  {
-	    unsigned  valid;
-	    unsigned  temp;
-	  
-	    valid = valid_directions(mptr, cptr);
-	    temp = valid & (0xF ^ (1 << (mptr->dir ^ 1)));
-	    if(temp)
-	      valid &= temp;
-	    if(chosen)
-	      {
-		temp = run_home(mptr, cptr);
-		if(temp & valid)
-		  valid &= temp;
-	      }
-	    else
-	      valid &= 0xF;
-	    mptr->dir = choose_direction(valid);
-	    move_movable(mptr, cptr);
-	  }
+      	CELL      *cptr;
+      	unsigned  chosen;
+      	
+      	assert(mptr->type >= SPRITE_MRIS && mptr->type < SPRITE_MRIS + 8);
+      	cptr = BOARDCELL(mptr->cell.x, mptr->cell.y);
+      	chosen = !(monster.den & 1 << ((mptr->type - SPRITE_MRIS) & 3));
+      	if(mptr->offset.x || mptr->offset.y)
+      	  move_movable(mptr, cptr);
+      	else if(!mptr->cell.y && chosen &&
+      	    mptr->cell.x == ((mptr->type - SPRITE_MRIS) & 3) + 4)
+      	  {
+      	    back_sprite(mptr->type, 0, mptr->old_pixel.x, mptr->old_pixel.y);
+      	    mptr->type = 5;
+      	    monster.normals--;
+      	  }
+      	else
+      	  {
+      	    unsigned  valid;
+      	    unsigned  temp;
+      	  
+      	    valid = valid_directions(mptr, cptr);
+      	    temp = valid & (0xF ^ (1 << (mptr->dir ^ 1)));
+      	    if(temp)
+      	      valid &= temp;
+      	    if(chosen)
+      	      {
+      		temp = run_home(mptr, cptr);
+      		if(temp & valid)
+      		  valid &= temp;
+      	      }
+      	    else
+      	      valid &= 0xF;
+      	    mptr->dir = choose_direction(valid);
+      	    move_movable(mptr, cptr);
+      	  }
       }
       /*}}}*/
   return;

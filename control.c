@@ -1,5 +1,5 @@
-/* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: control.c,v 4.15 1993/12/10 11:52:23 nathan Stable $ */
+/* Copyright (C) 1992,1993, 1999 Nathan Sidwell */
+/* RCS $Id: control.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 /*{{{  includes*/
 #include "xmred.h"
 #include <X11/StringDefs.h>
@@ -308,7 +308,7 @@ ARGSEP  int       delta   /* amount to alter it by */
   state.counts[count] += delta;
   for(ix = itoa(count_text[count], state.counts[count], 0); ix != 3; ix++)
     count_text[count][ix] = ' ';
-  count_text[count][4] = 0;
+  count_text[count][3] = 0;
   XtVaSetValues(gizmos[GIZMO_TOTAL_COUNTS + count].widget,
       XtNlabel, (XtArgVal)count_text[count], NULL);
   if(INRANGE(count, COUNT_APPLES, 4))
@@ -730,11 +730,11 @@ FUNCARG((root),
     
     for(iptr = icons, ix = XtNumber(icons); ix--; iptr++)
       {
-	iptr->pixmap = XCreatePixmap(display.display, display.copy,
-	    iptr->size.x, iptr->size.y, display.depth);
-	generate_icon(iptr);
-	XtVaSetValues(gizmos[iptr->gizmo].widget,
-	    XtNpixmap, (XtArgVal)iptr->pixmap, NULL);
+  	iptr->pixmap = XCreatePixmap(display.display, display.copy,
+  	    iptr->size.x, iptr->size.y, display.depth);
+  	generate_icon(iptr);
+  	XtVaSetValues(gizmos[iptr->gizmo].widget,
+  	    XtNpixmap, (XtArgVal)iptr->pixmap, NULL);
       }
   }
   /*}}}*/
@@ -744,14 +744,14 @@ FUNCARG((root),
     static XtResource button_resources[] =
     {
       {"option", "Option", XtROption, sizeof(int),
-	  0, XtRImmediate, (XtPointer)-1},
+    	  0, XtRImmediate, (XtPointer)-1},
     };
     /*}}}*/
     /*{{{  static XtResource index_resources[] =*/
     static XtResource index_resources[] =
     {
       {"index", "Index", XtRInt, sizeof(int),
-	  0, XtRImmediate, (XtPointer)0},
+    	  0, XtRImmediate, (XtPointer)0},
     };
     /*}}}*/
     /*{{{  typedef struct _Option*/
@@ -774,29 +774,29 @@ FUNCARG((root),
     OPTION CONST *optr;
     
     XtAppSetTypeConverter(display.context, XtRString, XtROption,
-	convert_string2option, (XtConvertArgRec *)NULL, 0, XtCacheNone,
-	(void (*)PROTOARG((XtAppContext, XrmValue *, XtPointer,
-	    XrmValue *, Cardinal *)))NULL);
+  	convert_string2option, (XtConvertArgRec *)NULL, 0, XtCacheNone,
+  	(void (*)PROTOARG((XtAppContext, XrmValue *, XtPointer,
+  	    XrmValue *, Cardinal *)))NULL);
     for(gptr = &gizmos[GIZMO_BUTTONS + BUTTONS - 1], ix = BUTTONS;
-	ix--; gptr--)
+  	ix--; gptr--)
       {
-	unsigned  binding;
-	
-	XtGetApplicationResources(gptr->widget, (XtPointer)&binding,
-	    button_resources, XtNumber(button_resources), NULL, 0);
-	bind_button(ix, binding >= OPTIONS ? -1 : binding);
+  	unsigned  binding;
+  	
+  	XtGetApplicationResources(gptr->widget, (XtPointer)&binding,
+  	    button_resources, XtNumber(button_resources), NULL, 0);
+  	bind_button(ix, binding >= OPTIONS ? -1 : binding);
       }
     for(optr = options, ix = XtNumber(options); ix--; optr++)
       {
-	XtGetApplicationResources(gizmos[optr->gizmo].widget,
-	    optr->dest, index_resources, XtNumber(index_resources), NULL, 0);
-	*optr->dest %= optr->range;
+  	XtGetApplicationResources(gizmos[optr->gizmo].widget,
+  	    optr->dest, index_resources, XtNumber(index_resources), NULL, 0);
+  	*optr->dest %= optr->range;
       }
     gizmo2icon(&gizmos[GIZMO_OPTIONS])->sprite += state.apple;
     for(ix = BUTTONS; ix--;)
       if(state.button[ix] >= 0)
-	gizmo2icon(&gizmos[GIZMO_BUTTONS + ix])->sprite =
-	    gizmo2icon(&gizmos[GIZMO_OPTIONS + state.button[ix]])->sprite;
+  	gizmo2icon(&gizmos[GIZMO_BUTTONS + ix])->sprite =
+  	    gizmo2icon(&gizmos[GIZMO_OPTIONS + state.button[ix]])->sprite;
   }
   /*}}}*/
   /*{{{  set option callback*/
@@ -831,7 +831,7 @@ FUNCARG((root),
     gptr = &gizmos[GIZMO_TOTAL_WARNINGS + 5];
     shown = (float)1.0;
     XtSetArg(arg[0], XtNshown, sizeof(float) > sizeof(XtArgVal) ?
-	(XtArgVal)&shown : *(XtArgVal *)&shown);
+  	(XtArgVal)&shown : *(XtArgVal *)&shown);
     XtSetValues(gptr->widget, arg, 1);
     XtAddCallback(gptr->widget, XtNjumpProc, apple_jump, (XtPointer)NULL);
     XtAddCallback(gptr->widget, XtNscrollProc, apple_scroll, (XtPointer)NULL);
@@ -844,15 +844,15 @@ FUNCARG((root),
     for(ix = XtNumber(list); ix--;)
       list[ix] = gizmos[GIZMO_BUTTONS + ix].widget;
     XtVaSetValues(gizmos[GIZMO_OPTION_DRAG].widget,
-	MredNwidgetChoices, (XtArgVal)list,
-	MredNnumWidgetChoices, (XtArgVal)XtNumber(list), NULL);
+  	MredNwidgetChoices, (XtArgVal)list,
+  	MredNnumWidgetChoices, (XtArgVal)XtNumber(list), NULL);
     XtVaSetValues(gizmos[GIZMO_BUTTON_DRAG].widget,
-	MredNwidgetChoices, (XtArgVal)list,
-	MredNnumWidgetChoices, (XtArgVal)XtNumber(list), NULL);
+  	MredNwidgetChoices, (XtArgVal)list,
+  	MredNnumWidgetChoices, (XtArgVal)XtNumber(list), NULL);
     XtAddCallback(gizmos[GIZMO_BUTTON_DRAG].widget, XtNcallback,
-	drag_button, (XtPointer)NULL);
+  	drag_button, (XtPointer)NULL);
     XtAddCallback(gizmos[GIZMO_OPTION_DRAG].widget, XtNcallback,
-	drag_option, (XtPointer)NULL);
+  	drag_option, (XtPointer)NULL);
   }
   /*}}}*/
   XtAddCallback(gizmos[GIZMO_COMMENT].widget, XtNcallback,
@@ -920,7 +920,7 @@ ARGSEP  unsigned  flag
     {
       state ^= 1 << count;
       XtVaSetValues(gizmos[GIZMO_TOTAL_WARNINGS + count].widget,
-	  XtNbitmap, sprites[SPRITE_WARNING + flag].image, NULL);
+    	  XtNbitmap, sprites[SPRITE_WARNING + flag].image, NULL);
     }
     /*}}}*/
   return;
@@ -1018,28 +1018,28 @@ extern VOIDFUNC update_garden FUNCARGVOID
   for(ix = CELLS_DOWN; ix--;)
     for(cptr = state.edit->board->map[ix]; *cptr; cptr++)
       {
-	if(*cptr == GARDEN_CHERRY || ISPATHCHERRY(*cptr))
-	  state.counts[COUNT_CHERRY]++;
-	else if(ISPATHDEN(*cptr))
-	  state.counts[COUNT_DEN]++;
-	else if(ISPATHPLAYER(*cptr))
-	  state.counts[COUNT_PLAYER]++;
-	else if(ISAPPLE(*cptr))
-	  {
-	    unsigned  value;
-	    unsigned  ix;
-	    
-	    value = GARDENAPPLE(*cptr);
-	    for(ix = 4; ix--;)
-	      if(value & (1 << ix))
-		state.counts[COUNT_APPLES + ix]++;
-	    state.counts[COUNT_SPACES]++;
-	  }
-	else if(*cptr == GARDEN_RANDOM)
-	  state.counts[COUNT_SPACES]++;
-	if(ix != CELLS_DOWN - 1 && ISPATH(cptr[CELLS_ACROSS + 1]) &&
-	    (*cptr == GARDEN_RANDOM || ISAPPLE(*cptr)))
-	  state.counts[COUNT_FALL]++;
+  	if(*cptr == GARDEN_CHERRY || ISPATHCHERRY(*cptr))
+  	  state.counts[COUNT_CHERRY]++;
+  	else if(ISPATHDEN(*cptr))
+  	  state.counts[COUNT_DEN]++;
+  	else if(ISPATHPLAYER(*cptr))
+  	  state.counts[COUNT_PLAYER]++;
+  	else if(ISAPPLE(*cptr))
+  	  {
+  	    unsigned  value;
+  	    unsigned  ix;
+  	    
+  	    value = GARDENAPPLE(*cptr);
+  	    for(ix = 4; ix--;)
+  	      if(value & (1 << ix))
+  		state.counts[COUNT_APPLES + ix]++;
+  	    state.counts[COUNT_SPACES]++;
+  	  }
+  	else if(*cptr == GARDEN_RANDOM)
+  	  state.counts[COUNT_SPACES]++;
+  	if(ix != CELLS_DOWN - 1 && ISPATH(cptr[CELLS_ACROSS + 1]) &&
+  	    (*cptr == GARDEN_RANDOM || ISAPPLE(*cptr)))
+  	  state.counts[COUNT_FALL]++;
       }
   /*}}}*/
   apple_set_thumb();

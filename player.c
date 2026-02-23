@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: player.c,v 4.3 1993/10/07 18:08:36 nathan Stable $ */
+/* RCS $Id: player.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 #include "xmris.h"
 /*{{{  void bounce_ball()*/
 extern VOIDFUNC bounce_ball FUNCARGVOID

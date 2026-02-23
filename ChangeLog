@@ -1,0 +1,21 @@
+1999-11-22  Nathan Sidwell  <nathan@acm.org>
+
+	* COPYING-2.0: Added the GPL.
+	* patchlevel.h (XMRISVERSION, XMREDVERSION, DATE): Generate
+	automatically.
+
+Tue Mar 16 11:27:28 GMT 1999  Nathan Sidwell  <nathan@acm.org>
+
+	* whole.c (close_file): Use strerror.
+
+Tue Mar 16 10:53:13 GMT 1999  Carson Gaspar <gaspar@ms.com>
+
+	* demo.c (animate_def_keys): Use KeySym, not KeyCode.
+
+Sun Mar 14 14:38:33 GMT 1999  Nathan Sidwell  <nathan@acm.org>
+
+	* Brought under PRCS control.
+	* all.c: Renamed to ...
+	* whole.c: ... this. Makes got confused with an `all' target.
+	* control.c (adjust_count): Fix array overflow.
+

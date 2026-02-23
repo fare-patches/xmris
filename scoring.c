@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: scoring.c,v 4.14 1995/12/21 15:55:04 nathan Exp $ */
+/* RCS $Id: scoring.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 /*{{{  file locking problems*/
 /*
  * USELOCKFILE file locking as suggested by

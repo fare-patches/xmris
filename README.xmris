@@ -1,7 +1,7 @@
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 
@@ -67,7 +67,7 @@ X Version 11      Last change: 12 December 1995                 1
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 
@@ -133,7 +133,7 @@ X Version 11      Last change: 12 December 1995                 2
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 
@@ -199,13 +199,13 @@ X Version 11      Last change: 12 December 1995                 3
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 
      these.
 
-     ----hhhheeeellllpppp
+     -hhhheeeellllpppp
           Lists the command options, application resource  fields
           and  some  other  information to stderr. Does not start
           the game. If the -colours option is supplied too,  then
@@ -216,24 +216,24 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
           you  ran  the  game,  as  it  does  not  read the color
           resources.
 
-     ----sssswwwwaaaapppp
-     ----rrrrvvvv
-     ----rrrreeeevvvveeeerrrrsssseeee
+     -sssswwwwaaaapppp
+     -rrrrvvvv
+     -rrrreeeevvvveeeerrrrsssseeee
           Normally the foreground is  black  and  the  background
           white,  this  swaps them round. On colour systems, this
           may also alter other colours.
 
      ++++sssswwwwaaaapppp
-     ----nnnnoooosssswwwwaaaapppp
+     -nnnnoooosssswwwwaaaapppp
           Override a swap resource in your  resources,  to  force
           unswapped colours.
 
-     ----mmmmoooonnnnoooo
+     -mmmmoooonnnnoooo
           Use black and white, even on colour  displays.  (Unfor-
           tunately,  the obvious option, '-bw', is already nabbed
           by the toolkit as borderwidth.)
 
-     ----rrrraaaannnnddddoooommmm
+     -rrrraaaannnnddddoooommmm
      ++++rrrraaaannnnddddoooommmm
           Mr Is has two methods for placing the apples. They will
           either  be  placed  according  to  one  of four sets of
@@ -243,9 +243,9 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
           by  the  resources,  -random  places them randomly, and
           +random uses one of the four sets.
 
-     ----mmmmrrrriiiissss
-     ----mmmmssssiiiitttt
-     ----ggggeeeennnnddddeeeerrrr _g_e_n_d_e_r
+     -mmmmrrrriiiissss
+     -mmmmssssiiiitttt
+     -ggggeeeennnnddddeeeerrrr _g_e_n_d_e_r
           Mr Is can also be run as xmsit. The two sexes have dif-
           ferent  sprites.   Mris  selects  the  classic sprites,
           while msit selects a more modern set.   The  gender  of
@@ -265,7 +265,7 @@ X Version 11      Last change: 12 December 1995                 4
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 
@@ -281,11 +281,11 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
           the timer signal is still being used  for  the  initial
           part of the frame delay.
 
-     ----ddddiiiirrrr _s_c_o_r_e-_d_i_r_e_c_t_o_r_y
+     -ddddiiiirrrr _s_c_o_r_e-_d_i_r_e_c_t_o_r_y
           Specify a different score directory.
 
-     ----uuuusssseeeerrrrnnnnaaaammmmeeee
-     ----rrrreeeeaaaallllnnnnaaaammmmeeee
+     -uuuusssseeeerrrrnnnnaaaammmmeeee
+     -rrrreeeeaaaallllnnnnaaaammmmeeee
           The name for the score file can be either the  username
           or  the  real name.  These options select which to use.
           The default is to use the real name.  If the real  name
@@ -293,13 +293,13 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
           the current score file has an entry by the other  name,
           then it will be changed to the new name.
 
-     ----ggggaaaarrrrddddeeeennnnssss _g_a_r_d_e_n-_f_i_l_e
+     -ggggaaaarrrrddddeeeennnnssss _g_a_r_d_e_n-_f_i_l_e
           Specify a garden definition file. This  allows  you  to
           alter  the initial garden layouts. The file is searched
           for in the current directory, and the Mr  Is  subdirec-
           tory of app-defaults. These are explained below.
 
-     ----ssssccccoooorrrreeeessss
+     -ssssccccoooorrrreeeessss
           List the high scores to  stdout.  Does  not  start  the
           game.  Note  that  this  will  still  need to open an X
           display, in order to read the X  resources  (which  may
@@ -314,7 +314,7 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
           default score directory, and that this will not be done
           -- you will have to use the -dir option too.
 
-     ----rrrreeeemmmmoooovvvveeee _n_a_m_e
+     -rrrreeeemmmmoooovvvveeee _n_a_m_e
           Allows the game's owner to remove someone's scores. The
           option  will only work when the real and effective user
           ids are the same. (ie a setuid Mr Is has  been  run  by
@@ -331,14 +331,14 @@ X Version 11      Last change: 12 December 1995                 5
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 
           which may override the  default  score  directory.  The
           +display option may be used to prevent this.
 
-     ----eeeexxxxppppiiiirrrreeee _d_a_t_e
+     -eeeexxxxppppiiiirrrreeee _d_a_t_e
           Allows you to remove your own scores before or after  a
           certain  date.   If your high score is removed, then it
           is replaced with  a  new  personal  high  score.  After
@@ -380,7 +380,7 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
           dates,  '11jun93'  (dmy),  '14/3/93' (dmy), 'april6:93'
           (mdy), and '0-16-8' (ydm).
 
-     ----ffffoooorrrrmmmmaaaatttt _f_o_r_m_a_t
+     -ffffoooorrrrmmmmaaaatttt _f_o_r_m_a_t
           Allows the game's owner to set the date format which is
           stored with the score file, for future use disambiguat-
           ing dates. The format is automatically stored  if  none
@@ -397,16 +397,16 @@ X Version 11      Last change: 12 December 1995                 6
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 
-     ----ddddeeeepppptttthhhh _d_e_p_t_h
+     -ddddeeeepppptttthhhh _d_e_p_t_h
           Mr Is will use the default depth of the screen. You may
           wish to override that by using this option. Selecting a
           different depth may affect the visual selected.
 
-     ----vvvviiiissssuuuuaaaallll _v_i_s_u_a_l-_c_l_a_s_s
+     -vvvviiiissssuuuuaaaallll _v_i_s_u_a_l-_c_l_a_s_s
           Mr Is will  pick  the  default  visual  for  the  depth
           chosen,  but you can override that by specifying a par-
           ticular visual class. Valid visuals are  'PseudoColor',
@@ -416,14 +416,14 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
           visual, you may have to specify a  private  colour  map
           too, due to limitations of the server or display.
 
-     ----pppprrrriiiivvvvaaaatttteeee
+     -pppprrrriiiivvvvaaaatttteeee
           This forces Mr Is to allocate  a  private  colour  map.
           Normally Mr Is will share the default colour map of the
           selected visual, but if that does not have enough  free
           colour cells then some colours will have to be shared.
 
-     ----ccccoooolllloooouuuurrrrssss
-     ----ccccoooolllloooorrrrssss
+     -ccccoooolllloooouuuurrrrssss
+     -ccccoooolllloooorrrrssss
           Show how the colours are allocated,  and  which  visual
           has been selected.  The allocation is listed to stdout.
           When allocating each colour, its resource name and  rgb
@@ -434,7 +434,7 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
           resource  classes  are  listed,  and  the game does not
           start.
 
-     ----ddddiiiissssttttiiiinnnncccctttt _n
+     -ddddiiiissssttttiiiinnnncccctttt _n
           Sets the number of distinct colours used. This  can  be
           used  to  limit  the  number  of  colours used from the
           colour map. Black and white are not included, and  nei-
@@ -443,12 +443,12 @@ XMRIS(6)                 Games and Demos                 XMRIS(6)
           is different from -mono, even though both will only use
           black and white.
 
-     ----ssssttttaaaattttiiiicccc
+     -ssssttttaaaattttiiiicccc
           Do not use dynamic  background  colours,  even  if  the
           visual  supports  them.  The  default  uses two dynamic
           colours, which alter during the game.
 
-     ----sssspppprrrriiiitttteeeessss
+     -sssspppprrrriiiitttteeeessss
           Show all the sprites during  the  demonstration  cycle.
           This  can be used when you are defining your own sprite
           colours. The direction keys will control the  direction
@@ -463,7 +463,7 @@ X Version 11      Last change: 12 December 1995                 7
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 
@@ -529,7 +529,7 @@ X Version 11      Last change: 12 December 1995                 8
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 
@@ -595,7 +595,7 @@ X Version 11      Last change: 12 December 1995                 9
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 
@@ -661,7 +661,7 @@ X Version 11      Last change: 12 December 1995                10
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 
@@ -727,7 +727,7 @@ X Version 11      Last change: 12 December 1995                11
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 
@@ -793,7 +793,7 @@ X Version 11      Last change: 12 December 1995                12
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 
@@ -859,7 +859,7 @@ X Version 11      Last change: 12 December 1995                13
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 
@@ -925,7 +925,7 @@ X Version 11      Last change: 12 December 1995                14
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 
@@ -991,7 +991,7 @@ X Version 11      Last change: 12 December 1995                15
 
 
 
-XMRIS(6)                 Games and Demos                 XMRIS(6)
+Games and Demos                                          XMRIS(6)
 
 
 

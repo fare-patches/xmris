@@ -1,5 +1,5 @@
 /* Copyright (C) 1993 Nathan Sidwell */
-/* RCS $Id: Icon.c,v 4.13 1995/12/14 13:53:27 nathan Exp $ */
+/* RCS $Id: Icon.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 /* this widget holds a pixmap which it can select a row/column from
  * similar to a command widget, or initiate a drag on press and move
  */

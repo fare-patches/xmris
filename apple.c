@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: apple.c,v 4.10 1993/12/10 11:52:23 nathan Stable $ */
+/* RCS $Id: apple.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 #include "xmris.h"
 /*{{{  prototypes*/
 static APPLE *apple_search PROTOARG((int, int, unsigned, unsigned, unsigned));

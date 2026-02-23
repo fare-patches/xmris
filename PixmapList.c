@@ -1,5 +1,5 @@
 /* Copyright (C) 1993 Nathan Sidwell */
-/* RCS $Id: PixmapList.c,v 4.9 1995/12/14 13:53:27 nathan Exp $ */
+/* RCS $Id: PixmapList.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 /* Holds a list of pixmaps which can be selected or dragged like
  * individual Icon widgets.
  * I tried using a box widget with an insertPosition function

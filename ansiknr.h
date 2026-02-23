@@ -1,5 +1,5 @@
 /* Copyright (C) 1993 Nathan Sidwell */
-/* RCS $Id: ansiknr.h,v 4.6 1995/12/14 13:53:27 nathan Exp $ */
+/* RCS $Id: ansiknr.h 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 /* macros to make both ANSI & K&R compilers happy */
 /* uses FUNCPROTO like Xfuncproto.h does, so you can tailor things */
 /*{{{  prototypes*/

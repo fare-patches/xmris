@@ -1,5 +1,5 @@
 /* Copyright (C) 1993 Nathan Sidwell */
-/* RCS $Id: Drag.h,v 4.5 1993/10/01 19:19:35 nathan Stable $ */
+/* RCS $Id: Drag.h 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 
 #ifndef Mred_Drag_h
 #define Mred_Drag_h

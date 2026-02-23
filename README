@@ -1,7 +1,7 @@
 			X M R I S V4.04
                         X M R E D V1.02
 		Copyright (C) 1995, 1994, 1993, 1992 Nathan Sidwell
-RCS $Id: README,v 4.6 1995/12/14 13:53:27 nathan Exp $
+RCS $Id: README 1.3 Tue, 16 Mar 1999 11:28:16 +0000 nathan $
 
 Modify the Imakefile as appropriate for your system. This should just mean
 setting SCORE to point to the score file directory, and maybe setting

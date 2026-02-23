@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: draw.c,v 4.18 1995/12/14 13:53:27 nathan Exp $ */
+/* RCS $Id: draw.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 #include "xmris.h"
 #include "time.h"
 /*{{{  board load error masks*/

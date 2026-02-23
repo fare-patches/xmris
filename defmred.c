@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: defmred.c,v 4.14 1993/10/25 12:02:18 nathan Stable $ */
+/* RCS $Id: defmred.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 #define EXTERN
 #include "xmred.h"
 #include "defmred.h"

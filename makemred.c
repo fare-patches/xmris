@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: makemred.c,v 4.30 1995/12/14 13:53:27 nathan Exp $ */
+/* RCS $Id: makemred.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 /*{{{  includes*/
 #include "xmred.h"
 #include "defmred.h"

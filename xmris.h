@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: xmris.h,v 4.20 1995/12/22 11:56:52 nathan Exp $ */
+/* RCS $Id: xmris.h 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 #include "common.h"
 #define COPYRIGHT "Copyright (C) 1995-1992 Nathan Sidwell"
 /*{{{  function pointers*/

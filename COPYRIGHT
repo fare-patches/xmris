@@ -2,13 +2,11 @@
 			X M R I S V4.00
 			---------------
 		Copyright (C) 1993, 1992 Nathan Sidwell
-RCS $Id: COPYRIGHT,v 4.2 1993/11/08 16:56:32 nathan Stable $
+RCS $Id: COPYRIGHT 1.4 Mon, 22 Nov 1999 13:56:06 +0000 nathan $
 
-This program is copyright (C) 1993, 1992 Nathan Sidwell.  Permission is
-granted to distribute and compile verbatim copies of this software for
-non-commercial, non-profit use, without fee.  The software may be
-modified, provided that both the above copyright notice and this
-permission notice appear.
+This program is copyright (C) 1993, 1992 Nathan Sidwell.  This software
+is available under the terms of the GNU General Public License, a copy of
+which is in COPYING-2.0.
 
 No guarantee is given as to the robustness or suitability of this
 software for your computer. I'm also not responsible if you don't

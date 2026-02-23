@@ -1,5 +1,5 @@
 . Copyright (C) 1995, 1994, 1993, 1992 Nathan Sidwell
-. RCS $Id: xmris.man,v 4.17 1995/12/14 13:53:27 nathan Exp $
+. RCS $Id: xmris.man 1.3 Tue, 16 Mar 1999 11:28:16 +0000 nathan $
 .TH XMRIS 6 "12 December 1995" "X Version 11"
 .IX xmris#(n) "" "\fLxmris\fP(n)"
 .SH NAME

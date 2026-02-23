@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: dialogs.c,v 4.6 1994/01/25 18:33:03 nathan Stable $ */
+/* RCS $Id: dialogs.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 /*{{{  includes*/
 #include "xmred.h"
 #include <X11/Xaw/Dialog.h>

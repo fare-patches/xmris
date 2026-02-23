@@ -1,5 +1,5 @@
 ! Copyright (C) 1993 Nathan Sidwell
-! RCS $Id: Xmris-ad.src,v 4.11 1995/12/14 13:53:27 nathan Exp $
+! RCS $Id: Xmris-ad.src 1.3 Tue, 16 Mar 1999 11:28:16 +0000 nathan $
 
 ! These are some of the resources you can fiddle with for xmris
 ! The defaults are shown in the man page.

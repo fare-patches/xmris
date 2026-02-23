@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: xmris.c,v 4.19 1995/12/14 13:53:27 nathan Exp $ */
+/* RCS $Id: xmris.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 /*{{{  the problem with recursive function definitions*/
 /*
  * In order to keep a single control loop, I use animate functions,

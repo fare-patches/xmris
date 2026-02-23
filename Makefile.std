@@ -403,7 +403,7 @@ LINTFONT = $(LINTLIBDIR)/llib-lfont.ln
 # start of Imakefile
 
 # Copyright (C) 1993 Nathan Sidwell
-# RCS $Id: Imakefile,v 4.57 1995/12/22 11:32:07 nathan Exp $
+# RCS $Id: Makefile.std 1.3 Tue, 16 Mar 1999 11:28:16 +0000 nathan $
 
 # specify if this is a transputer target
 # #define transputerbuild 1

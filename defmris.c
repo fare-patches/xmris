@@ -1,5 +1,5 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
-/* RCS $Id: defmris.c,v 4.6 1995/12/14 13:53:27 nathan Exp $ */
+/* RCS $Id: defmris.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 #define EXTERN
 #include "xmris.h"
 #include "defmris.h"
