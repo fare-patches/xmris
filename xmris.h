@@ -491,7 +491,7 @@ extern VOIDFUNC create_xtra_monster PROTOARG((unsigned));
 extern VOIDFUNC draw_extra PROTOARG((VOIDARG));
 extern VOIDFUNC draw_extra_letter PROTOARG((unsigned));
 extern VOIDFUNC new_board PROTOARG((VOIDARG));
-extern void init_presentation(void);
+extern int configure_presentation(int scale);
 extern void present_area(int, int, unsigned, unsigned);
 extern void present_load(int, int);
 extern VOIDFUNC refresh_window PROTOARG((VOIDARG));

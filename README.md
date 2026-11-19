@@ -40,7 +40,9 @@ make
 ./xmris
 ```
 
-Use `./xmris -scale 2` to double the game window with crisp pixels. Game audio is enabled by default. Set
+The game automatically uses the largest whole-number pixel scale that fits
+its window, and stays centered as you resize. Use `-scale 2` to lock it at
+2×, or `-scale auto` to override a fixed X resource. Game audio is enabled by default. Set
 `Xmris.sound: false` in your X resources for quiet play, or run `xmris -nosound`.
 Use `-sound` to enable audio for a single session. For effects and fanfares
 without the looping soundtrack, use `-nomusic` or `Xmris.music: false`.

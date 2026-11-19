@@ -291,7 +291,8 @@ typedef struct Data
   Boolean username; /* use username of user */
   Boolean nodynamic; /* don't take advantage of dynamic visuals */
   Boolean nodisplay; /* don't open the display, even to get X resources */
-  int pixel_scale;
+  String scale_option;
+  int pixel_scale; /* current presentation scale */
   Boolean sound, music;
   Boolean busywait; /* do busy waiting */
 #endif /* XMRED */

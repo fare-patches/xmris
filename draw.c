@@ -6,36 +6,47 @@
 
 static Picture source_picture, window_picture;
 
-void init_presentation(void)
+/* Return false if this visual cannot scale; auto mode can still use 1x. */
+int configure_presentation(int scale)
 {
-  XRenderPictFormat *format;
-  XFixed half = XDoubleToFixed(0.5);
-  XTransform transform = {{{half, 0, 0}, {0, half, 0}, {0, 0, XDoubleToFixed(1)}}};
-  int major, minor;
+  XFixed one = XDoubleToFixed(1);
+  XTransform transform = {{{one, 0, 0}, {0, one, 0}, {0, 0, scale * one}}};
+  static int unavailable;
 
-  if(data.pixel_scale == 1)
-    return;
-  if(!XRenderQueryVersion(display.display, &major, &minor) ||
-      (major == 0 && minor < 6))
-    XtError("-scale 2 requires X Render 0.6 or later");
-  format = XRenderFindVisualFormat(display.display, display.visual);
-  if(!format)
-    XtError("-scale 2 requires an X Render format for the selected visual");
-  source_picture = XRenderCreatePicture(display.display, display.copy, format, 0, NULL);
-  window_picture = XRenderCreatePicture(display.display, display.window, format, 0, NULL);
+  if(scale == 1)
+    return 1;
+  if(unavailable)
+    return 0;
+  if(!source_picture)
+    {
+      int major, minor;
+      XRenderPictFormat *format;
+
+      if(!XRenderQueryVersion(display.display, &major, &minor) ||
+          (major == 0 && minor < 6) ||
+          !(format = XRenderFindVisualFormat(display.display, display.visual)))
+        {
+          unavailable = 1;
+          return 0;
+        }
+      source_picture = XRenderCreatePicture(display.display, display.copy, format, 0, NULL);
+      window_picture = XRenderCreatePicture(display.display, display.window, format, 0, NULL);
+      XRenderSetPictureFilter(display.display, source_picture, FilterNearest, NULL, 0);
+    }
   XRenderSetPictureTransform(display.display, source_picture, &transform);
-  XRenderSetPictureFilter(display.display, source_picture, FilterNearest, NULL, 0);
+  return 1;
 }
 
 /* All game coordinates and off-screen pixmaps stay at their native size. */
 void present_area(int x, int y, unsigned width, unsigned height)
 {
-  if(data.pixel_scale == 1)
+  int scale = data.pixel_scale;
+  if(scale == 1)
     XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
         x, y, width, height, x, y);
   else if(width && height)
     XRenderComposite(display.display, PictOpSrc, source_picture, None, window_picture,
-        2 * x, 2 * y, 0, 0, 2 * x, 2 * y, 2 * width, 2 * height);
+        scale * x, scale * y, 0, 0, scale * x, scale * y, scale * width, scale * height);
 }
 
 void present_load(int left, int right)

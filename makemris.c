@@ -3,7 +3,7 @@
 /*{{{  includes*/
 #include "xmris.h"
 #include "defmris.h"
-#include <X11/IntrinsicP.h> /* XtMoveWidget */
+#include <X11/IntrinsicP.h> /* XtConfigureWidget */
 #include <X11/Xaw/Form.h>
 #include <X11/Xaw/Paned.h>
 #include <X11/Xaw/Simple.h>
@@ -71,22 +71,39 @@ ARGSEP  XtPointer *data
     }
 }
 /*}}}*/
-/* The form fills the window manager's allocation. Keep the garden at
- * its native pixel scale and distribute extra space between its edges. */
+/* Zero requests automatic sizing; the renderer always has a positive scale. */
+static int fixed_scale;
+
 static void center_garden(Widget form, XtPointer closure, XEvent *event,
     Boolean *dispatch)
 {
   Dimension width, height, border;
-  int spare_x, spare_y;
+  int scale = fixed_scale;
+  int spare_x, spare_y, changed;
 
   if(event->type != ConfigureNotify && event->type != MapNotify)
     return;
   XtVaGetValues(form, XtNwidth, &width, XtNheight, &height, (String)NULL);
   XtVaGetValues(display.garden, XtNborderWidth, &border, (String)NULL);
-  spare_x = (int)width - WINDOW_WIDTH * data.pixel_scale - 2 * border;
-  spare_y = (int)height - WINDOW_HEIGHT * data.pixel_scale - 2 * border;
-  XtMoveWidget(display.garden, spare_x > 0 ? spare_x / 2 : 0,
-      spare_y > 0 ? spare_y / 2 : 0);
+  if(!scale)
+    {
+      int across = ((int)width - 2 * border) / WINDOW_WIDTH;
+      int down = ((int)height - 2 * border) / WINDOW_HEIGHT;
+      scale = across < down ? across : down;
+      if(scale < 1)
+        scale = 1;
+    }
+  if(scale != data.pixel_scale && !configure_presentation(scale))
+    scale = 1;
+  changed = scale != data.pixel_scale;
+  data.pixel_scale = scale;
+  spare_x = (int)width - WINDOW_WIDTH * scale - 2 * border;
+  spare_y = (int)height - WINDOW_HEIGHT * scale - 2 * border;
+  XtConfigureWidget(display.garden, spare_x > 0 ? spare_x / 2 : 0,
+      spare_y > 0 ? spare_y / 2 : 0, WINDOW_WIDTH * scale,
+      WINDOW_HEIGHT * scale, border);
+  if(changed && display.mapped)
+    refresh_window();
 }
 
 /*{{{  void create_widget()*/
@@ -96,8 +113,15 @@ extern VOIDFUNC create_widget FUNCARGVOID
  * sets visual and stuff for the toplevel widget
  */
 {
-  if(data.pixel_scale != 1 && data.pixel_scale != 2)
-    XtError("-scale must be 1 or 2");
+  if(strcmp(data.scale_option, "auto") != 0)
+    {
+      char *end;
+      long value = strtol(data.scale_option, &end, 10);
+      if(*end || value < 1 || value > 32767 / WINDOW_HEIGHT)
+        XtError("-scale requires auto or a positive integer fitting X11 coordinates");
+      fixed_scale = (int)value;
+    }
+  data.pixel_scale = fixed_scale ? fixed_scale : 1;
   display.form = XtVaCreateManagedWidget("form", formWidgetClass,
       display.toplevel, XtNdefaultDistance, (XtArgVal)0, (String)NULL);
   display.garden = XtVaCreateManagedWidget(&names[data.gender != False][1],

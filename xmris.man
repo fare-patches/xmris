@@ -219,9 +219,10 @@ The game is known as xmris (eks mister iz), because the arcade game was masculin
 .br
 .ne 3
 .TP
-.BI "-scale " "1|2"
-Draw each game pixel at its original size (1, the default) or as a 2 by 2
-block (2). The corresponding X resource is Scale.
+.BI "-scale " "auto|n"
+By default, center the game at the largest integer scale that fits the window
+(minimum 1). Recalculate on resize. A positive integer selects a fixed
+scale. The corresponding X resource is Scale.
 .TP
 .BR -sound ", " -nosound
 Enable or disable all game audio. The sound resource is true by default.

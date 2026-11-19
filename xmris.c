@@ -1320,7 +1320,8 @@ ARGSEP  char CONST **argv
   printf("Garden is 0x%lx\n", (long)XtWindow(display.garden));
 #endif /* DEBUGEVENTLOOP */
   display.window = XtWindow(display.garden);
-  init_presentation();
+  if(!configure_presentation(data.pixel_scale))
+    XtError("explicit pixel scaling requires X Render 0.6 on the selected visual");
   if(data.sound)
     sound_open();
   timer_open();
