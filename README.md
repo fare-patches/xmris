@@ -1,4 +1,4 @@
-# XMRIS 4.1.0 in 2026
+# XMRIS 4.1.1 in 2026
 
 xmris (1992-1995) by Nathan Sidwell is a remarkably faithful Unix clone of
 Mr. Do!, a 1982 game for 8-bit consoles by Kazutoshi Ueda.
@@ -18,6 +18,17 @@ dying and gaining a life at the same time, etc.),
 that Nathan perfectly reproduced.
 
 2026 revival and SDL port maintained by François-René (Faré) Rideau.
+
+## What's new in 4.1.1
+
+* The Linux SDL3 frontend shares the X11 game's rules, gardens, scores, and music.
+  Press F11 for fullscreen. Integer scaling is the default. Use
+  `-scale fit` for fractional scaling that preserves the aspect ratio.
+* Press F1 at the title screen in either frontend to change sound effects,
+  music, diamond difficulty, or controls. Both frontends share saved preferences.
+  The Controls screen shows current bindings and can restore the defaults.
+* SDL uses the classic X11 Courier bitmap font. Both games identify themselves
+  as `xmris` in the audio mixer.
 
 ## Building and running XMRIS
 

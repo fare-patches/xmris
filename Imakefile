@@ -6,7 +6,7 @@ XCOMM Copyright (C) 1993,1999 Nathan Sidwell
 XCOMM RCS $Id: Imakefile 1.4 Mon, 22 Nov 1999 13:56:06 +0000 nathan $
 
 XCOMM $Format: "VERSION = $ReleaseVersion$"$
-VERSION = 4.1.0
+VERSION = 4.1.1
 XCOMM $Format: "APP = $Project$"$
 APP = xmris
 
@@ -124,7 +124,7 @@ MREDHDRS = xmred.h defmred.h
 COMMONSRCS = defcom.c makecom.c
 GARDENS = alphabet.gdn digits.gdn puzzle.gdn xmred.gdn
 FILES = ChangeLog CHANGES CHANGES.4.01 CHANGES.4.02 CHANGES.4.03 CHANGES.4.04 \
-	README COPYRIGHT COPYING-2.0 Imakefile \
+	README README.md COPYRIGHT COPYING-2.0 Imakefile xmris.desktop xmsit.desktop xmred.desktop xmris.png xmsit.png \
 	xmris.man xmred.man Xmris-ad.src
 MRISSRCS = options.c platform-x11.c video-x11.c sound.c apple.c defmris.c demo.c draw.c makemris.c \
 	monster.c move.c player.c scoring.c timer.c xmris.c
