@@ -72,10 +72,20 @@ xmris
 The SDL frontend builds from the same game, garden, score, and sound sources.
 F11 toggles fullscreen. The SDL window centers the garden and scales it in
 whole pixels as you resize it. Use `-scale 2` to request a 2× initial window.
-Arrow keys move, Space starts or throws, and K on the title screen changes
-the bindings. Run `./xmris-sdl -help` for the supported options. The SDL
+Arrow keys move, Space starts or throws, and K on the title screen opens Options. Run `./xmris-sdl -help` for the supported options. The SDL
 frontend uses the bundled 18-pixel X11 Courier bitmap font and command-line settings. The X11 game
 and the xmred garden editor use the existing imake build and X resources.
+
+### Game options
+
+Press **K** at the title screen in either frontend. Use the movement keys
+to select a row and Enter or Throw to change it. You can toggle sound
+effects and background music independently, choose Easy, Hard, or Classic
+diamond behavior, or open the keyboard setup. Esc returns to the title.
+Changes are saved under `$XDG_CONFIG_HOME/xmris/config`, which defaults
+to `~/.config/xmris/config`. Command-line settings and explicit X resources
+take precedence at startup. The `-nosound` switch disables the audio device
+for the whole session.
 
 ## Features added 2026
 

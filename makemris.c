@@ -370,6 +370,14 @@ ARGSEP  String  *argv
 	  display.display = XtDisplay(display.toplevel);
 	  for(ptr = resources; *(char CONST **)ptr; ptr++)
 	    /* EMPTY */;
+          options_read();
+          for (XtResource *r = resources; r->resource_name; ++r) {
+            const char *saved = option_default(r->resource_name);
+            if (saved) {
+              r->default_type = XtRString;
+              r->default_addr = (XtPointer)saved;
+            }
+          }
 	  XtGetApplicationResources(display.toplevel, (XtPointer)&data,
 	      resources, (Cardinal)(ptr - resources), (Arg *)NULL, 0);
           if(!strcmp(data.diamond_difficulty, "classic"))

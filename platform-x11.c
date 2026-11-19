@@ -195,6 +195,8 @@ ARGSEP  Cardinal  *num_params
 }
 /*}}}*/
 /*{{{  int main(argc, argv)*/
+const char *portable_key_name(KeySym key) { return key_name(key); }
+
 extern int main
 FUNCARG((argc, argv),
 	int     argc

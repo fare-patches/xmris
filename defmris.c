@@ -197,7 +197,7 @@ TITLE title_text[] =
     {"Pause - %s",        KEY_PAUSE},
     {"Quit - %s",         KEY_QUIT},
     {"Iconize - %s",      KEY_ICONIZE},
-    {"Keyboard - %s",     KEY_KEYBOARD},
+    {"Options - %s",     KEY_KEYBOARD},
     {"Press %s to start", KEY_THROW},
     {""},
     {COPYRIGHT},

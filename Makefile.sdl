@@ -2,7 +2,7 @@
 SDL_CFLAGS ?= $(shell pkg-config --cflags sdl3)
 SDL_LIBS ?= $(shell pkg-config --libs sdl3)
 CFLAGS ?= -O2 -g
-sources = platform-sdl.c video-sdl.c apple.c defmris.c demo.c draw.c monster.c move.c player.c scoring.c timer.c sound.c xmris.c
+sources = options.c platform-sdl.c video-sdl.c apple.c defmris.c demo.c draw.c monster.c move.c player.c scoring.c timer.c sound.c xmris.c
 objects = $(sources:%.c=build/sdl/%.o)
 
 xmris-sdl: $(objects)

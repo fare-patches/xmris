@@ -16,6 +16,34 @@ void fatal_error(const char *format,...)
 }
 
 const char *key_name(KeySym key) { return SDL_GetKeyName(key); }
+/* Use X keysym spellings for the common cross-backend controls. */
+static const struct { KeySym key; const char *name; } key_names[] = {
+  {SDLK_SPACE,"space"}, {SDLK_RETURN,"Return"}, {SDLK_ESCAPE,"Escape"},
+  {SDLK_LSHIFT,"Shift_L"}, {SDLK_RSHIFT,"Shift_R"},
+  {SDLK_LCTRL,"Control_L"}, {SDLK_RCTRL,"Control_R"},
+  {SDLK_LALT,"Alt_L"}, {SDLK_RALT,"Alt_R"}
+};
+const char *portable_key_name(KeySym key)
+{
+  static char ascii[2];
+  if (key >= 'a' && key <= 'z') { ascii[0]=key; return ascii; }
+  for (unsigned i=0;i<XtNumber(key_names);++i)
+    if (key_names[i].key==key) return key_names[i].name;
+  return key_name(key);
+}
+
+static void load_keys(void)
+{
+  const char *const actions[]={"up","down","left","right","throw","pause","quit","iconize","keyboard"};
+  for (unsigned i=0;i<KEYS;++i) {
+    const char *name=option_default(actions[i]);
+    if (!name) continue;
+    KeySym key=SDL_GetKeyFromName(name);
+    for (unsigned j=0;j<XtNumber(key_names);++j)
+      if (!strcmp(key_names[j].name,name)) key=key_names[j].key;
+    if (key) data.keysyms[i]=key;
+  }
+}
 void set_key_default(void) {}
 void set_key_single(void) {}
 void color_cycle(void) {}
@@ -86,10 +114,17 @@ int main(int argc,char **argv)
   init_scores_early();
   memcpy(data.keysyms,keys,sizeof(keys));
   data.music=data.sound=True;
-  data.diamond_mask=1;
+  options_read();
+  load_keys();
+  const char *difficulty=option_default("diamondDifficulty");
+  data.diamond_mask=difficulty && !strcmp(difficulty,"classic") ? 0 :
+      difficulty && !strcmp(difficulty,"hard") ? 7 : 1;
+  data.effects=!option_default("effects") || strcmp(option_default("effects"),"false")!=0;
+  data.music=!option_default("music") || strcmp(option_default("music"),"false")!=0;
   for (int i=1;i<argc;++i) {
     if (!strcmp(argv[i],"-fullscreen")) fullscreen=1;
     else if (!strcmp(argv[i],"-nosound")) data.sound=False;
+    else if (!strcmp(argv[i],"-music")) data.music=True;
     else if (!strcmp(argv[i],"-nomusic")) data.music=False;
     else if (!strcmp(argv[i],"-random")) data.random=True;
     else if (!strcmp(argv[i],"-gardens") && i+1<argc) data.boards=argv[++i];
@@ -103,7 +138,7 @@ int main(int argc,char **argv)
         scale=factor;
       }
     } else {
-      fprintf(stderr,"Usage: %s [-fullscreen] [-scale auto|N] [-nosound] [-nomusic] [-random] [-gardens FILE]\n",myname);
+      fprintf(stderr,"Usage: %s [-fullscreen] [-scale auto|N] [-nosound] [-music|-nomusic] [-random] [-gardens FILE]\n",myname);
       return strcmp(argv[i],"-help")!=0;
     }
   }

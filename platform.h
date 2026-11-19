@@ -1,4 +1,8 @@
 /* Platform operations used by the game. */
+void options_read(void);
+const char *option_default(const char *name);
+int options_save(int which);
+const char *portable_key_name(KeySym key);
 void game_tick(void);
 void game_keypress(KeySym key);
 void game_keyrelease(KeySym key);

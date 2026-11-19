@@ -8,6 +8,7 @@ enum sound_effect {
 enum music_theme { MUSIC_OFF = 0, MUSIC_GARDEN = 1, MUSIC_CHASE = 2, MUSIC_EXTRA = 4,
   MUSIC_DRONES = 8, MUSIC_DIAMOND = 16 };
 
+int sound_effects_enabled(void);
 void sound_apples(int started, int falling, int crushed);
 void sound_open(void);
 void sound_cherry(unsigned count);

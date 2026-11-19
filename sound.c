@@ -98,7 +98,7 @@ static void mix_audio(void *unused, Uint8 *stream, int bytes)
  * a landing silences it only when there are no other apples in flight. */
 void sound_apples(int started, int falling, int crushed)
 {
-  if (!device || (!started && falling && !crushed))
+  if (!device || !sound_effects_enabled() || (!started && falling && !crushed))
     return;
   lock_audio(device);
   if (started || !falling)
@@ -114,7 +114,7 @@ void sound_play(enum sound_effect cue)
     &bounce, &burst, &returning, &center_bonus, &apple_break, &chew, &credit,
     &death_song, &opening, &victory, &interlude, &extra_life, &diamond_show, &game_over, &game_over
   };
-  if (!device)
+  if (!device || !sound_effects_enabled())
     return;
   lock_audio(device);
   if (cue >= FX_DEATH) {
@@ -149,7 +149,7 @@ void sound_cherry(unsigned count)
   static const struct tune *const notes[] = {
     &cherry1, &cherry2, &cherry3, &cherry4, &cherry5, &cherry6, &cherry7, &cherry8
   };
-  if (!device || count < 1 || count > 8)
+  if (!device || !sound_effects_enabled() || count < 1 || count > 8)
     return;
   lock_audio(device);
   begin_tune(&cherry, notes[count - 1]);

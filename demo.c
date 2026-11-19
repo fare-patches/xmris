@@ -349,6 +349,7 @@ static FUNCANIMATE(animate_def_keys, next)
     {
       global.pressed = 0;
       global.throw = 0;
+      if (!options_save(3)) perror("saving key bindings");
       assert(rts != (PROTOANIMATE((*)))NULL);
       then = (*rts)((PROTOVOID(*))NULL);
     }
@@ -356,6 +357,69 @@ static FUNCANIMATE(animate_def_keys, next)
   return then;
 }
 /*}}}*/
+/* Use the key-definition event loop so the menu also waits quietly. */
+static int menu_save_ok = 1;
+
+static FUNCANIMATE(animate_options, next)
+{
+  static int selected;
+  const char *labels[] = {"Sound effects", "Background music",
+                          "Diamond difficulty", "Change keys", "Done"};
+  const char *values[] = {data.effects ? "On" : "Off", data.music ? "On" : "Off",
+      data.diamond_mask == 0 ? "Classic" : data.diamond_mask == 7 ? "Hard" : "Easy"};
+  KeySym key = global.key;
+  if (next) {
+    selected = 0;
+    global.state = MODE_KEY_DEF;
+    global.pressed = global.throw = 0;
+    monster.monsters = apple.apples = 0;
+    update.back.backs = update.score.scores = 0;
+  } else {
+    const char *name = portable_key_name(key);
+    int activate = key == data.keysyms[KEY_THROW] || (name && !strcmp(name,"Return"));
+    if (name && !strcmp(name,"Escape")) {
+      selected = 4;
+      activate = 1;
+    } else if (key == data.keysyms[0]) selected = (selected+4)%5;
+    else if (key == data.keysyms[1]) selected = (selected+1)%5;
+    if (activate) {
+      if (selected == 4) {
+        global.key = NoSymbol;
+        return animate_demo((PROTOVOID(*))NULL);
+      }
+      if (selected == 3)
+        return animate_def_keys((PROTOVOID(*))animate_demo);
+      if (selected == 0) {
+        data.effects = !data.effects;
+        values[0] = data.effects ? "On" : "Off";
+      } else if (selected == 1) {
+        data.music = !data.music;
+        values[1] = data.music ? "On" : "Off";
+        if (!data.music) sound_music(MUSIC_OFF);
+      } else {
+        data.diamond_mask = data.diamond_mask == 1 ? 7 : data.diamond_mask == 7 ? 0 : 1;
+        values[2] = data.diamond_mask == 0 ? "Classic" : data.diamond_mask == 7 ? "Hard" : "Easy";
+      }
+      menu_save_ok = options_save(selected);
+    }
+  }
+  global.key = NoSymbol;
+  video_fill(display.back,GCN(GC_CLEAR),0,0,WINDOW_WIDTH,WINDOW_HEIGHT);
+  video_text(display.back,GCN(GC_TEXT),CENTER_X-3*font.width,100,"Options",7);
+  for (int i=0;i<5;++i) {
+    char line[64];
+    int len=snprintf(line,sizeof(line),"%c %-19s %s",selected==i ? '>' : ' ',
+        labels[i],i<3 ? values[i] : "");
+    video_text(display.back,GCN(GC_TEXT),4*font.width,160+i*40,line,len);
+  }
+  const char *hint = menu_save_ok ? "Up/down, Enter to choose, Esc to exit" : "Could not save preferences";
+  video_text(display.back,GCN(GC_TEXT),CENTER_X-(int)(strlen(hint)*font.width/2),
+      WINDOW_HEIGHT-60,hint,strlen(hint));
+  video_copy(display.back,display.copy,GCN(GC_COPY),0,0,WINDOW_WIDTH,WINDOW_HEIGHT,0,0);
+  refresh_window();
+  return (PROTOVOID(*))animate_options;
+}
+
 /*{{{  ANIMATE animate_demo(next)*/
 extern FUNCANIMATE(animate_demo, next)
 /*
@@ -381,7 +445,7 @@ extern FUNCANIMATE(animate_demo, next)
   else if(global.pressed & 1 << KEY_KEYBOARD)
     {
       state = 2;
-      then = animate_def_keys((PROTOVOID(*))animate_demo);
+      then = animate_options((PROTOVOID(*))animate_demo);
     }
   else
     {

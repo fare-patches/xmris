@@ -490,7 +490,7 @@ GARDENS = alphabet.gdn digits.gdn puzzle.gdn xmred.gdn
 FILES = CHANGES CHANGES.4.01 CHANGES.4.02 CHANGES.4.03 CHANGES.4.04 \
 	README COPYRIGHT Imakefile \
 	xmris.man xmred.man Xmris-ad.src
-MRISSRCS = platform-x11.c video-x11.c sound.c apple.c defmris.c demo.c draw.c makemris.c \
+MRISSRCS = options.c platform-x11.c video-x11.c sound.c apple.c defmris.c demo.c draw.c makemris.c \
 	monster.c move.c player.c scoring.c timer.c xmris.c
 MRISOBJS = $(MRISSRCS:.c=.o)
 SCRAMSRCS = scram.c

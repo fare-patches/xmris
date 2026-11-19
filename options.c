@@ -1,0 +1,103 @@
+#include "xmris.h"
+#include "sound.h"
+#include <sys/stat.h>
+#include <sys/file.h>
+#include <fcntl.h>
+
+/* Store only preferences explicitly changed in the menu. */
+static const char *const names[] = {"effects", "music", "diamondDifficulty",
+  "up", "down", "left", "right", "throw", "pause", "quit", "iconize", "keyboard"};
+static char values[XtNumber(names)][128];
+
+static char *config_path(int create)
+{
+  const char *base = getenv("XDG_CONFIG_HOME");
+  const char *parent = "";
+  if (!base || *base != '/') {
+    base = getenv("HOME");
+    if (!base || !*base) return NULL;
+    parent = "/.config";
+  }
+  char *path = malloc(strlen(base) + strlen(parent) + sizeof("/xmris/config.XXXXXX"));
+  if (!path) return NULL;
+  sprintf(path, "%s%s", base, parent);
+  if (create && mkdir(path,0700) && errno != EEXIST) goto failed;
+  strcat(path,"/xmris");
+  if (create && mkdir(path,0700) && errno != EEXIST) goto failed;
+  strcat(path,"/config");
+  return path;
+failed:
+  free(path);
+  return NULL;
+}
+
+void options_read(void)
+{
+  char *path = config_path(0), line[256];
+  FILE *file = path ? fopen(path,"r") : NULL;
+  free(path);
+  memset(values,0,sizeof(values));
+  if (!file) return;
+  while (fgets(line,sizeof(line),file)) {
+    char *value = strchr(line,'=');
+    if (!value) continue;
+    *value++ = 0;
+    value[strcspn(value,"\r\n")] = 0;
+    if (strlen(value) >= sizeof(values[0])) continue;
+    for (unsigned i=0;i<XtNumber(names);++i)
+      if (!strcmp(names[i],line)) strcpy(values[i],value);
+  }
+  fclose(file);
+}
+
+const char *option_default(const char *name)
+{
+  for (unsigned i=0;i<XtNumber(names);++i)
+    if (!strcmp(name,names[i]) && values[i][0]) return values[i];
+  return NULL;
+}
+
+int options_save(int which)
+{
+  char *path = config_path(1);
+  if (!path) return 0;
+  char *tmp = malloc(strlen(path)+8);
+  if (!tmp) { free(path); return 0; }
+  sprintf(tmp,"%s.XXXXXX",path);
+  /* Serialize read-modify-write across running instances. The directory
+   * stays in place while the preferences file is atomically replaced. */
+  char *slash = strrchr(path,'/');
+  *slash = 0;
+  int directory = open(path,O_RDONLY | O_DIRECTORY);
+  *slash = '/';
+  if (directory < 0 || flock(directory,LOCK_EX) < 0) {
+    if (directory >= 0) close(directory);
+    free(tmp);
+    free(path);
+    return 0;
+  }
+  options_read();
+  if (which==0) strcpy(values[0],data.effects ? "true" : "false");
+  if (which==1) strcpy(values[1],data.music ? "true" : "false");
+  if (which==2) strcpy(values[2],data.diamond_mask==0 ? "classic" : data.diamond_mask==7 ? "hard" : "easy");
+  if (which==3)
+    for (unsigned i=0;i<KEYS;++i) {
+      const char *key = portable_key_name(data.keysyms[i]);
+      if (key) snprintf(values[3+i],sizeof(values[0]),"%s",key);
+    }
+  int fd = mkstemp(tmp);
+  FILE *file = fd<0 ? NULL : fdopen(fd,"w");
+  int ok = file != NULL;
+  if (file) {
+    for (unsigned i=0;i<XtNumber(names);++i)
+      if (values[i][0] && fprintf(file,"%s=%s\n",names[i],values[i])<0) ok=0;
+    if (fclose(file)) ok=0;
+  } else if (fd>=0) close(fd);
+  if (ok) ok = rename(tmp,path)==0;
+  if (!ok) { perror(path); unlink(tmp); }
+  free(tmp);
+  free(path);
+  close(directory);
+  return ok;
+}
+int sound_effects_enabled(void) { return data.effects; }

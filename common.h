@@ -313,7 +313,7 @@ typedef struct Data
   String diamond_difficulty;
   unsigned diamond_mask; /* second random byte: easy 1, hard 7, classic 0 */
   int pixel_scale; /* current presentation scale */
-  Boolean sound, music;
+  Boolean sound, music, effects;
   Boolean busywait; /* do busy waiting */
 #endif /* XMRED */
   Boolean gender;   /* he or she? */
