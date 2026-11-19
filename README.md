@@ -17,15 +17,23 @@ many not obvious to the beginner (shooting through walls,
 dying and gaining a life at the same time, etc.),
 that Nathan perfectly reproduced.
 
-## Building an Running XMRIS
+## Building and running XMRIS
 
-### Prerequisites
+Choose a frontend. For the SDL3 game on Ubuntu, install its build dependencies:
+
+```sh
+sudo apt install build-essential pkg-config libsdl3-dev
+make -f Makefile.sdl
+./xmris-sdl -fullscreen
+```
+
+### X11 prerequisites
 
 On Ubuntu, I needed to install `xmkmf` from xutils, the Athena widgets,
 and the standard 75dpi bitmap fonts.
-Extensions I had Codex write for me require XRender and SDL:
+The X11 game uses XRender for scaling and SDL2 for sound:
 ```
-apt install -y xutils-dev libxaw7-dev xfonts-75dpi libxrender-dev libsdl2-dev
+sudo apt install build-essential xutils-dev libxaw7-dev xfonts-75dpi libxrender-dev libsdl2-dev
 ```
 
 If you want the fonts to work in the same X11 session, you might additionally need to:
@@ -62,14 +70,6 @@ xmris
 ### SDL3 on Linux
 
 The SDL frontend builds from the same game, garden, score, and sound sources.
-Install a C compiler, GNU make, pkg-config, and the SDL3 development package
-(`libsdl3-dev` on Debian or Ubuntu), then run
-
-```sh
-make -f Makefile.sdl
-./xmris-sdl -fullscreen
-```
-
 F11 toggles fullscreen. The SDL window centers the garden and scales it in
 whole pixels as you resize it. Use `-scale 2` to request a 2× initial window.
 Arrow keys move, Space starts or throws, and K on the title screen changes

@@ -985,58 +985,41 @@ ARGSEP  char CONST *parent
       size_t    length;
       
       length = strlen(name);
-      if(*name == '/')
-	{
-	  filename = malloc(length + 1 + FILE_SUFFIX_LEN);
-	  strcpy(filename, name);
-	  strcpy(&filename[length], FILE_SUFFIX);
-	  if(filename)
-	    {
-	      stream = fopen(filename, "r");
-	      if(!stream)
-		{
-		  filename[length] = 0;
-		  stream = fopen(filename, "r");
-		}
-	    }
-	  else
-	    error = ERROR_MALLOC;
-	}
-      else
-	{
-	  size_t    offset;
-	  
-	  filename = parent ? strrchr(parent, '/') : NULL;
-	  offset = filename ? filename - parent + 1 : 0;
-	  filename = malloc(length + offset + 1 + FILE_SUFFIX_LEN);
-	  strncpy(filename, parent, offset);
-	  strcpy(&filename[offset], name);
-	  strcpy(&filename[offset + length], FILE_SUFFIX);
-	  stream = fopen(filename, "r");
-	  if(!stream)
-	    {
-	      filename[offset + length] = 0;
-	      stream = fopen(filename, "r");
-	    }
-	  if(!stream)
-	    /*{{{  try in app-defaults/xmris/<file>*/
-	    {
-	      char CONST *lib;
-	      
-	      lib = garden_resource(name, NULL);
-	      if(!lib)
-		lib = garden_resource(name, FILE_SUFFIX);
-	      if(lib)
-		{
-		  free(filename);
-		  filename = (char *)lib;
-		}
-	      stream = fopen(filename, "r");
-	    }
-	    /*}}}*/
-	}
+      {
+        char CONST *slash = *name != '/' && parent ? strrchr(parent, '/') : NULL;
+        size_t offset = slash ? (size_t)(slash - parent + 1) : 0;
+
+        filename = malloc(offset + length + FILE_SUFFIX_LEN + 1);
+        if(!filename)
+          error = ERROR_MALLOC;
+        else
+          {
+            if(offset)
+              memcpy(filename, parent, offset);
+            memcpy(filename + offset, name, length);
+            strcpy(filename + offset + length, FILE_SUFFIX);
+            stream = fopen(filename, "r");
+            if(!stream)
+              {
+                filename[offset + length] = 0;
+                stream = fopen(filename, "r");
+              }
+            if(!stream && *name != '/')
+              {
+                char *resource = garden_resource(name, NULL);
+                if(!resource)
+                  resource = garden_resource(name, FILE_SUFFIX);
+                if(resource)
+                  {
+                    free(filename);
+                    filename = resource;
+                    stream = fopen(filename, "r");
+                  }
+              }
+          }
+      }
       sptr->name = filename;
-      if(!stream && filename)
+      if(filename && !stream)
 	{
 	  perror(filename);
 	  error = ERROR_OPEN;
