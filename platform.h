@@ -1,0 +1,16 @@
+/* Platform operations used by the game. */
+void game_tick(void);
+void game_keypress(KeySym key);
+void game_keyrelease(KeySym key);
+void set_key_default(void);
+void set_key_single(void);
+char *key_name(KeySym key);
+void video_sync(void);
+void video_pattern(unsigned long foreground, unsigned long background, Pixmap stipple);
+char *garden_resource(const char *name, const char *suffix);
+void video_copy(Pixmap src, Pixmap dst, GC gc, int x, int y, unsigned w, unsigned h, int dx, int dy);
+void video_fill(Pixmap dst, GC gc, int x, int y, unsigned w, unsigned h);
+void video_line(Pixmap dst, GC gc, int x, int y, int dx, int dy);
+void video_rect(Pixmap dst, GC gc, int x, int y, unsigned w, unsigned h);
+void video_text(Pixmap dst, GC gc, int x, int y, const char *str, int n);
+void video_opaque_text(Pixmap dst, GC gc, int x, int y, const char *str, int n);

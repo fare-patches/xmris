@@ -237,7 +237,7 @@ static FUNCANIMATE(animate_def_keys, next)
       player.ball.count = 16;
       player.old_ball.state = 0;
       player.old_ball.count = 16;
-      XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+      video_fill(display.back, GCN(GC_CLEAR),
     	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
       back_mris(0);
       monster.den = 0;
@@ -249,7 +249,7 @@ static FUNCANIMATE(animate_def_keys, next)
     	}
       for(ix = monster.delay; strchr(title_text[ix + 1].text, '%'); ix++)
     	back_title(&title_text[ix], ix);
-      XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
+      video_copy(display.back, display.copy, GCN(GC_COPY),
     	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
       global.count = 0;
     }
@@ -272,11 +272,11 @@ static FUNCANIMATE(animate_def_keys, next)
     	{
     	  data.keysyms[tptr->ix] = key;
     	  monster.den |= 1 << tptr->ix;
-    	  XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+    	  video_fill(display.back, GCN(GC_CLEAR),
     	      0, PIXELY(monster.delay + global.count, 0),
     	      WINDOW_WIDTH, CELL_HEIGHT);
     	  back_title(tptr, monster.delay + global.count);
-    	  XCopyArea(display.display, display.back, display.copy,
+    	  video_copy(display.back, display.copy,
     	      GCN(GC_COPY), 0, PIXELY(monster.delay + global.count, 0),
     	      WINDOW_WIDTH, CELL_HEIGHT,
     	      0, PIXELY(monster.delay + global.count, 0));
@@ -287,10 +287,10 @@ static FUNCANIMATE(animate_def_keys, next)
     		
     		for(ix = monster.delay; title_text[ix].ix != lookup; ix++)
     		  /* EMPTY */;
-    		XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+    		video_fill(display.back, GCN(GC_CLEAR),
     		    CENTER_X + (font.width + 1) / 2, PIXELY(ix, 0),
     		    WINDOW_WIDTH / 2, CELL_HEIGHT);
-    		XCopyArea(display.display, display.back, display.copy,
+    		video_copy(display.back, display.copy,
     		    GCN(GC_COPY), CENTER_X + (font.width + 1) / 2,
     		    PIXELY(ix, 0), WINDOW_WIDTH / 2,
     		    CELL_HEIGHT, CENTER_X + (font.width + 1) / 2,
@@ -311,7 +311,7 @@ static FUNCANIMATE(animate_def_keys, next)
       	char    buffer[49];
       	size_t  length;
       	    
-      	XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+      	video_fill(display.back, GCN(GC_CLEAR),
       	    0, PIXELY(CELLS_DOWN - 1, 0), WINDOW_WIDTH,
       	    CELL_HEIGHT * 2 + GAP_HEIGHT);
       	strcpy(buffer, "Press new ");
@@ -320,22 +320,22 @@ static FUNCANIMATE(animate_def_keys, next)
       	strcat(buffer, " key");
       	length = strlen(buffer);
       	assert(length < sizeof(buffer));
-      	XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+      	video_opaque_text(display.back, GCN(GC_TEXT),
       	    CENTER_X - (int)(length * font.width / 2),
       	    PIXELY(CELLS_DOWN - 1, CELL_HEIGHT / 2) + font.center,
       	    buffer, (int)length);
       	if(!(monster.den & 1 << tptr->ix))
       	  {
       	    sprintf(buffer, "%s for current binding",
-      		XKeysymToString(data.keysyms[KEY_THROW]));
+      		key_name(data.keysyms[KEY_THROW]));
       	    length = strlen(buffer);
       	    assert(length < sizeof(buffer));
-      	    XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+      	    video_opaque_text(display.back, GCN(GC_TEXT),
       		CENTER_X - (int)(length * font.width / 2),
       		PIXELY(CELLS_DOWN, CELL_HEIGHT / 2) + font.center,
       		buffer, (int)length);
       	  }
-      	XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
+      	video_copy(display.back, display.copy, GCN(GC_COPY),
       	    0, PIXELY(CELLS_DOWN - 1, 0), WINDOW_WIDTH,
       	    CELL_HEIGHT * 2 + GAP_HEIGHT, 0, PIXELY(CELLS_DOWN - 1, 0));
       }
@@ -424,7 +424,7 @@ extern FUNCANIMATE(animate_diamond, next)
       player.ball.state = 0;
       player.ball.count = 8;
       add_background(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT - 1);
-      XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+      video_fill(display.back, GCN(GC_CLEAR),
     	  BORDER_LEFT + 1, BORDER_TOP + 1, BOARD_WIDTH - 2, BOARD_HEIGHT - 2);
       spawn_monster(0, 4, 3, 3, CELLS_ACROSS + 1, CELLS_DOWN / 2,
     	  -(CELL_WIDTH + GAP_WIDTH) * CELLS_ACROSS, 0);
@@ -495,7 +495,7 @@ extern FUNCANIMATE(animate_extra_life, next)
       player.old_ball.state = 0;
       player.old_ball.count = 16;
       add_background(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT - 1);
-      XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+      video_fill(display.back, GCN(GC_CLEAR),
     	  BORDER_LEFT + 1, BORDER_TOP + 1, BOARD_WIDTH - 2, BOARD_HEIGHT - 2);
       /*{{{  display some text*/
       {
@@ -508,7 +508,7 @@ extern FUNCANIMATE(animate_extra_life, next)
       	    size_t    length;
       	    
       	    length = strlen(*tptr);
-      	    XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+      	    video_opaque_text(display.back, GCN(GC_TEXT),
       		CENTER_X - (int)(length * font.width / 2),
       		(int)line + font.ascent, *tptr, (int)length);
       	    line += font.ascent + font.descent;
@@ -582,10 +582,10 @@ extern FUNCANIMATE(animate_extra_life, next)
       for(i = 5; i--;)
     	draw_extra_letter(i);
       x = PIXELX((int)global.lives - 1, 0);
-      XCopyArea(display.display, sprites[SPRITE_PLAYER + 6].mask,
+      video_copy(sprites[SPRITE_PLAYER + 6].mask,
     	  display.back, GCN(GC_MASK), 0, 0,
     	  CELL_WIDTH, CELL_HEIGHT, x, PIXELY(CELLS_DOWN, 0));
-      XCopyArea(display.display, sprites[SPRITE_PLAYER + 6].image,
+      video_copy(sprites[SPRITE_PLAYER + 6].image,
     	  display.back, GCN(GC_OR), 0, 0,
     	  CELL_WIDTH, CELL_HEIGHT, x, PIXELY(CELLS_DOWN, 0));
       add_background(x, PIXELY(CELLS_DOWN, 0), CELL_WIDTH, CELL_HEIGHT);
@@ -655,7 +655,7 @@ extern FUNCANIMATE(animate_history, next)
       player.old_ball.count = 16;
       add_background(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT - 1);
       draw_extra_letter(extra.select);
-      XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+      video_fill(display.back, GCN(GC_CLEAR),
     	  BORDER_LEFT + 1, BORDER_TOP + 1, BOARD_WIDTH - 2, BOARD_HEIGHT - 2);
       /*{{{  add in the parts*/
       {
@@ -678,7 +678,7 @@ extern FUNCANIMATE(animate_history, next)
       	    
       	    sprintf(text, "Garden %d", base + ix + 1);
       	    length = strlen(text);
-      	    XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+      	    video_opaque_text(display.back, GCN(GC_TEXT),
       		PIXELX(CELLS_ACROSS / 2 - 1,
       		  -GAP_WIDTH) - (int)(font.width * length),
       		PIXELY((int)(screens - ix),
@@ -687,7 +687,7 @@ extern FUNCANIMATE(animate_history, next)
       	    time = history.times[screens - 1 - ix] / 1000;
       	    sprintf(text, "%3u\'%02u\"", (int)(time / 60), (int)(time % 60));
       	    length = strlen(text);
-      	    XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+      	    video_opaque_text(display.back, GCN(GC_TEXT),
       		PIXELX(CELLS_ACROSS / 2 + 2, 0),
       		PIXELY((int)(screens - ix),
       		  (CELL_HEIGHT + GAP_HEIGHT) / 2) + font.center,
@@ -763,7 +763,7 @@ static FUNCANIMATE(animate_keys, next)
       player.ball.count = 16;
       player.old_ball.state = 0;
       player.old_ball.count = 16;
-      XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+      video_fill(display.back, GCN(GC_CLEAR),
     	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
       /*{{{  put on M R I S*/
       {
@@ -779,7 +779,7 @@ static FUNCANIMATE(animate_keys, next)
       	    4 + (int)missing, -1, x, y);
       }
       /*}}}*/
-      XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
+      video_copy(display.back, display.copy, GCN(GC_COPY),
       0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
       /*{{{  put on the title text*/
       {
@@ -864,7 +864,7 @@ static FUNCANIMATE(animate_name, next)
       state = -1;
       extra.got = 0x1F;
       blank_board(board.list[chaotic() % board.boards], 0);
-      XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
+      video_copy(display.back, display.copy, GCN(GC_COPY),
     	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
       player.old_ball.count = 16;
       player.ball.count = 16;
@@ -1066,9 +1066,9 @@ static FUNCANIMATE(animate_score, next)
       player.ball.count = 16;
       player.old_ball.state = 0;
       player.old_ball.count = 16;
-      XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+      video_fill(display.back, GCN(GC_CLEAR),
     	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-      XDrawLine(display.display, display.back, GCN(GC_BORDER),
+      video_line(display.back, GCN(GC_BORDER),
     	BORDER_LEFT, PIXELY(CELLS_DOWN, 0) - 1,
     	BORDER_LEFT + BOARD_WIDTH, PIXELY(CELLS_DOWN, 0) - 1);
       back_mris(0);
@@ -1102,7 +1102,7 @@ static FUNCANIMATE(animate_score, next)
       	else
       	  string = table_names[scoring.display != scoring.high];
       	length = strlen(string);
-      	XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+      	video_opaque_text(display.back, GCN(GC_TEXT),
       	    PIXELX(CELLS_ACROSS / 2, 0) - (int)(length * font.width / 2),
       	    PIXELY(0, CELL_HEIGHT / 2) + font.center,
       	    string, (int)length);
@@ -1111,14 +1111,14 @@ static FUNCANIMATE(animate_score, next)
       	else
       	  string = "   Score Garden Time  Name";
       	length = strlen(string);
-      	XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+      	video_opaque_text(display.back, GCN(GC_TEXT),
       	    PIXELX(0, 0), PIXELY(1, CELL_HEIGHT / 2) + font.center,
       	    string, (int)length);
       	if(scoring.mine.score)
       	  back_score(&scoring.mine, CELLS_DOWN, 0);
       }
       /*}}}*/
-      XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
+      video_copy(display.back, display.copy, GCN(GC_COPY),
     	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
       /*{{{  put on the scores*/
       {
@@ -1247,7 +1247,7 @@ static FUNCANIMATE(animate_sprites, next)
       player.old_ball.count = 16;
       extra.select = 0;
       extra.got = 0;
-      XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+      video_fill(display.back, GCN(GC_CLEAR),
     	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
       /*{{{  M R I S*/
       {
@@ -1379,23 +1379,21 @@ static FUNCANIMATE(animate_sprites, next)
       	color_set((int)0);
       	for(ix = BACKGROUNDS * FILLS; ix--;)
       	  {
-      	    XGCValues gcv;
-      
-      	    gcv.fill_style = FillOpaqueStippled;
-      	    gcv.background = data.mono != False ? display.white :
+      	    unsigned long foreground, background;
+      Pixmap stipple;
+      	    background = data.mono != False ? display.white :
       		colors[display.dynamic ? COLOR_DYNAMIC :
       		backgrounds[ix % BACKGROUNDS][0]].pixel;
-      	    gcv.stipple = fills[ix / BACKGROUNDS].mask;
-      	    gcv.foreground = data.mono != False ?
+      	    stipple = fills[ix / BACKGROUNDS].mask;
+      	    foreground = data.mono != False ?
       		display.black : colors[display.dynamic ?
       		COLOR_DYNAMIC + 1 : backgrounds[ix % BACKGROUNDS][1]].pixel;
-      	    XChangeGC(display.display, GCN(GC_BOARD),
-      		GCFillStyle | GCForeground | GCBackground | GCStipple, &gcv);
-      	    XFillRectangle(display.display, display.back, GCN(GC_BOARD),
+      	    video_pattern(foreground, background, stipple);
+      	    video_fill(display.back, GCN(GC_BOARD),
       		PIXELX(7, -(GAP_WIDTH / 2)),
       		PIXELY((int)ix, -(GAP_HEIGHT / 2)),
       		(CELL_WIDTH + GAP_WIDTH) * 3, CELL_HEIGHT + GAP_HEIGHT);
-      	    XDrawRectangle(display.display, display.back, GCN(GC_SET),
+      	    video_rect(display.back, GCN(GC_SET),
       		PIXELX(7, -(GAP_WIDTH / 2)),
       		PIXELY((int)ix, -(GAP_HEIGHT / 2)),
       		(CELL_WIDTH + GAP_WIDTH) * 3 - 1,
@@ -1425,7 +1423,7 @@ static FUNCANIMATE(animate_sprites, next)
       	spawn_apple(10, CELLS_DOWN, CELL_WIDTH / 2, 0)->count = 0;
       }
       /*}}}*/
-      XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
+      video_copy(display.back, display.copy, GCN(GC_COPY),
     	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
       refresh_window();
       timer_set(FRAME_RATE * 2, TIMING_OFF);
@@ -1612,7 +1610,7 @@ ARGSEP  unsigned  split
   assert(strlen(string) == SCORING_LEN - 1);
   height = font.digitup + font.digitdown + font.ascent + font.descent;
   y = PIXELY((int)ix, CELL_HEIGHT / 2);
-  XDrawString(display.display, display.back, GCN(GC_TEXT),
+  video_text(display.back, GCN(GC_TEXT),
       PIXELX(0, 0), y + (split ? height > CELL_HEIGHT + GAP_HEIGHT - 2 ?
       font.digitup - (CELL_HEIGHT + GAP_HEIGHT) / 2 + 1 :
       font.digitup - height / 2 :
@@ -1644,7 +1642,7 @@ ARGSEP  unsigned  split
   	}
     }
   /*}}}*/
-  XDrawString(display.display, display.back, GCN(GC_TEXT),
+  video_text(display.back, GCN(GC_TEXT),
       split ? PIXELX(CELLS_ACROSS, -GAP_WIDTH) - (length + 2) * font.width :
       PIXELX(0, 0) + SCORING_LEN * font.width,
       y + (split ? height > CELL_HEIGHT + GAP_HEIGHT - 2 ?
@@ -1675,7 +1673,7 @@ ARGSEP  unsigned  ix
     if(!ptr)
       strcpy(buffer, tptr->text);
     else
-      sprintf(buffer, tptr->text, XKeysymToString(data.keysyms[tptr->ix]));
+      sprintf(buffer, tptr->text, key_name(data.keysyms[tptr->ix]));
   }
   /*}}}*/
   length = strlen(buffer);
@@ -1689,7 +1687,7 @@ ARGSEP  unsigned  ix
 	shift = (ptr - buffer + 1) * font.width;
       else
 	shift = 0;
-      XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+      video_opaque_text(display.back, GCN(GC_TEXT),
 	  CENTER_X - (int)(shift ? shift : length * font.width / 2),
 	  PIXELY((int)ix, CELL_HEIGHT / 2) + font.center,
 	  buffer, (int)length);

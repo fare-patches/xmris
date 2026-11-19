@@ -2,61 +2,6 @@
 /* RCS $Id: draw.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 #include "xmris.h"
 #include "time.h"
-#include <X11/extensions/Xrender.h>
-
-static Picture source_picture, window_picture;
-
-/* Return false if this visual cannot scale; auto mode can still use 1x. */
-int configure_presentation(int scale)
-{
-  XFixed one = XDoubleToFixed(1);
-  XTransform transform = {{{one, 0, 0}, {0, one, 0}, {0, 0, scale * one}}};
-  static int unavailable;
-
-  if(scale == 1)
-    return 1;
-  if(unavailable)
-    return 0;
-  if(!source_picture)
-    {
-      int major, minor;
-      XRenderPictFormat *format;
-
-      if(!XRenderQueryVersion(display.display, &major, &minor) ||
-          (major == 0 && minor < 6) ||
-          !(format = XRenderFindVisualFormat(display.display, display.visual)))
-        {
-          unavailable = 1;
-          return 0;
-        }
-      source_picture = XRenderCreatePicture(display.display, display.copy, format, 0, NULL);
-      window_picture = XRenderCreatePicture(display.display, display.window, format, 0, NULL);
-      XRenderSetPictureFilter(display.display, source_picture, FilterNearest, NULL, 0);
-    }
-  XRenderSetPictureTransform(display.display, source_picture, &transform);
-  return 1;
-}
-
-/* All game coordinates and off-screen pixmaps stay at their native size. */
-void present_area(int x, int y, unsigned width, unsigned height)
-{
-  int scale = data.pixel_scale;
-  if(scale == 1)
-    XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
-        x, y, width, height, x, y);
-  else if(width && height)
-    XRenderComposite(display.display, PictOpSrc, source_picture, None, window_picture,
-        scale * x, scale * y, 0, 0, scale * x, scale * y, scale * width, scale * height);
-}
-
-void present_load(int left, int right)
-{
-  int scale = data.pixel_scale;
-  XFillRectangle(display.display, display.window, GCN(GC_LOAD),
-      left * scale, PIXELY(CELLS_DOWN, CELL_HEIGHT) * scale,
-      (right - left + 1) * scale, scale);
-}
-
 /*{{{  board load error masks*/
 #define ERROR_FILL              0x0001
 #define ERROR_BACKGROUND        0x0002
@@ -190,11 +135,11 @@ extern FUNCANIMATE(animate_zoom, next)
     /*{{{  start*/
     {
       rts = (PROTOANIMATE((*)))next;
-      XFillRectangle(display.display, display.copy, GCN(GC_CLEAR),
+      video_fill(display.copy, GCN(GC_CLEAR),
 	  BORDER_LEFT + 1, BORDER_TOP + 1, BOARD_WIDTH - 2, BOARD_HEIGHT - 2);
       global.missed = 0;
       refresh_window();
-      XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
+      video_copy(display.back, display.copy, GCN(GC_COPY),
 	  BORDER_LEFT + 1, BORDER_TOP + 1, BOARD_WIDTH - 2, BOARD_HEIGHT - 2,
 	  BORDER_LEFT + 1, BORDER_TOP + 1);
       /*{{{  do the apple sprites*/
@@ -207,9 +152,9 @@ extern FUNCANIMATE(animate_zoom, next)
 	    SPRITE    *sptr;
 	    
 	    sptr = &sprites[SPRITE_APPLE];
-	    XCopyArea(display.display, sptr->mask, display.copy, GCN(GC_MASK),
+	    video_copy(sptr->mask, display.copy, GCN(GC_MASK),
 		0, 0, CELL_WIDTH, CELL_HEIGHT, aptr->pixel.x, aptr->pixel.y);
-	    XCopyArea(display.display, sptr->image, display.copy, GCN(GC_OR),
+	    video_copy(sptr->image, display.copy, GCN(GC_OR),
 		0, 0, CELL_WIDTH, CELL_HEIGHT, aptr->pixel.x, aptr->pixel.y);
 	  }
       }
@@ -268,38 +213,37 @@ ARGSEP  unsigned cycle
   memset(garden, 0, sizeof(garden));
   /*{{{  draw blank background*/
   {
-    XGCValues gcv;
+    unsigned long foreground, background;
+      Pixmap stipple;
     unsigned  back;
   
-    XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+    video_fill(display.back, GCN(GC_CLEAR),
 	0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     back = (map->colors + cycle) % BACKGROUNDS;
     if(data.mono == False)
       color_set((int)back);
     /*{{{  draw blank board*/
     {
-      gcv.fill_style = FillOpaqueStippled;
-      gcv.background = data.mono != False ? display.white :
+      background = data.mono != False ? display.white :
 	  colors[display.dynamic ? COLOR_DYNAMIC :
 	  backgrounds[back][0]].pixel;
-      gcv.stipple = fills[map->fill].mask;
-      gcv.foreground = data.mono != False ?
+      stipple = fills[map->fill].mask;
+      foreground = data.mono != False ?
 	  display.black : colors[display.dynamic ?
 	  COLOR_DYNAMIC + 1 : backgrounds[back][1]].pixel;
-      XChangeGC(display.display, GCN(GC_BOARD),
-	  GCFillStyle | GCForeground | GCBackground | GCStipple, &gcv);
-      XFillRectangle(display.display, display.back, GCN(GC_BOARD),
+      video_pattern(foreground, background, stipple);
+      video_fill(display.back, GCN(GC_BOARD),
 	  BORDER_LEFT, BORDER_TOP, BOARD_WIDTH, BOARD_HEIGHT);
     }
     /*}}}*/
-    XDrawLine(display.display, display.back, GCN(GC_BORDER),
+    video_line(display.back, GCN(GC_BORDER),
 	BORDER_LEFT, BORDER_TOP, BORDER_LEFT + BOARD_WIDTH, BORDER_TOP);
-    XDrawLine(display.display, display.back, GCN(GC_BORDER),
+    video_line(display.back, GCN(GC_BORDER),
 	BORDER_LEFT, BORDER_TOP + BOARD_HEIGHT - 1,
 	BORDER_LEFT + BOARD_WIDTH, BORDER_TOP + BOARD_HEIGHT - 1);
-    XDrawLine(display.display, display.back, GCN(GC_BORDER),
+    video_line(display.back, GCN(GC_BORDER),
 	PIXELX(4, -1), PIXELY(-1, 0), PIXELX(4, -1), PIXELY(-1, CELL_HEIGHT));
-    XDrawLine(display.display, display.back, GCN(GC_BORDER),
+    video_line(display.back, GCN(GC_BORDER),
 	PIXELX(4, XTRA_SPACING * 4 + CELL_WIDTH), PIXELY(-1, 0),
 	PIXELX(4, XTRA_SPACING * 4 + CELL_WIDTH), PIXELY(-1, CELL_HEIGHT));
   }
@@ -599,12 +543,12 @@ FUNCARG((ix),
   for(dptr = &sprites[SPRITE_XTRA], sptr = &sprites[SPRITE_XTRA_SOURCE],
       i = MONSTER_IMAGES; i--; dptr++, sptr++)
     {
-      XCopyArea(display.display, sptr->image, dptr->image, GCN(GC_COPY),
+      video_copy(sptr->image, dptr->image, GCN(GC_COPY),
 	  0, 0, CELL_WIDTH, CELL_HEIGHT, 0, 0);
-      XCopyArea(display.display, lptr->mask, dptr->image, GCN(GC_MASK),
+      video_copy(lptr->mask, dptr->image, GCN(GC_MASK),
 	  (int)ix * (CELL_WIDTH / 2), 0, CELL_WIDTH / 2, CELL_HEIGHT / 2,
 	  XTRA_LETTER_X, XTRA_LETTER_Y);
-      XCopyArea(display.display, lptr[!(extra.got & 1 << ix)].image,
+      video_copy(lptr[!(extra.got & 1 << ix)].image,
 	  dptr->image, GCN(GC_OR),
 	  (int)ix * (CELL_WIDTH / 2), 0, CELL_WIDTH / 2, CELL_HEIGHT / 2,
 	  XTRA_LETTER_X, XTRA_LETTER_Y);
@@ -768,14 +712,14 @@ FUNCARG((ix),
   
   lptr = &sprites[SPRITE_EXTRA];
   x = PIXELX(4, ix * XTRA_SPACING);
-  XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+  video_fill(display.back, GCN(GC_CLEAR),
       x, PIXELY(-1, 0), CELL_WIDTH, CELL_HEIGHT);
   if(display.background != COLOUR_ZERO)
-    XCopyArea(display.display, lptr->mask,
+    video_copy(lptr->mask,
 	display.back, GCN(GC_MASK), (int)ix * (CELL_WIDTH / 2), 0,
 	CELL_WIDTH / 2, CELL_HEIGHT / 2,
 	x + XTRA_LETTER_X, PIXELY(-1, XTRA_LETTER_Y));
-  XCopyArea(display.display, lptr[!(extra.got & 1 << ix)].image,
+  video_copy(lptr[!(extra.got & 1 << ix)].image,
       display.back, GCN(GC_OR), (int)ix * (CELL_WIDTH / 2), 0,
       CELL_WIDTH / 2, CELL_HEIGHT / 2,
       x + XTRA_LETTER_X, PIXELY(-1, XTRA_LETTER_Y));
@@ -929,7 +873,7 @@ extern VOIDFUNC new_board FUNCARGVOID
 	}
     }
     /*}}}*/
-  XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+  video_fill(display.back, GCN(GC_CLEAR),
       BORDER_LEFT + (CELL_WIDTH + GAP_WIDTH) * 4 + GAP_WIDTH, BORDER_TOP + 1,
       XTRA_SPACING * 4 + CELL_WIDTH, GAP_HEIGHT * 2 - 1);
   draw_extra();
@@ -939,7 +883,7 @@ extern VOIDFUNC new_board FUNCARGVOID
     int       length;
     
     length = 7 + itoa(text + 7, (unsigned long)global.screen, 0);
-    XDrawImageString(display.display, display.back, GCN(GC_TEXT),
+    video_opaque_text(display.back, GCN(GC_TEXT),
 	PIXELX(8, (int)font.width * 2),
 	PIXELY(-1, CELL_HEIGHT / 2 + font.center), text, length);
   }
@@ -974,14 +918,14 @@ extern VOIDFUNC new_board FUNCARGVOID
 	  if(cptr->sprite)
 	    back_sprite(cptr->sprite, 1, cell.x, cell.y);
 	  if(cptr->den)
-	    XFillRectangle(display.display, display.back,
+	    video_fill(display.back,
 		GCN(GC_CLEAR), cell.x - DEN_WIDTH,
 		cell.y - DEN_HEIGHT,
 		CELL_WIDTH + DEN_WIDTH * 2, CELL_HEIGHT + DEN_HEIGHT * 2);
 	}
   }
   /*}}}*/
-  XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
+  video_copy(display.back, display.copy, GCN(GC_COPY),
       0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
   return;
 }
@@ -1000,10 +944,10 @@ ARGSEP  int       y
 {
   if(flag)
     {
-      XCopyArea(display.display, sprites[SPRITE_BALL].mask, display.copy,
+      video_copy(sprites[SPRITE_BALL].mask, display.copy,
 	  GCN(GC_MASK), 0, 0, BALL_WIDTH, BALL_HEIGHT,
 	  x - BALL_WIDTH / 2, y - BALL_HEIGHT / 2);
-      XCopyArea(display.display, sprites[SPRITE_BALL].image, display.copy,
+      video_copy(sprites[SPRITE_BALL].image, display.copy,
 	  GCN(GC_OR), 0, 0, BALL_WIDTH, BALL_HEIGHT,
 	  x - BALL_WIDTH / 2, y - BALL_HEIGHT / 2);
     }
@@ -1043,7 +987,7 @@ ARGSEP  char CONST *parent
       length = strlen(name);
       if(*name == '/')
 	{
-	  filename = XtMalloc(length + 1 + FILE_SUFFIX_LEN);
+	  filename = malloc(length + 1 + FILE_SUFFIX_LEN);
 	  strcpy(filename, name);
 	  strcpy(&filename[length], FILE_SUFFIX);
 	  if(filename)
@@ -1064,7 +1008,7 @@ ARGSEP  char CONST *parent
 	  
 	  filename = parent ? strrchr(parent, '/') : NULL;
 	  offset = filename ? filename - parent + 1 : 0;
-	  filename = XtMalloc(length + offset + 1 + FILE_SUFFIX_LEN);
+	  filename = malloc(length + offset + 1 + FILE_SUFFIX_LEN);
 	  strncpy(filename, parent, offset);
 	  strcpy(&filename[offset], name);
 	  strcpy(&filename[offset + length], FILE_SUFFIX);
@@ -1079,14 +1023,12 @@ ARGSEP  char CONST *parent
 	    {
 	      char CONST *lib;
 	      
-	      lib = XtResolvePathname(display.display,
-		  "app-defaults/xmris", name, NULL, NULL, NULL, 0, NULL);
+	      lib = garden_resource(name, NULL);
 	      if(!lib)
-		lib = XtResolvePathname(display.display, "app-defaults/xmris",
-		    name, FILE_SUFFIX, NULL, NULL, 0, NULL);
+		lib = garden_resource(name, FILE_SUFFIX);
 	      if(lib)
 		{
-		  XtFree(filename);
+		  free(filename);
 		  filename = (char *)lib;
 		}
 	      stream = fopen(filename, "r");
@@ -1411,7 +1353,7 @@ ARGSEP  char CONST *parent
   while(!error);
   if(stream)
     fclose(stream);
-  XtFree((char *)sptr->name);
+  free((char *)sptr->name);
   return;
 }
 /*}}}*/
@@ -1530,7 +1472,7 @@ ARGSEP  unsigned  cell_y
   x = PIXELX(cell_x, 0);
   y = PIXELY(cell_y, 0);
   add_background(x, y, CELL_WIDTH, CELL_HEIGHT);
-  XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+  video_fill(display.back, GCN(GC_CLEAR),
       x, y, CELL_WIDTH, CELL_HEIGHT);
   back_sprite(ix, 0, x, y);
   return;
@@ -1556,7 +1498,7 @@ extern VOIDFUNC show_updates FUNCARGVOID
     BACKGROUND *bptr;
 	
     for(bptr = update.back.list, i = update.back.backs; i--; bptr++)
-      XCopyArea(display.display, display.back, display.copy, GCN(GC_COPY),
+      video_copy(display.back, display.copy, GCN(GC_COPY),
 	  bptr->place.x, bptr->place.y, bptr->size.x, bptr->size.y,
 	  bptr->place.x, bptr->place.y);
   }
@@ -1594,7 +1536,7 @@ extern VOIDFUNC show_updates FUNCARGVOID
 		  !player.old_ball.state && player.ball.state)) &&
 		mptr->on)
 	      {
-		XCopyArea(display.display, display.back, display.copy,
+		video_copy(display.back, display.copy,
 		    GCN(GC_COPY),
 		    mptr->old_pixel.x, mptr->old_pixel.y,
 		    CELL_WIDTH, CELL_HEIGHT,
@@ -1653,7 +1595,7 @@ extern VOIDFUNC show_updates FUNCARGVOID
 		y = aptr->old_pixel.y + asp->offset.y;
 		width = asp->size.x;
 		height = asp->size.y;
-		XCopyArea(display.display, display.back, display.copy,
+		video_copy(display.back, display.copy,
 		    GCN(GC_COPY), x, y, width, height, x, y);
 		bounding_box(x, y, width, height);
 	      }
@@ -1707,9 +1649,9 @@ extern VOIDFUNC show_updates FUNCARGVOID
 	    y = aptr->old_pixel.y + asp->offset.y;
 	    width = asp->size.x;
 	    height = asp->size.y;
-	    XCopyArea(display.display, sptr->mask, display.copy, GCN(GC_MASK),
+	    video_copy(sptr->mask, display.copy, GCN(GC_MASK),
 		0, 0, width, height, x, y);
-	    XCopyArea(display.display, sptr->image, display.copy, GCN(GC_OR),
+	    video_copy(sptr->image, display.copy, GCN(GC_OR),
 		0, 0, width, height, x, y);
 	  }
       }
@@ -1728,7 +1670,7 @@ extern VOIDFUNC show_updates FUNCARGVOID
 		  SPRITE    *sptr;
 		  
 		  sptr = &sprites[mptr->old_sprite];
-		  XCopyArea(display.display, sptr->mask, display.copy,
+		  video_copy(sptr->mask, display.copy,
 		      GCN(GC_MASK), 0, 0, CELL_WIDTH, CELL_HEIGHT,
 		      mptr->old_pixel.x, mptr->old_pixel.y);
 		  if(mptr->ghosting)
@@ -1740,20 +1682,20 @@ extern VOIDFUNC show_updates FUNCARGVOID
 		      dptr = &sprites[SPRITE_GHOSTING];
 		      offset.x = mptr->ghosting & 0xF;
 		      offset.y = (mptr->ghosting >> 4) & 0xF;
-		      XCopyArea(display.display, sptr->image, dptr->image,
+		      video_copy(sptr->image, dptr->image,
 			  GCN(GC_COPY), 0, 0, CELL_WIDTH, CELL_HEIGHT, 0, 0);
-		      XCopyArea(display.display, dptr->mask, dptr->image,
+		      video_copy(dptr->mask, dptr->image,
 			  GCN(GC_AND), offset.x, offset.y,
 			  CELL_WIDTH, CELL_HEIGHT, 0, 0);
-		      XCopyArea(display.display, dptr->image, display.copy,
+		      video_copy(dptr->image, display.copy,
 			  GCN(GC_OR), 0, 0, CELL_WIDTH, CELL_HEIGHT,
 			  mptr->old_pixel.x, mptr->old_pixel.y);
-		      XFillRectangle(display.display, dptr->image,
+		      video_fill(dptr->image,
 			  GCN(GC_CLEAR), 0, 0, CELL_WIDTH, CELL_HEIGHT);
-		      XCopyArea(display.display, dptr->mask, dptr->image,
+		      video_copy(dptr->mask, dptr->image,
 			  GCN(GC_MASK), offset.x, offset.y,
 			  CELL_WIDTH, CELL_HEIGHT, 0, 0);
-		      XCopyArea(display.display, sptr->mask, dptr->image,
+		      video_copy(sptr->mask, dptr->image,
 			  GCN(GC_AND), 0, 0, CELL_WIDTH, CELL_HEIGHT, 0, 0);
 		      sptr = dptr;
 		      if(!mptr->cycle)
@@ -1776,7 +1718,7 @@ extern VOIDFUNC show_updates FUNCARGVOID
 			/*}}}*/
 		    }
 		    /*}}}*/
-		  XCopyArea(display.display, sptr->image, display.copy,
+		  video_copy(sptr->image, display.copy,
 		      GCN(GC_OR), 0, 0, CELL_WIDTH, CELL_HEIGHT,
 		      mptr->old_pixel.x, mptr->old_pixel.y);
 		}
@@ -1804,10 +1746,10 @@ extern VOIDFUNC show_updates FUNCARGVOID
 	
     for(sptr = update.score.list, i = update.score.scores; i--; sptr++)
       {
-	XCopyArea(display.display, sptr->mask, display.copy, GCN(GC_MASK),
+	video_copy(sptr->mask, display.copy, GCN(GC_MASK),
 	    0, 0, DIGIT_WIDTH * 4, DIGIT_HEIGHT,
 	    sptr->place.x, sptr->place.y);
-	XCopyArea(display.display, sptr->image, display.copy, GCN(GC_OR),
+	video_copy(sptr->image, display.copy, GCN(GC_OR),
 	    0, 0, DIGIT_WIDTH * 4, DIGIT_HEIGHT,
 	    sptr->place.x, sptr->place.y);
       }
@@ -1846,7 +1788,7 @@ extern VOIDFUNC show_updates FUNCARGVOID
   }
   /*}}}*/
   update.back.backs = 0;
-  XSync(display.display, False);
+  video_sync();
   return;
 }
 /*}}}*/

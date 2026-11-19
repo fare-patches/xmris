@@ -557,3 +557,5 @@ extern size_t itoa PROTOARG((char *, unsigned long, unsigned));
 extern int main PROTOARG((int, char CONST **));
 /*}}}*/
 /*}}}*/
+
+#include "platform.h"

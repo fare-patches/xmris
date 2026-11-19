@@ -81,9 +81,9 @@ ARGSEP  int       y
   
   sptr = &sprites[ix];
   if(display.background != COLOUR_ZERO || flag)
-    XCopyArea(display.display, sptr->mask, display.back, GCN(GC_MASK),
+    video_copy(sptr->mask, display.back, GCN(GC_MASK),
 	0, 0, sptr->size.x, sptr->size.y, x, y);
-  XCopyArea(display.display, sptr->image, display.back, GCN(GC_OR),
+  video_copy(sptr->image, display.back, GCN(GC_OR),
       0, 0, sptr->size.x, sptr->size.y, x, y);
   return;
 }
@@ -977,10 +977,10 @@ ARGSEP  SPRITE CONST *sprite
  */
 {
   if(display.background != COLOUR_ONE)
-    XCopyArea(display.display, sprite->mask, display.back, GCN(GC_MASK),
+    video_copy(sprite->mask, display.back, GCN(GC_MASK),
 	sx, sy, width, height, dx, dy);
   if(display.background != COLOUR_ZERO)
-    XCopyArea(display.display, sprite->image, display.back, GCN(GC_OR),
+    video_copy(sprite->image, display.back, GCN(GC_OR),
 	sx, sy, width, height, dx, dy);
   bounding_box(dx, dy, width, height);
   return;

@@ -12,7 +12,7 @@ extern MONSTER *extra_escape FUNCARGVOID
   
   extra.escape = 1;
   x = PIXELX(4, extra.select * XTRA_SPACING);
-  XFillRectangle(display.display, display.back, GCN(GC_CLEAR),
+  video_fill(display.back, GCN(GC_CLEAR),
       x, PIXELY(-1, 0), CELL_WIDTH, CELL_HEIGHT);
   add_background(x, PIXELY(-1, 0), CELL_WIDTH, CELL_HEIGHT);
   x -= BORDER_LEFT + GAP_WIDTH;
