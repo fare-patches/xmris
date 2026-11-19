@@ -90,6 +90,10 @@ use `-nomusic` or `Xmris.music: false`.
 In xmris, the music accelerates when the normal monsters speed up;
 it changes when the center prize releases the drones.
 
+I also restored some behavior from the arcade game: there is a .4 second
+grace period after eating a cherry to continue a streak, and the last
+cherry in the streak is 500 points total, not 550 (with 500 plus regular 50).
+
 ## Provenance
 
 This repository was initialized with the contents of
@@ -107,6 +111,8 @@ X Error of failed request:  BadName (named color or font does not exist)
   Current serial number in output stream:  11
 Maybe we need to install additional X packages on the server side?
 ```
+
+Solution: install and configure the good old fonts.
 
 ## TODO
 
