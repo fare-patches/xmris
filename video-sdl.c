@@ -1,10 +1,11 @@
 #include "xmris.h"
 #include "defmris.h"
+#include "courier18.h"
 
 static SDL_Window *window;
 static SDL_Renderer *renderer;
 static SDL_Texture *texture;
-static Pixmap frame, pattern, glyphs;
+static Pixmap frame, pattern;
 static Uint32 foreground, background;
 static int dirty;
 
@@ -84,13 +85,13 @@ void video_text(Pixmap dst, GC gc, int x, int y, const char *str, int n)
   Uint32 color = gc == GC_CLEAR ? display.white : display.black;
   for (int i = 0; i < n; ++i) {
     unsigned ch = (unsigned char)str[i];
-    if (ch < 32 || ch >= 127) ch = '?';
-    for (int gy = 0; gy < 8; ++gy) {
+    if (ch < 32 || (ch >= 127 && ch < 160)) ch = '?';
+    for (int gy = 0; gy < courier_ascent + courier_descent; ++gy) {
       int dy = y - font.ascent + gy;
       if (dy < 0 || dy >= dst->h) continue;
-      for (int gx = 0; gx < 8; ++gx) {
-        int dx = x + i * 8 + gx;
-        if (dx >= 0 && dx < dst->w && (row(glyphs,gy)[ch*8+gx] & 0xffffff))
+      for (int gx = 0; gx < courier_width; ++gx) {
+        int dx = x + i * courier_width + gx;
+        if (dx >= 0 && dx < dst->w && (courier_rows[ch-32][gy] & (1u << gx)))
           row(dst,dy)[dx] = color;
       }
     }
@@ -201,17 +202,12 @@ SDL_Window *sdl_video_open(int scale, int fullscreen)
     update.score.list[i].image=surface(DIGIT_WIDTH*4,DIGIT_HEIGHT);
     update.score.list[i].mask=surface(DIGIT_WIDTH*4,DIGIT_HEIGHT);
   }
-  glyphs=surface(128*8,8);
-  SDL_Renderer *letters=SDL_CreateSoftwareRenderer(glyphs);
-  if (!letters) fatal_error("%s",SDL_GetError());
-  SDL_SetRenderDrawColor(letters,255,255,255,255);
-  for (i=32;i<127;++i) {
-    char glyph[2]={(char)i,0};
-    SDL_RenderDebugText(letters,i*8,0,glyph);
-  }
-  SDL_RenderPresent(letters);
-  SDL_DestroyRenderer(letters);
-  font.width=8; font.ascent=8; font.center=4; font.digitup=8;
+  font.width = courier_width;
+  font.ascent = courier_ascent;
+  font.descent = courier_descent;
+  font.center = (font.ascent - font.descent) / 2;
+  font.digitup = courier_digit_up;
+  font.digitdown = courier_digit_down;
   display.copy=surface(WINDOW_WIDTH,WINDOW_HEIGHT);
   display.back=surface(WINDOW_WIDTH,WINDOW_HEIGHT);
   frame=surface(WINDOW_WIDTH,WINDOW_HEIGHT);

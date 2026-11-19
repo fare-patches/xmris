@@ -74,7 +74,7 @@ F11 toggles fullscreen. The SDL window centers the garden and scales it in
 whole pixels as you resize it. Use `-scale 2` to request a 2× initial window.
 Arrow keys move, Space starts or throws, and K on the title screen changes
 the bindings. Run `./xmris-sdl -help` for the supported options. The SDL
-frontend uses its own bitmap text and command-line settings. The X11 game
+frontend uses the bundled 18-pixel X11 Courier bitmap font and command-line settings. The X11 game
 and the xmred garden editor use the existing imake build and X resources.
 
 ## Features added 2026
