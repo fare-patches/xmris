@@ -937,6 +937,7 @@ extern FUNCANIMATE(animate_game, next)
 		  player.old_ball.count = 8;
 		  player.ball.state = 0;
 		  player.thrown = 0;
+		  player.cherry = player.cherry_ticks = 0;
 		  player.bashed = 0;
 		  player.pressed = 0;
 		  player.next = 0;

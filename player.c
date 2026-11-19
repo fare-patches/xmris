@@ -795,6 +795,9 @@ extern unsigned move_player FUNCARGVOID
   unsigned  stop;
   unsigned  eaten;
 
+  /* The arcade allows 30 video ticks between cherries. */
+  if(player.cherry_ticks && !--player.cherry_ticks)
+    player.cherry = 0;
   dir = monster.list[0].dir;
   stop = monster.list[0].stop;
   step = 0;
@@ -956,10 +959,7 @@ extern unsigned move_player FUNCARGVOID
       new_face(&monster.list[0]);
     }
   if(monster.list[0].pause)
-    {
-      player.cherry = player.distance = 0;
-      monster.list[0].pause = 0;
-    }
+    monster.list[0].pause = 0;
   else if(!monster.list[0].stop)
     /*{{{  move*/
     {
@@ -1012,7 +1012,7 @@ extern unsigned move_player FUNCARGVOID
 	      else
 		{
 		  add_score(50 / SCORE_ROUND, 0, 0);
-		  player.distance = (CELL_WIDTH + GAP_WIDTH) / VEL_X;
+		  player.cherry_ticks = (FRAMES_PER_SECOND + 1) / 2;
 		}
 	    }
 	    /*}}}*/
@@ -1050,10 +1050,6 @@ extern unsigned move_player FUNCARGVOID
     /*}}}*/
   if(!step)
     player.pressed = global.pressed;
-  if(player.distance)
-    player.distance--;
-  else
-    player.cherry = 0;
   /*{{{  player looping*/
   if(monster.list[0].stop ||
       monster.list[0].offset.x || monster.list[0].offset.y)

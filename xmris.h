@@ -336,7 +336,7 @@ EXTERN struct
   unsigned  count;      /* ball return dec count */
   unsigned  thrown;     /* how many times its been thrown */
   unsigned  cherry;     /* consecutive cherry count */
-  unsigned  distance;   /* distance to next cherry */
+  unsigned  cherry_ticks; /* frames remaining in the cherry streak */
   unsigned  pressed;    /* keys we had pressed */
 } player;
 /*}}}*/
