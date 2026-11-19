@@ -179,7 +179,7 @@ static void sprite(unsigned n)
   }
 }
 
-SDL_Window *sdl_video_open(int scale, int fullscreen)
+SDL_Window *sdl_video_open(int scale, int fullscreen, SDL_RendererLogicalPresentation mode)
 {
   int i,x,y;
   display.white=0xffffff; display.background=COLOUR_ONE; display.foreground=COLOUR_ZERO;
@@ -219,6 +219,7 @@ SDL_Window *sdl_video_open(int scale, int fullscreen)
       SDL_TEXTUREACCESS_STREAMING,WINDOW_WIDTH,WINDOW_HEIGHT);
   if (!texture) fatal_error("%s",SDL_GetError());
   SDL_SetTextureScaleMode(texture,SDL_SCALEMODE_NEAREST);
-  SDL_SetRenderLogicalPresentation(renderer,WINDOW_WIDTH,WINDOW_HEIGHT,SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
+  if (!SDL_SetRenderLogicalPresentation(renderer,WINDOW_WIDTH,WINDOW_HEIGHT,mode))
+    fatal_error("%s",SDL_GetError());
   return window;
 }

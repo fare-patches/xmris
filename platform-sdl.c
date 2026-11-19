@@ -2,7 +2,7 @@
 #include "sound.h"
 #include <signal.h>
 
-extern SDL_Window *sdl_video_open(int, int);
+extern SDL_Window *sdl_video_open(int, int, SDL_RendererLogicalPresentation);
 
 void fatal_error(const char *format,...)
 {
@@ -112,6 +112,7 @@ static void handle_event(SDL_Window *window, const SDL_Event *event)
 int main(int argc,char **argv)
 {
   int scale=0, fullscreen=0;
+  SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_INTEGER_SCALE;
   SDL_Window *window;
   sigset_t alarm, previous;
   myname=argv[0];
@@ -135,14 +136,18 @@ int main(int argc,char **argv)
     else if (!strcmp(argv[i],"-scale") && i+1<argc) {
       char *end;
       const char *value=argv[++i];
-      if (!strcmp(value,"auto")) scale=0;
+      mode = SDL_LOGICAL_PRESENTATION_INTEGER_SCALE;
+      if (!strcmp(value,"fit")) {
+        scale = 0;
+        mode = SDL_LOGICAL_PRESENTATION_LETTERBOX;
+      } else if (!strcmp(value,"auto")) scale=0;
       else {
         long factor=strtol(value,&end,10);
         if (*end || factor<1 || factor>32767/WINDOW_HEIGHT) fatal_error("invalid scale %s",value);
         scale=factor;
       }
     } else {
-      fprintf(stderr,"Usage: %s [-fullscreen] [-scale auto|N] [-nosound] [-music|-nomusic] [-random] [-gardens FILE]\n",myname);
+      fprintf(stderr,"Usage: %s [-fullscreen] [-scale auto|fit|N] [-nosound] [-music|-nomusic] [-random] [-gardens FILE]\n",myname);
       return strcmp(argv[i],"-help")!=0;
     }
   }
@@ -160,7 +165,7 @@ int main(int argc,char **argv)
     if (SDL_GetDisplayUsableBounds(SDL_GetPrimaryDisplay(),&bounds))
       scale=SDL_max(1,SDL_min(bounds.w/WINDOW_WIDTH,bounds.h/WINDOW_HEIGHT));
   }
-  window=sdl_video_open(scale,fullscreen);
+  window=sdl_video_open(scale,fullscreen,mode);
   if (data.sound) sound_open();
   sigprocmask(SIG_SETMASK,&previous,NULL);
   display.mapped=1;
