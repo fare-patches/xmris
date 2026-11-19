@@ -211,6 +211,7 @@ void sound_open(void)
     perror("xmris: disabling sound");
     return;
   }
+  SDL_SetHint(SDL_HINT_AUDIO_DEVICE_APP_NAME, "xmris");
   SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
   if (SDL_InitSubSystem(SDL_INIT_AUDIO) == 0) {
     spec.callback = mix_audio;

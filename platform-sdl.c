@@ -152,6 +152,7 @@ int main(int argc,char **argv)
   sigemptyset(&alarm);
   sigaddset(&alarm,SIGALRM);
   sigprocmask(SIG_BLOCK,&alarm,&previous);
+  SDL_SetAppMetadata("xmris", XMRISVERSION, NULL);
   if (!SDL_Init(SDL_INIT_VIDEO)) fatal_error("%s",SDL_GetError());
   if (!scale) {
     SDL_Rect bounds;

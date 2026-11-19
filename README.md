@@ -17,6 +17,8 @@ many not obvious to the beginner (shooting through walls,
 dying and gaining a life at the same time, etc.),
 that Nathan perfectly reproduced.
 
+2026 revival and SDL port maintained by François-René (Faré) Rideau.
+
 ## Building and running XMRIS
 
 Choose a frontend. For the SDL3 game on Ubuntu, install its build dependencies:
