@@ -4,7 +4,7 @@ void game_keypress(KeySym key);
 void game_keyrelease(KeySym key);
 void set_key_default(void);
 void set_key_single(void);
-char *key_name(KeySym key);
+const char *key_name(KeySym key);
 void video_sync(void);
 void video_pattern(unsigned long foreground, unsigned long background, Pixmap stipple);
 char *garden_resource(const char *name, const char *suffix);

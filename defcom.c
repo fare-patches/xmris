@@ -177,6 +177,7 @@
 unsigned long color_zero = 0;
 unsigned long color_one = ~0;
 Boolean  default_gender = False;
+#ifndef XMRIS_SDL
 static int CONST negone = -1;
 /*{{{  create tables*/
 /*{{{  extern CommandOptionDesc command_options[] =*/
@@ -284,6 +285,8 @@ XtResource resources[] =
   {NULL}
 };
 /*}}}*/
+
+#endif
 /*{{{  extern COLOR_DEF color_names[] =*/
 COLOR_DEF color_names[] =
 {
@@ -349,6 +352,7 @@ COLOR_DEF color_names[] =
 #endif
 };
 /*}}}*/
+#ifndef XMRIS_SDL
 /*{{{  extern CONTEXT gcsdefine[GCS] =*/
 CONTEXT gcsdefine[GCS] =
 {
@@ -408,6 +412,8 @@ HELP CONST help[] =
   {NULL}
 };
 /*}}}*/
+
+#endif
 /*{{{  extern SPRITE_DEF CONST icons[] =*/
 SPRITE_DEF CONST icons[] =
 {
@@ -954,6 +960,7 @@ SPRITE_DEF fills_def[FILLS] =
   {(unsigned char *)fill3_bits, 0, {NULL}, {fill3_width, fill3_height}},
 };
 /*}}}*/
+#ifndef XMRIS_SDL
 /*{{{  extern VISUAL_CLASS CONST visual_class[] =*/
 VISUAL_CLASS CONST visual_class[] =
 {
@@ -967,6 +974,8 @@ VISUAL_CLASS CONST visual_class[] =
 };
 /*}}}*/
 /*}}}*/
+
+#endif
 /*{{{  public tables*/
 /*{{{  unsigned backgrounds[][2] =*/
 unsigned CONST backgrounds[][2] =

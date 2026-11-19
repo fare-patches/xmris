@@ -85,7 +85,7 @@ void video_opaque_text(Pixmap dst, GC gc, int x, int y, const char *str, int n)
 }
 
 
-char *key_name(KeySym key) { return XKeysymToString(key); }
+const char *key_name(KeySym key) { return XKeysymToString(key); }
 void video_sync(void) { XSync(display.display, False); }
 void video_pattern(unsigned long foreground, unsigned long background, Pixmap stipple)
 {

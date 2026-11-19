@@ -1,8 +1,11 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
 /* this file is common to xmris and xmred, included from def*.h */
 /* RCS $Id: defcom.h 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
+#ifndef XMRIS_SDL
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
+#endif
+
 #define XtRGender       "Gender"
 #define COLOR_PLANES 3  /* max color planes for sprite generation */
 /*{{{  some macros*/
@@ -86,8 +89,11 @@ extern unsigned long color_one;
 extern Boolean  default_gender;
 /*{{{  create tables*/
 extern CommandOptionDesc command_options[];
+#ifndef XMRIS_SDL
 extern XrmOptionDescRec options[];
 extern XtResource resources[];
+#endif
+
 extern COLOR_DEF color_names[];
 extern CONTEXT gcsdefine[GCS];
 extern HELP CONST help[];

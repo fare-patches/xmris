@@ -501,12 +501,14 @@ extern VOIDFUNC show_updates PROTOARG((VOIDARG));
 extern VOIDFUNC color_cycle PROTOARG((VOIDARG));
 extern VOIDFUNC color_set PROTOARG((int));
 extern VOIDFUNC create_widget PROTOARG((VOIDARG));
-#ifndef NDEBUG
+#if !defined(NDEBUG) && !defined(XMRIS_SDL)
 extern int error_handler PROTOARG((Display *, XErrorEvent *));
 #endif /* NDEBUG */
 extern VOIDFUNC fatal_error PROTOVARARG((char CONST *, VARARG));
 extern VOIDFUNC list_help PROTOARG((char CONST *));
+#ifndef XMRIS_SDL
 extern VOIDFUNC nadger_widget_colors PROTOARG((Widget, WidgetClass));
+#endif
 extern VOIDFUNC open_toolkit PROTOARG((int, String *));
 /*}}}*/
 /*{{{  monster*/
@@ -554,7 +556,9 @@ extern VOIDFUNC calc_distances PROTOARG((VOIDARG));
 extern VOIDFUNC calc_extra_home PROTOARG((unsigned));
 extern unsigned chaotic PROTOARG((VOIDARG));
 extern size_t itoa PROTOARG((char *, unsigned long, unsigned));
+#ifndef XMRIS_SDL
 extern int main PROTOARG((int, char CONST **));
+#endif
 /*}}}*/
 /*}}}*/
 

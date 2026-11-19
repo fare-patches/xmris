@@ -17,10 +17,26 @@
 #include <ctype.h>
 #include <time.h>
 #include <unistd.h>
+#ifdef XMRIS_SDL
+#include <SDL3/SDL.h>
+typedef SDL_Surface *Pixmap;
+typedef SDL_Keycode KeySym;
+typedef unsigned long Pixel;
+typedef struct { Pixel pixel; } XColor;
+typedef int GC;
+typedef unsigned char Boolean;
+typedef unsigned Cardinal;
+typedef char *String;
+#define True 1
+#define False 0
+#define NoSymbol 0
+#define XtNumber(a) (sizeof(a) / sizeof((a)[0]))
+#else
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
 #include <X11/Intrinsic.h>
+#endif
 /*}}}*/
 #include "ansiknr.h"
 /*{{{  case changing things*/
@@ -33,7 +49,7 @@
 #endif /* _tolower */
 /*}}}*/
 /*{{{  check font*/
-#ifndef FONT_NAME
+#if !defined(FONT_NAME) && !defined(XMRIS_SDL)
   #error No default font
 #endif /* FONT_NAME */
 /*}}}*/
@@ -278,7 +294,9 @@
 /*{{{  typedef struct Data*/
 typedef struct Data
 {
+#ifndef XMRIS_SDL
   Font    font;     /* font to use */
+#endif
 #ifndef XMRED
   String  expire;   /* expiration */
   String  remove;   /* removal */
@@ -355,6 +373,7 @@ EXTERN char CONST *myname;      /* name of me */
 /*{{{  display*/
 EXTERN struct
 {
+#ifndef XMRIS_SDL
   XtAppContext context; /* my context */
   Widget    toplevel;   /* toplevel widget */
 #ifndef XMRED
@@ -367,6 +386,7 @@ EXTERN struct
   int       screen;     /* screen */
   Visual    *visual;    /* visual */
   int       depth;      /* screen depth */
+#endif
   Pixel     black;      /* black pixel index */
   Pixel     white;      /* white pixel index */
   Pixel     border;     /* border pixel index */

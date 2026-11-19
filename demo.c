@@ -272,11 +272,11 @@ static FUNCANIMATE(animate_def_keys, next)
     	{
     	  data.keysyms[tptr->ix] = key;
     	  monster.den |= 1 << tptr->ix;
-    	  video_fill(display.back, GCN(GC_CLEAR),
+          video_fill(display.back, GCN(GC_CLEAR),
     	      0, PIXELY(monster.delay + global.count, 0),
     	      WINDOW_WIDTH, CELL_HEIGHT);
     	  back_title(tptr, monster.delay + global.count);
-    	  video_copy(display.back, display.copy,
+          video_copy(display.back, display.copy,
     	      GCN(GC_COPY), 0, PIXELY(monster.delay + global.count, 0),
     	      WINDOW_WIDTH, CELL_HEIGHT,
     	      0, PIXELY(monster.delay + global.count, 0));
@@ -287,10 +287,10 @@ static FUNCANIMATE(animate_def_keys, next)
     		
     		for(ix = monster.delay; title_text[ix].ix != lookup; ix++)
     		  /* EMPTY */;
-    		video_fill(display.back, GCN(GC_CLEAR),
+                video_fill(display.back, GCN(GC_CLEAR),
     		    CENTER_X + (font.width + 1) / 2, PIXELY(ix, 0),
     		    WINDOW_WIDTH / 2, CELL_HEIGHT);
-    		video_copy(display.back, display.copy,
+                video_copy(display.back, display.copy,
     		    GCN(GC_COPY), CENTER_X + (font.width + 1) / 2,
     		    PIXELY(ix, 0), WINDOW_WIDTH / 2,
     		    CELL_HEIGHT, CENTER_X + (font.width + 1) / 2,
@@ -311,7 +311,7 @@ static FUNCANIMATE(animate_def_keys, next)
       	char    buffer[49];
       	size_t  length;
       	    
-      	video_fill(display.back, GCN(GC_CLEAR),
+        video_fill(display.back, GCN(GC_CLEAR),
       	    0, PIXELY(CELLS_DOWN - 1, 0), WINDOW_WIDTH,
       	    CELL_HEIGHT * 2 + GAP_HEIGHT);
       	strcpy(buffer, "Press new ");
@@ -320,22 +320,22 @@ static FUNCANIMATE(animate_def_keys, next)
       	strcat(buffer, " key");
       	length = strlen(buffer);
       	assert(length < sizeof(buffer));
-      	video_opaque_text(display.back, GCN(GC_TEXT),
+        video_opaque_text(display.back, GCN(GC_TEXT),
       	    CENTER_X - (int)(length * font.width / 2),
       	    PIXELY(CELLS_DOWN - 1, CELL_HEIGHT / 2) + font.center,
       	    buffer, (int)length);
       	if(!(monster.den & 1 << tptr->ix))
       	  {
       	    sprintf(buffer, "%s for current binding",
-      		key_name(data.keysyms[KEY_THROW]));
+                key_name(data.keysyms[KEY_THROW]));
       	    length = strlen(buffer);
       	    assert(length < sizeof(buffer));
-      	    video_opaque_text(display.back, GCN(GC_TEXT),
+            video_opaque_text(display.back, GCN(GC_TEXT),
       		CENTER_X - (int)(length * font.width / 2),
       		PIXELY(CELLS_DOWN, CELL_HEIGHT / 2) + font.center,
       		buffer, (int)length);
       	  }
-      	video_copy(display.back, display.copy, GCN(GC_COPY),
+        video_copy(display.back, display.copy, GCN(GC_COPY),
       	    0, PIXELY(CELLS_DOWN - 1, 0), WINDOW_WIDTH,
       	    CELL_HEIGHT * 2 + GAP_HEIGHT, 0, PIXELY(CELLS_DOWN - 1, 0));
       }
@@ -508,7 +508,7 @@ extern FUNCANIMATE(animate_extra_life, next)
       	    size_t    length;
       	    
       	    length = strlen(*tptr);
-      	    video_opaque_text(display.back, GCN(GC_TEXT),
+            video_opaque_text(display.back, GCN(GC_TEXT),
       		CENTER_X - (int)(length * font.width / 2),
       		(int)line + font.ascent, *tptr, (int)length);
       	    line += font.ascent + font.descent;
@@ -678,7 +678,7 @@ extern FUNCANIMATE(animate_history, next)
       	    
       	    sprintf(text, "Garden %d", base + ix + 1);
       	    length = strlen(text);
-      	    video_opaque_text(display.back, GCN(GC_TEXT),
+            video_opaque_text(display.back, GCN(GC_TEXT),
       		PIXELX(CELLS_ACROSS / 2 - 1,
       		  -GAP_WIDTH) - (int)(font.width * length),
       		PIXELY((int)(screens - ix),
@@ -687,7 +687,7 @@ extern FUNCANIMATE(animate_history, next)
       	    time = history.times[screens - 1 - ix] / 1000;
       	    sprintf(text, "%3u\'%02u\"", (int)(time / 60), (int)(time % 60));
       	    length = strlen(text);
-      	    video_opaque_text(display.back, GCN(GC_TEXT),
+            video_opaque_text(display.back, GCN(GC_TEXT),
       		PIXELX(CELLS_ACROSS / 2 + 2, 0),
       		PIXELY((int)(screens - ix),
       		  (CELL_HEIGHT + GAP_HEIGHT) / 2) + font.center,
@@ -1102,7 +1102,7 @@ static FUNCANIMATE(animate_score, next)
       	else
       	  string = table_names[scoring.display != scoring.high];
       	length = strlen(string);
-      	video_opaque_text(display.back, GCN(GC_TEXT),
+        video_opaque_text(display.back, GCN(GC_TEXT),
       	    PIXELX(CELLS_ACROSS / 2, 0) - (int)(length * font.width / 2),
       	    PIXELY(0, CELL_HEIGHT / 2) + font.center,
       	    string, (int)length);
@@ -1111,7 +1111,7 @@ static FUNCANIMATE(animate_score, next)
       	else
       	  string = "   Score Garden Time  Name";
       	length = strlen(string);
-      	video_opaque_text(display.back, GCN(GC_TEXT),
+        video_opaque_text(display.back, GCN(GC_TEXT),
       	    PIXELX(0, 0), PIXELY(1, CELL_HEIGHT / 2) + font.center,
       	    string, (int)length);
       	if(scoring.mine.score)
@@ -1379,21 +1379,21 @@ static FUNCANIMATE(animate_sprites, next)
       	color_set((int)0);
       	for(ix = BACKGROUNDS * FILLS; ix--;)
       	  {
-      	    unsigned long foreground, background;
+            unsigned long foreground, background;
       Pixmap stipple;
-      	    background = data.mono != False ? display.white :
+            background = data.mono != False ? display.white :
       		colors[display.dynamic ? COLOR_DYNAMIC :
       		backgrounds[ix % BACKGROUNDS][0]].pixel;
-      	    stipple = fills[ix / BACKGROUNDS].mask;
-      	    foreground = data.mono != False ?
+            stipple = fills[ix / BACKGROUNDS].mask;
+            foreground = data.mono != False ?
       		display.black : colors[display.dynamic ?
       		COLOR_DYNAMIC + 1 : backgrounds[ix % BACKGROUNDS][1]].pixel;
-      	    video_pattern(foreground, background, stipple);
-      	    video_fill(display.back, GCN(GC_BOARD),
+            video_pattern(foreground, background, stipple);
+            video_fill(display.back, GCN(GC_BOARD),
       		PIXELX(7, -(GAP_WIDTH / 2)),
       		PIXELY((int)ix, -(GAP_HEIGHT / 2)),
       		(CELL_WIDTH + GAP_WIDTH) * 3, CELL_HEIGHT + GAP_HEIGHT);
-      	    video_rect(display.back, GCN(GC_SET),
+            video_rect(display.back, GCN(GC_SET),
       		PIXELX(7, -(GAP_WIDTH / 2)),
       		PIXELY((int)ix, -(GAP_HEIGHT / 2)),
       		(CELL_WIDTH + GAP_WIDTH) * 3 - 1,

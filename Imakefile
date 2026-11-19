@@ -119,7 +119,7 @@ DEPLIBS = $(DEPXLIB)
 
 XCOMM filenames or stems
 COMMONHDRS = patchlevel.h ansiknr.h defcom.h common.h
-MRISHDRS = xmris.h defmris.h sound.h music-score.h
+MRISHDRS = platform.h xmris.h defmris.h sound.h music-score.h
 MREDHDRS = xmred.h defmred.h
 COMMONSRCS = defcom.c makecom.c
 GARDENS = alphabet.gdn digits.gdn puzzle.gdn xmred.gdn
@@ -192,7 +192,7 @@ BITMAPS = bitmaps/bitmaps/edge.r bitmaps/bitmaps/fill0.r \
 	bitmaps/bitmaps/oblong.r bitmaps/bitmaps/mris.r \
 	bitmaps/bitmaps/msit.r bitmaps/bitmaps/mred.r \
 	bitmaps/bitmaps/ghosting.r
-ALLFILES = $(FILES) $(GARDENS) $(COMMONHDRS) $(MRISHDRS) $(MREDHDRS) \
+ALLFILES = Makefile.sdl platform-sdl.c video-sdl.c $(FILES) $(GARDENS) $(COMMONHDRS) $(MRISHDRS) $(MREDHDRS) \
 	$(COMMONSRCS) $(MRISSRCS) $(SCRAMSRCS) $(MREDSRCS) \
 	$(WIDGETSRCS) $(WIDGETHDRS) \
 	$(APPLE:.r=.bw) $(APPLE:.r=.rgb) $(BOARD:.r=.bw) $(BOARD:.r=.rgb) \
@@ -309,7 +309,7 @@ tar : $(ALLFILES) README.xmris README.xmred
 XCOMM these are the o dependencies
 sound.o : music-score.h
 sound.o xmris.o player.o apple.o demo.o : sound.h
-$(MRISOBJS) : xmris.h common.h ansiknr.h patchlevel.h
+$(MRISOBJS) : platform.h xmris.h common.h ansiknr.h patchlevel.h
 
 makemris.o : defmris.h defcom.h makecom.c
 

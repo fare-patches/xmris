@@ -13,3 +13,6 @@ Makefile.bak
 bitmaps/*/*.h
 bitmaps/sprites
 bitmaps/*/sprites
+
+/xmris-sdl
+/build/sdl/

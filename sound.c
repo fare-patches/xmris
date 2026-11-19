@@ -1,11 +1,22 @@
 #include "sound.h"
-#include <SDL2/SDL_audio.h>
+#ifdef XMRIS_SDL
+#include <SDL3/SDL.h>
+#else
 #include <SDL2/SDL.h>
+#endif
 #include <signal.h>
 #include <stdio.h>
 
 enum { SAMPLE_RATE = 24000 };
+#ifdef XMRIS_SDL
+static SDL_AudioStream *device;
+#define lock_audio SDL_LockAudioStream
+#define unlock_audio SDL_UnlockAudioStream
+#else
 static SDL_AudioDeviceID device;
+#define lock_audio SDL_LockAudioDevice
+#define unlock_audio SDL_UnlockAudioDevice
+#endif
 
 #include <stdint.h>
 #include "music-score.h"
@@ -89,12 +100,12 @@ void sound_apples(int started, int falling, int crushed)
 {
   if (!device || (!started && falling && !crushed))
     return;
-  SDL_LockAudioDevice(device);
+  lock_audio(device);
   if (started || !falling)
     begin_tune(&apple_fall, falling ? &fall : NULL);
   if (crushed)
     begin_tune(&apple_impact, &sparkle);
-  SDL_UnlockAudioDevice(device);
+  unlock_audio(device);
 }
 
 void sound_play(enum sound_effect cue)
@@ -105,7 +116,7 @@ void sound_play(enum sound_effect cue)
   };
   if (!device)
     return;
-  SDL_LockAudioDevice(device);
+  lock_audio(device);
   if (cue >= FX_DEATH) {
     encore = cue == FX_HIGH_SCORE ? &initials : NULL;
     begin_tune(&apple_fall, NULL);
@@ -114,7 +125,7 @@ void sound_play(enum sound_effect cue)
   } else {
     begin_tune(&effect, scores[cue]);
   }
-  SDL_UnlockAudioDevice(device);
+  unlock_audio(device);
 }
 
 void sound_music(unsigned flags)
@@ -123,14 +134,14 @@ void sound_music(unsigned flags)
   unsigned changed = flags ^ current;
   if (!device || !changed)
     return;
-  SDL_LockAudioDevice(device);
+  lock_audio(device);
   if (changed & (MUSIC_GARDEN | MUSIC_CHASE))
     begin_tune(&music, flags & MUSIC_CHASE ? &chase : flags & MUSIC_GARDEN ? &garden : NULL);
   if (changed & MUSIC_EXTRA) begin_tune(&letter, flags & MUSIC_EXTRA ? &prize : NULL);
   if (changed & MUSIC_DRONES) begin_tune(&drones, flags & MUSIC_DRONES ? &minions : NULL);
   if (changed & MUSIC_DIAMOND) begin_tune(&gem, flags & MUSIC_DIAMOND ? &diamond_song : NULL);
   current = flags;
-  SDL_UnlockAudioDevice(device);
+  unlock_audio(device);
 }
 
 void sound_cherry(unsigned count)
@@ -140,11 +151,47 @@ void sound_cherry(unsigned count)
   };
   if (!device || count < 1 || count > 8)
     return;
-  SDL_LockAudioDevice(device);
+  lock_audio(device);
   begin_tune(&cherry, notes[count - 1]);
-  SDL_UnlockAudioDevice(device);
+  unlock_audio(device);
 }
 
+#ifdef XMRIS_SDL
+static void feed_audio(void *userdata, SDL_AudioStream *stream, int needed, int total)
+{
+  Sint16 buffer[512];
+  (void)total;
+  while (needed > 0) {
+    int bytes = SDL_min(needed, (int)sizeof(buffer));
+    mix_audio(userdata, (Uint8 *)buffer, bytes);
+    if (!SDL_PutAudioStreamData(stream, buffer, bytes)) break;
+    needed -= bytes;
+  }
+}
+
+void sound_pause(int paused)
+{
+  if (!device) return;
+  if (paused) SDL_PauseAudioStreamDevice(device);
+  else SDL_ResumeAudioStreamDevice(device);
+}
+
+void sound_open(void)
+{
+  SDL_AudioSpec spec = {SDL_AUDIO_S16, 1, SAMPLE_RATE};
+  if (SDL_InitSubSystem(SDL_INIT_AUDIO))
+    device = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK,
+        &spec, feed_audio, NULL);
+  if (device) sound_pause(0);
+  else fprintf(stderr, "xmris: disabling sound: %s\n", SDL_GetError());
+}
+
+void sound_close(void)
+{
+  SDL_DestroyAudioStream(device);
+  device = NULL;
+}
+#else
 void sound_pause(int paused)
 {
   if (device)
@@ -190,3 +237,4 @@ void sound_close(void)
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
   }
 }
+#endif

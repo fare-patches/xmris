@@ -202,9 +202,9 @@ ARGSEP  char CONST **argv
 )
 {
   Atom wm_delete_window;
-  
+
   init_scores_early();
-  
+
   myname = *argv ? *argv : "Xmris";
   open_toolkit(argc, (String *)argv);
   init_scores();
@@ -212,7 +212,7 @@ ARGSEP  char CONST **argv
   if(data.help)
     {
       char CONST *ptr;
-	
+
       ptr = myname;
       for(ptr += strlen(ptr) - 1; ptr != *argv; ptr--)
 	if(ptr[-1] == '/')
@@ -265,7 +265,7 @@ ARGSEP  char CONST **argv
 	{
 #ifdef DEBUGEVENTLOOP
 	  XEvent event;
-	  
+
 	  XtAppNextEvent(display.context, &event);
 	  fprintf(stderr, "Event %lu, Window 0x%lx\n",
 	      (long)event.xany.type, (long)event.xany.window);
@@ -300,7 +300,7 @@ VOIDFUNC set_key_default FUNCARGVOID
   if(display.repeat != AutoRepeatModeOff)
     {
       XKeyboardControl control;
-  
+
       control.auto_repeat_mode = display.repeat;
       XChangeKeyboardControl(display.display, KBAutoRepeatMode, &control);
     }
@@ -313,7 +313,7 @@ VOIDFUNC set_key_single FUNCARGVOID
   if(display.repeat != AutoRepeatModeOff)
     {
       XKeyboardControl control;
-  
+
       control.auto_repeat_mode = AutoRepeatModeOff;
       XChangeKeyboardControl(display.display, KBAutoRepeatMode, &control);
     }

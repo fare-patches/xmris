@@ -1,0 +1,21 @@
+# Standalone Linux SDL3 game build. All intermediates are private to this target.
+SDL_CFLAGS ?= $(shell pkg-config --cflags sdl3)
+SDL_LIBS ?= $(shell pkg-config --libs sdl3)
+CFLAGS ?= -O2 -g
+sources = platform-sdl.c video-sdl.c apple.c defmris.c demo.c draw.c monster.c move.c player.c scoring.c timer.c sound.c xmris.c
+objects = $(sources:%.c=build/sdl/%.o)
+
+xmris-sdl: $(objects)
+	$(CC) $(LDFLAGS) -o $@ $^ $(SDL_LIBS) $(LDLIBS)
+
+build/sdl/%.o: %.c
+	@mkdir -p $(@D)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(SDL_CFLAGS) -D_DEFAULT_SOURCE -DXMRIS_SDL -MMD -MP -c $< -o $@
+
+-include $(objects:.o=.d)
+
+# Reuse the original sprite compiler and per-sprite palette recipes.
+build/sdl/defmris.o: bitmaps/sprites
+
+bitmaps/sprites: scram.c ansiknr.h Makefile.std $(wildcard bitmaps/*/*.rgb bitmaps/*/*.bw)
+	$(MAKE) -f Makefile.std SDL_SPRITES_ONLY=1 CC="$(CC)" CCLINK="$(CC)" CFLAGS="$(CFLAGS)" LDOPTIONS= LDLIBS= EXTRA_LOAD_FLAGS= bitmaps/sprites

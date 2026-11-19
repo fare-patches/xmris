@@ -59,6 +59,24 @@ make install.man
 xmris
 ```
 
+### SDL3 on Linux
+
+The SDL frontend builds from the same game, garden, score, and sound sources.
+Install a C compiler, GNU make, pkg-config, and the SDL3 development package
+(`libsdl3-dev` on Debian or Ubuntu), then run
+
+```sh
+make -f Makefile.sdl
+./xmris-sdl -fullscreen
+```
+
+F11 toggles fullscreen. The SDL window centers the garden and scales it in
+whole pixels as you resize it. Use `-scale 2` to request a 2× initial window.
+Arrow keys move, Space starts or throws, and K on the title screen changes
+the bindings. Run `./xmris-sdl -help` for the supported options. The SDL
+frontend uses its own bitmap text and command-line settings. The X11 game
+and the xmred garden editor use the existing imake build and X resources.
+
 ## Features added 2026
 
 In 2026, I used AIs to add these features that were missing in 1992.
