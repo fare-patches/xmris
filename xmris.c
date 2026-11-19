@@ -38,6 +38,7 @@
  */
 /*}}}*/
 #include "xmris.h"
+#include <X11/XKBlib.h>
 #include "sound.h"
 #ifdef NDEBUG
 #define game_assert()
@@ -155,7 +156,7 @@ ARGSEP  Cardinal  *num_params
   unsigned  ix;
   KeySym    keysym;
 
-  keysym = XKeycodeToKeysym(display.display, event->xkey.keycode, 0);
+  keysym = XkbKeycodeToKeysym(display.display, event->xkey.keycode, 0, 0);
 #ifdef DEBUGEVENTLOOP
   fprintf(stderr, "action_keypress(0x%lx) keysym=%0xlx\n",
       (long)XtWindow(widget), (long)keysym);
@@ -193,7 +194,7 @@ ARGSEP  Cardinal  *num_params
   unsigned  ix;
   KeySym    keysym;
 
-  keysym = XKeycodeToKeysym(display.display, event->xkey.keycode, 0);
+  keysym = XkbKeycodeToKeysym(display.display, event->xkey.keycode, 0, 0);
 #ifdef DEBUGEVENTLOOP
   fprintf(stderr, "action_keyrelease(0x%lx) keysym=%0xlx\n",
       (long)XtWindow(widget), (long)keysym);
