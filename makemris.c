@@ -54,7 +54,7 @@ ARGSEP  XtPointer *data
       to->size = sizeof(KeySym);
       return False;
     }
-  keysym = XStringToKeysym((char CONST *)from->addr);
+  keysym = canonical_key(XStringToKeysym((char CONST *)from->addr));
   if(keysym != NoSymbol)
     {
       to->size = sizeof(KeySym);

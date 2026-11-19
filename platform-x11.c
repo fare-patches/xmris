@@ -2,6 +2,27 @@
 #include <X11/XKBlib.h>
 #include "sound.h"
 static unsigned map_start;
+
+/* XKB often reports the navigation symbol at keypad level zero. */
+KeySym canonical_key(KeySym key)
+{
+  switch(key)
+    {
+    case XK_KP_Insert: return XK_KP_0;
+    case XK_KP_End: return XK_KP_1;
+    case XK_KP_Down: return XK_KP_2;
+    case XK_KP_Next: return XK_KP_3;
+    case XK_KP_Left: return XK_KP_4;
+    case XK_KP_Begin: return XK_KP_5;
+    case XK_KP_Right: return XK_KP_6;
+    case XK_KP_Home: return XK_KP_7;
+    case XK_KP_Up: return XK_KP_8;
+    case XK_KP_Prior: return XK_KP_9;
+    case XK_KP_Delete: return XK_KP_Decimal;
+    default: return key;
+    }
+}
+
 /*{{{  prototypes*/
 static VOIDFUNC action_expose
     PROTOARG((Widget, XEvent *, String *, Cardinal *));
@@ -105,7 +126,7 @@ ARGSEP  Cardinal  *num_params
 {
   KeySym    keysym;
 
-  keysym = XkbKeycodeToKeysym(display.display, event->xkey.keycode, 0, 0);
+  keysym = canonical_key(XkbKeycodeToKeysym(display.display, event->xkey.keycode, 0, 0));
 #ifdef DEBUGEVENTLOOP
   fprintf(stderr, "action_keypress(0x%lx) keysym=%0xlx\n",
       (long)XtWindow(widget), (long)keysym);
@@ -129,7 +150,7 @@ ARGSEP  Cardinal  *num_params
 {
   KeySym    keysym;
 
-  keysym = XkbKeycodeToKeysym(display.display, event->xkey.keycode, 0, 0);
+  keysym = canonical_key(XkbKeycodeToKeysym(display.display, event->xkey.keycode, 0, 0));
 #ifdef DEBUGEVENTLOOP
   fprintf(stderr, "action_keyrelease(0x%lx) keysym=%0xlx\n",
       (long)XtWindow(widget), (long)keysym);

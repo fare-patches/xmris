@@ -2,6 +2,9 @@
 void options_read(void);
 const char *option_default(const char *name);
 int options_save(int which);
+#ifndef XMRIS_SDL
+KeySym canonical_key(KeySym key);
+#endif
 const char *portable_key_name(KeySym key);
 void game_tick(void);
 void game_keypress(KeySym key);
