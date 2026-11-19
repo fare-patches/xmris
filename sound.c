@@ -23,18 +23,57 @@ struct voice {
 
 #define SCORE(notes, ms) {notes, sizeof(notes) / sizeof(notes[0]), ms, 0}
 
-static const unsigned short garden[] = {
-  330, 392, 0, 440, 392, 330, 294, 0, 262, 330, 392, 0, 349, 294, 247, 294
+#include <stdint.h>
+#include "music-score.h"
+
+struct playback {
+  const struct tune *tune;
+  unsigned row, ticks, clock;
+  uint32_t phase[3];
 };
-static const unsigned short prize[] = {
-  440, 0, 523, 440, 622, 523, 440, 370, 415, 494, 587, 494, 415, 0, 370, 415
-};
-static const unsigned short chase[] = {
-  294, 349, 440, 294, 330, 392, 494, 330, 349, 440, 523, 440, 392, 330, 294, 247
-};
-static const struct pattern themes[] = {
-  {NULL, 0, 0, 0}, SCORE(garden, 155), SCORE(prize, 115), SCORE(chase, 100)
-};
+static struct playback music, fanfare;
+static const struct tune *const themes[] = {NULL, &garden, &prize, &chase};
+
+static void begin_tune(struct playback *player, const struct tune *tune)
+{
+  struct playback initial = {0};
+  initial.tune = tune;
+  *player = initial;
+}
+
+static int tune_sample(struct playback *player)
+{
+  /* The score uses PSG attenuation steps of 2 dB. */
+  static const int gain[] = {1450, 1152, 915, 727};
+  const struct chord *row;
+  int sum = 0;
+  unsigned i;
+  if (!player->tune)
+    return 0;
+  row = &player->tune->rows[player->row];
+  for (i = 0; i < 3; ++i) {
+    unsigned note = row->voice[i][0];
+    if (note) {
+      sum += player->phase[i] < UINT32_C(0x80000000)
+          ? gain[row->voice[i][1]] : -gain[row->voice[i][1]];
+      player->phase[i] += pitch_step[note];
+    }
+  }
+  /* 59.943 video ticks per second, independent of callback size. */
+  player->clock += 59943;
+  if (player->clock >= SAMPLE_RATE * 1000) {
+    player->clock -= SAMPLE_RATE * 1000;
+    if (++player->ticks == row->ticks) {
+      player->ticks = 0;
+      if (++player->row == player->tune->count) {
+        player->row = player->tune->repeat;
+        if (player->row == player->tune->count)
+          player->tune = NULL;
+      }
+    }
+  }
+  return sum;
+}
 
 static const unsigned short throw_notes[] = {880, 659, 440};
 static const unsigned short hit[] = {784, 392, 196, 98};
@@ -42,29 +81,14 @@ static const unsigned short crush[] = {165, 98, 73, 55};
 static const unsigned short recovered[] = {587, 1175};
 static const unsigned short bonus[] = {523, 659, 784, 1047};
 static const unsigned short death[] = {494, 466, 392, 311, 247, 196, 131};
-/* G4 C5 C5 C5 | F4 B4 B4 B4 | G4 F4 E4 D4 | C4 (held). */
-enum { INTRO_STEP_MS = 110 };
-static const unsigned short start[] = {
-  392, 523, 523, 523, 349, 494, 494, 494, 392, 349, 330, 294, 262
-};
-/* A quiet accompaniment in C, G7, and C. */
-static const unsigned short intro_bass[] = {131, 196, 98, 147, 98, 196, 131};
-static const struct pattern bass_line = SCORE(intro_bass, 2 * INTRO_STEP_MS);
-static const unsigned char start_lengths[] = {1,1,1,1, 1,1,1,1, 1,1,1,1, 2};
-/* sol Do Mi Sol-ol mi Sol-ol-ol */
-static const unsigned short clear[] = {392, 523, 659, 784, 659, 784};
-static const unsigned char clear_lengths[] = {1, 1, 1, 2, 1, 3};
-static const unsigned short history[] = {392, 523, 659, 784, 0, 698, 880, 1047, 0, 784, 1047};
 static const unsigned short life[] = {659, 784, 988, 1319};
 static const struct pattern cues[] = {
   SCORE(throw_notes, 24), SCORE(hit, 35), SCORE(crush, 55), SCORE(recovered, 55),
-  SCORE(bonus, 65), SCORE(death, 110), {start, sizeof(start) / sizeof(start[0]), INTRO_STEP_MS, start_lengths},
-  {clear, sizeof(clear) / sizeof(clear[0]), INTRO_STEP_MS, clear_lengths},
-  SCORE(history, 105), SCORE(life, 90)
+  SCORE(bonus, 65), SCORE(death, 110), {0}, {0}, {0}, SCORE(life, 90)
 };
 static const unsigned short scale[] = {523, 587, 659, 698, 784, 880, 988, 1047};
 static struct pattern cherry_note = {NULL, 1, 125, 0};
-static struct voice melody, cherry, effect, jingle, bass;
+static struct voice cherry, effect, jingle;
 
 static int next_sample(struct voice *v, int volume, int loop)
 {
@@ -106,8 +130,7 @@ static void mix_audio(void *unused, Uint8 *stream, int bytes)
   (void)unused;
   for (i = 0; i < bytes / (int)sizeof(*out); i++)
     {
-      int background = bass.pattern ? next_sample(&bass, 2100, 0)
-                                    : next_sample(&melody, 2200, 1);
+      int background = fanfare.tune ? tune_sample(&fanfare) : tune_sample(&music);
       out[i] = background + next_sample(&cherry, 7500, 0)
           + next_sample(&effect, 5800, 0) + next_sample(&jingle, 6200, 0);
     }
@@ -125,9 +148,14 @@ void sound_play(enum sound_effect cue)
   if (!device)
     return;
   SDL_LockAudioDevice(device);
-  if (cue >= FX_DEATH)
-    start_voice(&bass, cue == FX_START ? &bass_line : NULL);
-  start_voice(cue >= FX_DEATH ? &jingle : &effect, &cues[cue]);
+  if (cue >= FX_DEATH) {
+    const struct tune *score = cue == FX_START ? &opening :
+        cue == FX_CLEAR ? &victory : cue == FX_HISTORY ? &interlude : NULL;
+    begin_tune(&fanfare, score);
+    start_voice(&jingle, score ? NULL : &cues[cue]);
+  } else {
+    start_voice(&effect, &cues[cue]);
+  }
   SDL_UnlockAudioDevice(device);
 }
 
@@ -137,7 +165,7 @@ void sound_music(enum music_theme theme)
   if (!device || theme == current)
     return;
   SDL_LockAudioDevice(device);
-  start_voice(&melody, theme == MUSIC_OFF ? NULL : &themes[theme]);
+  begin_tune(&music, themes[theme]);
   current = theme;
   SDL_UnlockAudioDevice(device);
 }
