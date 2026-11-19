@@ -328,11 +328,10 @@ static FUNCANIMATE(animate_pause, next)
       set_key_default();
       rts = (PROTOANIMATE((*)))next;
       sound_music(MUSIC_OFF);
-      sprintf(buffer, "%s to continue, %s to quit",
+      snprintf(buffer, sizeof(buffer), "%.21s to continue, %.21s to quit",
 	  key_name(data.keysyms[KEY_THROW]),
 	  key_name(data.keysyms[KEY_QUIT]));
       length = strlen(buffer);
-      assert(length < sizeof(buffer));
       video_fill(display.copy, GCN(GC_CLEAR),
 	  BORDER_LEFT + 1, PIXELY(CELLS_DOWN, 0),
 	  BOARD_WIDTH - 2, CELL_HEIGHT);

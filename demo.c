@@ -654,7 +654,7 @@ extern FUNCANIMATE(animate_history, next)
       	unsigned  ix;
       	unsigned  sprite;
       	MONSTER   *mptr;
-      	char      text[11];
+        char      text[64];
       	size_t    length;
       	static unsigned sprites[4] =
       	    {SPRITE_CHERRY, SPRITE_NORMAL + 4, 4, 6};
@@ -666,7 +666,7 @@ extern FUNCANIMATE(animate_history, next)
       	  {
       	    unsigned long time;
       	    
-      	    sprintf(text, "Garden %d", base + ix + 1);
+            snprintf(text, sizeof(text), "Garden %u", base + ix + 1);
       	    length = strlen(text);
             video_opaque_text(display.back, GCN(GC_TEXT),
       		PIXELX(CELLS_ACROSS / 2 - 1,
@@ -675,7 +675,7 @@ extern FUNCANIMATE(animate_history, next)
       		  (CELL_HEIGHT + GAP_HEIGHT) / 2) + font.center,
       		  text, (int)length);
       	    time = history.times[screens - 1 - ix] / 1000;
-      	    sprintf(text, "%3u\'%02u\"", (int)(time / 60), (int)(time % 60));
+            snprintf(text, sizeof(text), "%3lu\'%02lu\"", time / 60, time % 60);
       	    length = strlen(text);
             video_opaque_text(display.back, GCN(GC_TEXT),
       		PIXELX(CELLS_ACROSS / 2 + 2, 0),
@@ -1661,9 +1661,9 @@ ARGSEP  unsigned  ix
   	
     ptr = strchr(tptr->text, '%');
     if(!ptr)
-      strcpy(buffer, tptr->text);
+      snprintf(buffer, sizeof(buffer), "%s", tptr->text);
     else
-      sprintf(buffer, tptr->text, key_name(data.keysyms[tptr->ix]));
+      snprintf(buffer, sizeof(buffer), tptr->text, key_name(data.keysyms[tptr->ix]));
   }
   /*}}}*/
   length = strlen(buffer);
