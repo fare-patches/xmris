@@ -8,8 +8,7 @@ Makes you wonder with how much patience Nathan reverse-engineered the behavior,
 vs whether he reverse-engineered the code:
 the game has plenty of fun corner cases that interact very well with each other,
 some not obvious to the beginner (shooting through walls, dying and gaining a life
-at the same time, etc.), that Nathan perfectly reproduced. The only missing feature
-is the sound (do re mi fa sol la si do) as you eat cherries.
+at the same time, etc.), that Nathan perfectly reproduced. The original X version lacked the sound (do re mi fa sol la si do) as you eat cherries.
 I suppose sound was not generally available on Unix in 1992.
 
 ## Building an Running XMRIS
@@ -18,7 +17,7 @@ I suppose sound was not generally available on Unix in 1992.
 
 On Ubuntu, I needed to install `xmkmf`, the Athena widgets and the standard 75dpi bitmap fonts:
 ```
-apt install -y xutils-dev libxaw7-dev libxrender-dev xfonts-75dpi
+apt install -y xutils-dev libxaw7-dev libxrender-dev libsdl2-dev xfonts-75dpi
 ```
 
 If you want the fonts to work the same X11 session, you might additionally need to:
@@ -41,7 +40,9 @@ make
 ./xmris
 ```
 
-Use `./xmris -scale 2` to double the game window with crisp pixels.
+Use `./xmris -scale 2` to double the game window with crisp pixels. Cherry sounds are enabled by default. Set
+`Xmris.sound: false` in your X resources for quiet play, or run `xmris -nosound`.
+Use `-sound` to enable audio for a single session.
 
 ### To Install
 ```
@@ -76,7 +77,7 @@ Maybe we need to install additional X packages on the server side?
 
 If you want to make this game better, have an AI add the following features:
 * [ ] Fullscreen scaling.
-* [ ] Adding the do re mi fa sol la si do sounds as you eat cherries as in Mr Do!
+* [x] Adding the do re mi fa sol la si do sounds as you eat cherries as in Mr Do!
 * [ ] Porting to other platforms beside X11.
 * [ ] Running in a TEE from a deterministic build so as to maintain
       a cheat-resistant global high score chart.

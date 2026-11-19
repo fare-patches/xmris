@@ -292,6 +292,7 @@ typedef struct Data
   Boolean nodynamic; /* don't take advantage of dynamic visuals */
   Boolean nodisplay; /* don't open the display, even to get X resources */
   int pixel_scale;
+  Boolean sound;
   Boolean busywait; /* do busy waiting */
 #endif /* XMRED */
   Boolean gender;   /* he or she? */

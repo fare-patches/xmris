@@ -1,6 +1,7 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
 /* RCS $Id: player.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 #include "xmris.h"
+#include "sound.h"
 /*{{{  void bounce_ball()*/
 extern VOIDFUNC bounce_ball FUNCARGVOID
 /*
@@ -991,6 +992,7 @@ extern unsigned move_player FUNCARGVOID
 	      global.cherries--;
 	      add_score(50 / SCORE_ROUND, 0, 0);
 	      player.cherry++;
+	      sound_cherry(player.cherry);
 	      if(player.cherry == 8)
 		{
 		  add_score(500 / SCORE_ROUND,

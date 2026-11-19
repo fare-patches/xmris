@@ -219,6 +219,8 @@ XrmOptionDescRec options[] =
   {"-realname",".username",     XrmoptionNoArg, (XtPointer)XtEno},
   {"-static",  ".static",       XrmoptionNoArg, (XtPointer)XtEyes},
   {"-scale", ".scale", XrmoptionSepArg, (XtPointer)NULL},
+  {"-sound", ".sound", XrmoptionNoArg, (XtPointer)XtEyes},
+  {"-nosound", ".sound", XrmoptionNoArg, (XtPointer)XtEno},
   {"-busywait", ".busywait",    XrmoptionNoArg, (XtPointer)XtEyes},
 #endif /* XMRED */
   {NULL}
@@ -256,6 +258,8 @@ XtResource resources[] =
       XtOffsetOf(DATA, nodynamic), XtRImmediate, (XtPointer)False},
   {"scale", "Scale", XtRInt, sizeof(int),
       XtOffsetOf(DATA, pixel_scale), XtRImmediate, (XtPointer)1},
+  {"sound", "Sound", XtRBoolean, sizeof(Boolean),
+      XtOffsetOf(DATA, sound), XtRImmediate, (XtPointer)True},
   {"busywait", "Busywait", XtRBoolean, sizeof(Boolean),
       XtOffsetOf(DATA, busywait), XtRImmediate, (XtPointer)False},
 #endif /* XMRED */
@@ -389,6 +393,8 @@ HELP CONST help[] =
   {"Do not open display",           "+display", "", ""},
   {"Store date format change",      "-format",    "", ""},
   {"Game pixel scale", "-scale", "Scale:", "<1|2>"},
+  {"Enable cherry sounds", "-sound", "Sound:true", ""},
+  {"Disable cherry sounds", "-nosound", "Sound:false", ""},
   {"Force busywaiting",             "-busywait",  "Busywait:yes", ""},
 #endif /* XMRED */
   {NULL}

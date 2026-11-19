@@ -490,7 +490,7 @@ GARDENS = alphabet.gdn digits.gdn puzzle.gdn xmred.gdn
 FILES = CHANGES CHANGES.4.01 CHANGES.4.02 CHANGES.4.03 CHANGES.4.04 \
 	README COPYRIGHT Imakefile \
 	xmris.man xmred.man Xmris-ad.src
-MRISSRCS = apple.c defmris.c demo.c draw.c makemris.c \
+MRISSRCS = sound.c apple.c defmris.c demo.c draw.c makemris.c \
 	monster.c move.c player.c scoring.c timer.c xmris.c
 MRISOBJS = $(MRISSRCS:.c=.o)
 SCRAMSRCS = scram.c
@@ -593,7 +593,7 @@ install :: initialize
 
 xmris: $(MRISOBJS) $(DEPLIBS)
 	$(RM) $@
-	$(CCLINK) -o $@ $(LDOPTIONS) $(MRISOBJS) -lXrender $(LOCAL_LIBRARIES) $(LDLIBS)  $(EXTRA_LOAD_FLAGS)
+	$(CCLINK) -o $@ $(LDOPTIONS) $(MRISOBJS) -lSDL2 -lXrender $(LOCAL_LIBRARIES) $(LDLIBS)  $(EXTRA_LOAD_FLAGS)
 
 clean::
 	$(RM) xmris
@@ -788,6 +788,7 @@ Makefile.std :: initialize
 	@echo You may want to edit Makefile.std now
 
 # these are the o dependencies
+sound.o xmris.o player.o : sound.h
 $(MRISOBJS) : xmris.h common.h ansiknr.h patchlevel.h
 
 makemris.o : defmris.h defcom.h makecom.c

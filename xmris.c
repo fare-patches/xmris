@@ -38,6 +38,7 @@
  */
 /*}}}*/
 #include "xmris.h"
+#include "sound.h"
 #ifdef NDEBUG
 #define game_assert()
 #endif /* NDEBUG */
@@ -1306,6 +1307,8 @@ ARGSEP  char CONST **argv
 #endif /* DEBUGEVENTLOOP */
   display.window = XtWindow(display.garden);
   init_presentation();
+  if(data.sound)
+    sound_open();
   timer_open();
   animate = animate_demo;
   while(!global.quit)
@@ -1349,6 +1352,7 @@ ARGSEP  char CONST **argv
       assert(monster.normals < 20);
     }
   timer_close();
+  sound_close();
   cleanup_scores();
   return 0;
 }
