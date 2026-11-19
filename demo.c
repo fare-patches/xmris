@@ -1601,8 +1601,12 @@ ARGSEP  unsigned  split
   int       y;
   int       height;
   
-  sprintf(string, "%8lu  %3u %3u\'%02u\"",
-      sptr->score, sptr->screen, sptr->elapsed / 60, sptr->elapsed % 60);
+  /* Keep each displayed field within its column. */
+  unsigned minutes = sptr->elapsed / 60;
+  snprintf(string, sizeof(string), "%8lu  %3u %3u'%02u\"",
+      sptr->score > 99999999UL ? 99999999UL : sptr->score,
+      sptr->screen > 999U ? 999U : sptr->screen,
+      minutes > 999U ? 999U : minutes, sptr->elapsed % 60);
   assert(strlen(string) == SCORING_LEN - 1);
   height = font.digitup + font.digitdown + font.ascent + font.descent;
   y = PIXELY((int)ix, CELL_HEIGHT / 2);

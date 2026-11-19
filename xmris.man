@@ -500,9 +500,9 @@ the four combinations of gender and swap resources, or use the same for some
 combinations. There is no reason why all these cannot be different colours,
 but note that the more unique colours you define, the more colour map entries
 you will use up. The colours black and white are already known about, but
-because of the way X parses hex colour names, I have programmed white as
-#FF00FF00FF00 (what #FFFFFF expands to), not #FFFFFFFFFFFF (what I think
-#FFFFFF should expand to). This means that if you specify a white colour to
+because of the way X parses hex colour names, I have programmed white as #FF00FF00FF00
+(what #FFFFFF expands to), not #FFFFFFFFFFFF (what I think #FFFFFF should
+expand to). This means that if you specify a white colour to
 more than 8 bit accuracy, a new colour will be allocated. (This is a bug.)
 Of course, you can specify the colours by name ('NavajoWhite'), so long
 as X can grok it by searching your colour database.
