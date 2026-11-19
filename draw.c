@@ -975,6 +975,7 @@ ARGSEP  char CONST *parent
   sptr->name = NULL;
   error = 0;
   sptr->line = 0;
+  sptr->error = 0;
   sptr->start = 0;
   sptr->garden = 0;
   stream = NULL;
@@ -1099,10 +1100,15 @@ ARGSEP  char CONST *parent
 			  name = ++ptr;
 			  while(*ptr && *ptr != '\"')
 			    ptr++;
-			  *ptr = 0;
+			  if(!*ptr)
+                            {
+                              error = ERROR_SYNTAX;
+                              break;
+                            }
+                          *ptr = 0;
 			  if(ptr == name)
 			    name = NULL;
-			  if(parse.depth == INCLUDE_LIMIT)
+			  if(parse.depth + 1 >= INCLUDE_LIMIT)
 			    {
 			      error = ERROR_TOO_MANY;
 			      break;
@@ -1166,11 +1172,11 @@ ARGSEP  char CONST *parent
 	      /*{{{  reading board*/
 	      if(state >= 2)
 		{
-		  while(state)
+		  while(state && !error)
 		    {
-		      if(*ptr == ' ' || *ptr == '\t')
+		      while(*ptr == ' ' || *ptr == '\t')
 			ptr++;
-		      if(*ptr == '\n')
+		      if(!*ptr || *ptr == '\n')
 			break;
 		      switch(state)
 		      {
@@ -1268,18 +1274,15 @@ ARGSEP  char CONST *parent
 			}
 			/*}}}*/
 		      }
-		      if(error && bptr)
-			{
-			  free(bptr);
-			  bptr = NULL;
-			}
+		      if(error)
+                        break;
 		      if(*ptr == ',')
 			ptr++;
 		    }
 		}
 	      /*}}}*/
 	    }
-	  while(state);
+	  while(state && !error);
 	  if(!error && !*parse.text)
 	    break;
 	}
@@ -1326,7 +1329,7 @@ ARGSEP  char CONST *parent
 	    if(error & 1 << ix)
 	      fprintf(stderr, "%s%s\n", text_error[ix],
 		  (1 << ix) & ERROR_FIX_MASK ? " (fixed)" : ""); 
-	  error &= ERROR_KEEP_MASK;
+	  error &= ERROR_KEEP_MASK | ERROR_SYNTAX;
 	}
       /*}}}*/
       if(bptr)
