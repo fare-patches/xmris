@@ -4,6 +4,7 @@
 /*{{{  other includes*/
 #include <pwd.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <sys/stat.h>
 /*}}}*/
 /*{{{  file locking*/
@@ -41,8 +42,8 @@ static VOIDFUNC load_check_expire_insert PROTOARG((unsigned));
 static VOIDFUNC make_unique PROTOARG((HIGH_SCORE *));
 static unsigned merge_personal PROTOARG((FILE *));
 static unsigned merge_scores PROTOARG((FILE *));
-static unsigned long read_line
-    PROTOARG((FILE *, HIGH_SCORE *, unsigned long));
+static int read_line
+    PROTOARG((FILE *, HIGH_SCORE *, unsigned long *));
 static VOIDFUNC remove_scores PROTOARG((HIGH_SCORE *, unsigned));
 static VOIDFUNC retire_scores PROTOARG((void));
 static VOIDFUNC write_personal PROTOARG((FILE *));
@@ -1051,13 +1052,13 @@ FUNCARG((stream),
   /*{{{  read file*/
   while(1)
     {
-      check = read_line(stream, &new, check);
-      if(!new.score)
+      failed = !read_line(stream, &new, &check);
+      if(failed || !new.score)
 	break;
       insert_score(scoring.personal, &new, 0);
     }
   /*}}}*/
-  failed = ferror(stream) || check != new.stamp;
+  failed |= ferror(stream) != 0;
   if(failed)
     {
       fprintf(stderr, "%s:Your personal score file '%s' has been corrupted.\n",
@@ -1093,8 +1094,8 @@ FUNCARG((stream),
   /*{{{  read file*/
   while(1)
     {
-      check = read_line(stream, &new, check);
-      if(!new.score)
+      failed = !read_line(stream, &new, &check);
+      if(failed || !new.score)
 	break;
       if(new.score >= SCORE_THRESHOLD)
 	insert_score(scoring.high, &new, 0);
@@ -1102,7 +1103,7 @@ FUNCARG((stream),
 	insert_score(scoring.today, &new, 0);
     }
   /*}}}*/
-  failed = ferror(stream) || check != new.stamp;
+  failed |= ferror(stream) != 0;
   if(failed)
     {
       fprintf(stderr, "%s:The high score file '%s' has been corrupted.\n",
@@ -1113,65 +1114,78 @@ FUNCARG((stream),
   return failed;
 }
 /*}}}*/
-/*{{{  unsigned long read_line(stream, sptr, check)*/
-static unsigned long read_line
-FUNCARG((stream, sptr, check),
-	FILE      *stream
-ARGSEP  HIGH_SCORE *sptr
-ARGSEP  unsigned long check
-)
+/* One decimal digit per bit is a conservative bound for every field. */
+#define SCORE_LINE_SIZE (NAME_LEN + 6 + CHAR_BIT * (2*sizeof(unsigned long) + 2*sizeof(unsigned)))
+
+static int score_number(char **cursor, unsigned long *value)
 {
-  char  line[NAME_LEN + 40];
-  
+  char *p = *cursor;
+  if(*p < '0' || *p > '9')
+    return 0;
+  errno = 0;
+  *value = strtoul(p, cursor, 10);
+  return errno != ERANGE;
+}
+
+static int read_line(FILE *stream, HIGH_SCORE *sptr, unsigned long *check)
+{
+  char line[SCORE_LINE_SIZE], *p = line, *newline;
+  unsigned long stamp, score, screen, elapsed = 0;
+  sptr->score = 0;
   if(!fgets(line, sizeof(line), stream))
-    sptr->score = sptr->stamp = 0;
-  else if(line[0] == '+')
+    return feof(stream) && ftell(stream) == 0;
+  newline = strchr(line, '\n');
+  if(!newline)
+    return 0;
+  if(*p == '+')
     {
-      char      *ptr;
-      size_t    index;
-      
-      sptr->score = 0;
-      sptr->stamp = strtol(&line[1], &ptr, 10);
-      while(*ptr == ' ')
-	ptr++;
-      for(index = 0; isalpha(*ptr) && index < 3; ptr++, index++)
-	date_format[index] = *ptr;
-      if(*ptr != '\n')
-	sptr->stamp = 0;
+      p++;
+      if(!score_number(&p, &stamp) || stamp != *check)
+        return 0;
+      while(*p == ' ') p++;
+      if(p == newline)
+        return 1;
+      if(newline - p != 3 || strspn(p, date_formats) != 3 ||
+          p[0] == p[1] || p[1] == p[2] || p[0] == p[2])
+        return 0;
+      memcpy(date_format, p, 3);
+      return 1;
     }
-  else
+  for(char *q = line; *q; ++q)
+    *check += (unsigned char)*q;
+  if(!score_number(&p, &stamp) || *p != ' ')
+    return 0;
+  while(*p == ' ') p++;
+  if(!score_number(&p, &score) || score < SCORE_ROUND || *p != ' ')
+    return 0;
+  while(*p == ' ') p++;
+  if(!score_number(&p, &screen) || !screen || screen > UINT_MAX || *p != ' ')
+    return 0;
+  while(*p == ' ') p++;
+  /* Older files omit elapsed time. A numeric prefix alone can be a name. */
+  if(*p >= '0' && *p <= '9')
     {
-      size_t    length;
-      char      *name;
-      char      *ptr;
-      
-      for(ptr = line; *ptr; ptr++)
-	check += *(unsigned char *)ptr;
-      sptr->stamp = strtol(line, &ptr, 10);
-      while(*ptr == ' ')
-	ptr++;
-      sptr->score = strtol(ptr, &ptr, 10) / SCORE_ROUND * SCORE_ROUND;
-      while(*ptr == ' ')
-	ptr++;
-      sptr->screen = (unsigned)strtol(ptr, &ptr, 10);
-      while(*ptr == ' ')
-	ptr++;
-      sptr->elapsed = (unsigned)strtol(ptr, &name, 10);
-      if(name == ptr)
-	sptr->elapsed = 0;
-      else
-	for(ptr = name; *ptr == ' ';)
-	  ptr++;
-      name = ptr;
-      length = strlen(ptr) - 1;
-      if(!sptr->score || !sptr->screen ||
-	  ptr[length] != '\n' || length > NAME_LEN)
-	sptr->score = 0;
-      name[length] = 0;
-      strcpy(sptr->name, name);
-      sptr->marker = 1;
+      char *end = p;
+      int valid = score_number(&end, &elapsed);
+      if(*end == ' ')
+        {
+          if(!valid || elapsed > UINT_MAX) return 0;
+          p = end;
+          while(*p == ' ') p++;
+        }
+      else elapsed = 0;
     }
-  return check;
+  if(newline - p > NAME_LEN || (time_t)stamp < 0 ||
+      (unsigned long)(time_t)stamp != stamp)
+    return 0;
+  sptr->stamp = (time_t)stamp;
+  sptr->score = score / SCORE_ROUND * SCORE_ROUND;
+  sptr->screen = (unsigned)screen;
+  sptr->elapsed = (unsigned)elapsed;
+  *newline = 0;
+  strcpy(sptr->name, p);
+  sptr->marker = 1;
+  return 1;
 }
 /*}}}*/
 /*{{{  static VOIDFUNC remove_scores(base, flag)*/
@@ -1295,10 +1309,10 @@ ARGSEP  unsigned long check
   
   for(ix = HIGH_SCORES; ix-- && sptr->score; sptr++)
     {
-      char      line[NAME_LEN + 40];
+      char      line[SCORE_LINE_SIZE];
       char      *ptr;
       
-      sprintf(line, "%lu %lu %u %u %s\n", (unsigned long)sptr->stamp,
+      snprintf(line, sizeof(line), "%lu %lu %u %u %s\n", (unsigned long)sptr->stamp,
 	  sptr->score, sptr->screen, sptr->elapsed, sptr->name);
       fputs(line, stream);
       for(ptr = line; *ptr; ptr++)
