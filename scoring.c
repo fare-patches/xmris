@@ -3,6 +3,7 @@
 #include "xmris.h"
 /*{{{  other includes*/
 #include <pwd.h>
+#include <fcntl.h>
 #include <sys/stat.h>
 /*}}}*/
 /*{{{  file locking*/
@@ -170,6 +171,22 @@ ARGSEP  unsigned long msec
   return;
 }
 /*}}}*/
+static FILE *open_score_file(const char *path, int flags, mode_t mode)
+{
+  int fd = open(path, O_RDWR | O_NONBLOCK | O_CLOEXEC | flags, mode);
+  struct stat st;
+  FILE *stream = NULL;
+
+  if(fd >= 0)
+    {
+      if(fstat(fd, &st) == 0 && S_ISREG(st.st_mode))
+        stream = fdopen(fd, "r+");
+      if(!stream)
+        close(fd);
+    }
+  return stream;
+}
+
 /*{{{  void init_scores_early()*/
 extern VOIDFUNC init_scores_early FUNCARGVOID
 /*
@@ -181,10 +198,9 @@ extern VOIDFUNC init_scores_early FUNCARGVOID
   gid_t realgid = getgid();
   uid_t realuid = getuid();
 
-  score_stream = fopen(score_file, "r+");
-  /* If we cannot open it, try creating it */
-  if(!score_stream)
-    score_stream = fopen(score_file, "w+");
+  int elevated = getegid() != realgid || geteuid() != realuid;
+  score_stream = open_score_file(score_file,
+      O_NOFOLLOW | (elevated ? 0 : O_CREAT), 0666);
   if(!score_stream)
     score_file = NULL;
 
@@ -324,9 +340,7 @@ extern VOIDFUNC init_scores FUNCARGVOID
 	    strcpy(personal_file, home);
 	    strcpy(&personal_file[length], "/.xmris.score");
 
-	    personal_stream = fopen(personal_file, "r+");
-	    if(!personal_stream)
-	      personal_stream = fopen(personal_file, "w+");
+	    personal_stream = open_score_file(personal_file, O_CREAT, 0600);
 	    if(!personal_stream)
 	      {
 		free(personal_file);

@@ -93,6 +93,15 @@ to `~/.config/xmris/config`. Command-line settings and explicit X resources
 take precedence at startup. The `-nosound` switch disables the audio device
 for the whole session.
 
+### Linux score files
+
+Both frontends keep personal scores in `~/.xmris.score`. For a shared
+leaderboard with a setgid installation, the administrator must pre-create
+`/var/games/xmris.score` as a regular file writable by the game group.
+Keep the containing directory under administrator control. The game opens
+the shared file before dropping privileges and can use personal scores
+when the shared file is unavailable.
+
 ## Features added 2026
 
 In 2026, I used AIs to add these features that were missing in 1992.
