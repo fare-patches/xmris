@@ -1,4 +1,4 @@
-# XMRIS in 2026
+# XMRIS 4.1.0 in 2026
 
 xmris (1992-1995) by Nathan Sidwell is a remarkably faithful Unix clone of
 Mr. Do!, a 1982 game for 8-bit consoles by Kazutoshi Ueda.
@@ -92,8 +92,15 @@ use `-nomusic` or `Xmris.music: false`.
 reveals a diamond. The default, `easy`, gives a 1 in 512 chance. Use `hard`
 for 1 in 2048. Both allow another diamond after collecting one. The historical
 `classic` setting gives a 1 in 256 chance and allows one collection per game.
-In xmris, the music accelerates when the normal monsters speed up;
-it changes when the center prize releases the drones.
+
+The chase music speeds up by 50% when the nearest enemy's distance falls to
+80 arcade pixels or less, and slows down again at 113 or more (16 pixels per
+cell). Between those thresholds it keeps its tempo. xmris measures tunnel
+distance for ordinary monsters and direct separation for digging monsters.
+
+In the arcade, the ball starts nine pixels ahead of the player, so a throw
+can clear a thin wall. xmris supports the same trick, but checks how far the
+hedge has been dug and can refuse a shot the arcade would launch.
 
 I also restored some behavior from the arcade game: there is a .4 second
 grace period after eating a cherry to continue a streak, and the last

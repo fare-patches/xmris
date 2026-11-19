@@ -410,7 +410,7 @@ LINTFONT = $(LINTLIBDIR)/llib-lfont.ln
 
 # For full details of the switches herein, read the README file
 # Imake file for xmris V4.04 23 July 1995
-VERSION = 4.04
+VERSION = 4.1.0
 APP = xmris
 
 # compiler options
