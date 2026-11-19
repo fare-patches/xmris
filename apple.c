@@ -1,6 +1,7 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
 /* RCS $Id: apple.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 #include "xmris.h"
+#include "sound.h"
 /*{{{  prototypes*/
 static APPLE *apple_search PROTOARG((int, int, unsigned, unsigned, unsigned));
 /*}}}*/
@@ -909,6 +910,7 @@ FUNCARG((mptr),
     mptr->shot = 1;
   else
     {
+      if(global.state < 4) sound_play(FX_CRUSH);
       mptr->chew = 0;
       if(mptr->type < 2)
 	monster.normals--;

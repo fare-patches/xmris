@@ -306,7 +306,7 @@ tar : $(ALLFILES) README.xmris README.xmred
 	$$rm
 
 XCOMM these are the o dependencies
-sound.o xmris.o player.o : sound.h
+sound.o xmris.o player.o apple.o : sound.h
 $(MRISOBJS) : xmris.h common.h ansiknr.h patchlevel.h
 
 makemris.o : defmris.h defcom.h makecom.c

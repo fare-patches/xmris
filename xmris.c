@@ -169,6 +169,7 @@ ARGSEP  Cardinal  *num_params
 	  if(ix == KEY_PAUSE)
 	    {
 	      timer_set((unsigned long)0, TIMING_PAUSE);
+	      sound_music(MUSIC_OFF);
 	      global.pause = 1;
 	    }
 	  break;
@@ -219,6 +220,7 @@ ARGSEP  Cardinal  *num_params
 #ifdef DEBUGEVENTLOOP
   fprintf(stderr, "action_map(0x%lx)\n", (long)XtWindow(widget));
 #endif /* DEBUGEVENTLOOP */
+  sound_pause(0);
   display.mapped = 1;
   if(map_start)
     timer_set((unsigned long)0, TIMING_ON);
@@ -254,6 +256,7 @@ ARGSEP  Cardinal  *num_params
 #ifdef DEBUGEVENTLOOP
   fprintf(stderr, "action_unmap(0x%lx)\n", (long)XtWindow(widget));
 #endif /* DEBUGEVENTLOOP */
+  sound_pause(1);
   display.mapped = 0;
   global.pause = global.state < 6;
   map_start = timer_set((unsigned long)0, TIMING_PAUSE) == TIMING_ON;
@@ -502,6 +505,7 @@ static FUNCANIMATE(animate_pause, next)
       timer_set((unsigned long)0, TIMING_PAUSE);
       set_key_default();
       rts = (PROTOANIMATE((*)))next;
+      sound_music(MUSIC_OFF);
       sprintf(buffer, "%s to continue, %s to quit",
 	  XKeysymToString(data.keysyms[KEY_THROW]),
 	  XKeysymToString(data.keysyms[KEY_QUIT]));
@@ -654,6 +658,9 @@ extern FUNCANIMATE(animate_game, next)
 	      /*{{{  game frame*/
 	      {
 		then = (PROTOVOID(*))animate_game;
+                if(data.music && global.state < 4)
+                  sound_music(global.state == 2 ? MUSIC_PRIZE :
+                      global.state == 3 ? MUSIC_CHASE : MUSIC_GARDEN);
 		age_scores();
 		/*{{{  den?*/
 		while(cell_y != CELLS_DOWN)
@@ -794,6 +801,8 @@ extern FUNCANIMATE(animate_game, next)
 				  monster.list[0].offset.y + CELL_HEIGHT);
 			  }
 			/*}}}*/
+			sound_music(MUSIC_OFF);
+			sound_play(monster.list[0].shot ? FX_DEATH : FX_CLEAR);
 			global.state = 4;
 			color_set(BACKGROUND_NORMAL);
 		      }
@@ -876,6 +885,7 @@ extern FUNCANIMATE(animate_game, next)
 		  {
 		    history.ending |= 2;
 		    state = 3;
+                    sound_play(FX_LIFE);
 		    then = animate_extra_life((PROTOVOID(*))animate_game);
 		  }
 		  /*}}}*/
@@ -944,7 +954,10 @@ extern FUNCANIMATE(animate_game, next)
 	  {
 	    state = 4;
 	    if(!(global.screen % HISTORY_SHOW))
-	      then = animate_history((PROTOVOID(*))animate_game);
+              {
+                sound_play(FX_HISTORY);
+                then = animate_history((PROTOVOID(*))animate_game);
+              }
 	    break;
 	  }
 	  /*}}}*/
@@ -956,6 +969,7 @@ extern FUNCANIMATE(animate_game, next)
 	    global.state = 0;
 	    state = 2;
 	    global.screen++;
+            sound_play(FX_START);
 	    new_board();
 	    global.difficulty = global.screen + DIFFICULTY_PEDESTAL;
 	    monster.normals = global.screen >= 3 ?

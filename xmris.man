@@ -224,8 +224,11 @@ Draw each game pixel at its original size (1, the default) or as a 2 by 2
 block (2). The corresponding X resource is Scale.
 .TP
 .BR -sound ", " -nosound
-Enable or disable the rising eight-note cherry scale. The sound resource
-is true by default.
+Enable or disable all game audio. The sound resource is true by default.
+.TP
+.BR -music ", " -nomusic
+Enable or disable looping background music while retaining effects and short
+fanfares. The music resource is true by default.
 .TP
 .B -busywait
 Forces the game timing to be done by busy waiting, rather than with an

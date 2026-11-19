@@ -40,9 +40,12 @@ make
 ./xmris
 ```
 
-Use `./xmris -scale 2` to double the game window with crisp pixels. Cherry sounds are enabled by default. Set
+Use `./xmris -scale 2` to double the game window with crisp pixels. Game audio is enabled by default. Set
 `Xmris.sound: false` in your X resources for quiet play, or run `xmris -nosound`.
-Use `-sound` to enable audio for a single session.
+Use `-sound` to enable audio for a single session. For effects and fanfares
+without the looping soundtrack, use `-nomusic` or `Xmris.music: false`.
+The original tunes change when the center prize releases the drones and again
+when normal monsters speed up afterward.
 
 ### To Install
 ```

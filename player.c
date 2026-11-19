@@ -128,6 +128,7 @@ extern VOIDFUNC bounce_ball FUNCARGVOID
 	  }
 	  if(player.ball.state)
 	    {
+	      if(global.state < 4) sound_play(FX_THROW);
 	      player.ball.pixel.x = PIXELX(player.ball.cell.x,
 		  player.ball.offset.x + CELL_WIDTH / 2);
 	      player.ball.pixel.y = PIXELY(player.ball.cell.y,
@@ -625,7 +626,10 @@ extern VOIDFUNC bounce_ball FUNCARGVOID
       player.ball.pixel.x = monster.list[0].pixel.x + CELL_WIDTH / 2;
       player.ball.pixel.y = monster.list[0].pixel.y + CELL_HEIGHT / 2;
       if(!player.ball.count)
-	player.ball.state = 0;
+        {
+          player.ball.state = 0;
+          if(global.state < 4) sound_play(FX_RETURN);
+        }
       break;
     }
     /*}}}*/
@@ -731,7 +735,10 @@ extern VOIDFUNC bounce_ball FUNCARGVOID
 	    INRANGE(mptr->pixel.y, tl.y, br.y))
 	  {
 	    if(mptr->type == 4)
-	      player.ball.state = 0;
+              {
+                player.ball.state = 0;
+                if(global.state < 4) sound_play(FX_RETURN);
+              }
 	    else
 	      {
 		if(global.state == 2 || mptr->type == 2)
@@ -743,7 +750,10 @@ extern VOIDFUNC bounce_ball FUNCARGVOID
 		      player.thrown++;
 		  }
 		if(mptr->type < 6)
-		  mptr->shot = 1;
+                  {
+                    mptr->shot = 1;
+                    if(global.state < 4) sound_play(FX_HIT);
+                  }
 		else if(INRANGE(mptr->type, SPRITE_MRIS + 4, SPRITE_MRIS + 8))
 		  mptr->type -= 4;
 		player.ball.state = 2;
@@ -1010,6 +1020,7 @@ extern unsigned move_player FUNCARGVOID
 	    {
 	      unsigned  score;
 	    
+	      sound_play(FX_PRIZE);
 	      eaten = 1;
 	      history.prize |= 1;
 	      score = global.screen * (500 / SCORE_ROUND) + 500 / SCORE_ROUND;
