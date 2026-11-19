@@ -31,7 +31,7 @@ struct playback {
   unsigned row, ticks, clock;
   uint32_t phase[3];
 };
-static struct playback music, fanfare;
+static struct playback music, fanfare, apple_fall, apple_impact;
 static const struct tune *const themes[] = {NULL, &garden, &prize, &chase};
 
 static void begin_tune(struct playback *player, const struct tune *tune)
@@ -44,7 +44,7 @@ static void begin_tune(struct playback *player, const struct tune *tune)
 static int tune_sample(struct playback *player)
 {
   /* The score uses PSG attenuation steps of 2 dB. */
-  static const int gain[] = {1450, 1152, 915, 727};
+  static const int gain[] = {1450, 1152, 915, 727, 577, 459, 364, 289, 230, 183};
   const struct chord *row;
   int sum = 0;
   unsigned i;
@@ -77,13 +77,12 @@ static int tune_sample(struct playback *player)
 
 static const unsigned short throw_notes[] = {880, 659, 440};
 static const unsigned short hit[] = {784, 392, 196, 98};
-static const unsigned short crush[] = {165, 98, 73, 55};
 static const unsigned short recovered[] = {587, 1175};
 static const unsigned short bonus[] = {523, 659, 784, 1047};
 static const unsigned short death[] = {494, 466, 392, 311, 247, 196, 131};
 static const unsigned short life[] = {659, 784, 988, 1319};
 static const struct pattern cues[] = {
-  SCORE(throw_notes, 24), SCORE(hit, 35), SCORE(crush, 55), SCORE(recovered, 55),
+  SCORE(throw_notes, 24), SCORE(hit, 35), SCORE(recovered, 55),
   SCORE(bonus, 65), SCORE(death, 110), {0}, {0}, {0}, SCORE(life, 90)
 };
 static const unsigned short scale[] = {523, 587, 659, 698, 784, 880, 988, 1047};
@@ -131,7 +130,8 @@ static void mix_audio(void *unused, Uint8 *stream, int bytes)
   for (i = 0; i < bytes / (int)sizeof(*out); i++)
     {
       int background = fanfare.tune ? tune_sample(&fanfare) : tune_sample(&music);
-      out[i] = background + next_sample(&cherry, 7500, 0)
+      out[i] = background + tune_sample(&apple_fall) + tune_sample(&apple_impact)
+          + next_sample(&cherry, 7500, 0)
           + next_sample(&effect, 5800, 0) + next_sample(&jingle, 6200, 0);
     }
 }
@@ -143,6 +143,20 @@ static void start_voice(struct voice *v, const struct pattern *p)
   v->phase = 0;
 }
 
+/* All apples share the arcade fall channel. A fresh drop retriggers it;
+ * a landing silences it only when there are no other apples in flight. */
+void sound_apples(int started, int falling, int crushed)
+{
+  if (!device || (!started && falling && !crushed))
+    return;
+  SDL_LockAudioDevice(device);
+  if (started || !falling)
+    begin_tune(&apple_fall, falling ? &fall : NULL);
+  if (crushed)
+    begin_tune(&apple_impact, &sparkle);
+  SDL_UnlockAudioDevice(device);
+}
+
 void sound_play(enum sound_effect cue)
 {
   if (!device)
@@ -151,6 +165,9 @@ void sound_play(enum sound_effect cue)
   if (cue >= FX_DEATH) {
     const struct tune *score = cue == FX_START ? &opening :
         cue == FX_CLEAR ? &victory : cue == FX_HISTORY ? &interlude : NULL;
+    begin_tune(&apple_fall, NULL);
+    if (cue == FX_START)
+      begin_tune(&apple_impact, NULL);
     begin_tune(&fanfare, score);
     start_voice(&jingle, score ? NULL : &cues[cue]);
   } else {

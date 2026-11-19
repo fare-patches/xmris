@@ -350,9 +350,12 @@ extern VOIDFUNC move_apples FUNCARGVOID
   APPLE     *aptr;
   unsigned  i;
 
+  unsigned started = 0, falling = 0, landed = 0, crushed = 0;
+
   apple.moving = 0;
   for(aptr = apple.list, i = apple.apples; i--; aptr++)
     {
+      unsigned was_falling = aptr->state == 2;
       CELL      *cptr;
   
       cptr = BOARDCELL(aptr->cell.x, aptr->cell.y);
@@ -829,8 +832,20 @@ extern VOIDFUNC move_apples FUNCARGVOID
 	  }
 	  apple.moving |= aptr->state;
 	}
+      if(aptr->state == 2)
+        {
+          falling++;
+          started |= !was_falling;
+        }
+      else if(was_falling)
+        {
+          landed = 1;
+          crushed |= aptr->state == 3 && aptr->monsters != 0;
+        }
       aptr->push = 0;
     }
+  if(global.state < 4 && (started || landed))
+    sound_apples(started, falling, crushed);
   return;
 }
 /*}}}*/
@@ -910,7 +925,6 @@ FUNCARG((mptr),
     mptr->shot = 1;
   else
     {
-      if(global.state < 4) sound_play(FX_CRUSH);
       mptr->chew = 0;
       if(mptr->type < 2)
 	monster.normals--;
