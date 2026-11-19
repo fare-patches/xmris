@@ -3,6 +3,7 @@
 /*{{{  includes*/
 #include "xmris.h"
 #include "defmris.h"
+#include <X11/IntrinsicP.h> /* XtMoveWidget */
 #include <X11/Xaw/Form.h>
 #include <X11/Xaw/Paned.h>
 #include <X11/Xaw/Simple.h>
@@ -70,6 +71,24 @@ ARGSEP  XtPointer *data
     }
 }
 /*}}}*/
+/* The form fills the window manager's allocation. Keep the garden at
+ * its native pixel scale and distribute extra space between its edges. */
+static void center_garden(Widget form, XtPointer closure, XEvent *event,
+    Boolean *dispatch)
+{
+  Dimension width, height, border;
+  int spare_x, spare_y;
+
+  if(event->type != ConfigureNotify && event->type != MapNotify)
+    return;
+  XtVaGetValues(form, XtNwidth, &width, XtNheight, &height, (String)NULL);
+  XtVaGetValues(display.garden, XtNborderWidth, &border, (String)NULL);
+  spare_x = (int)width - WINDOW_WIDTH * data.pixel_scale - 2 * border;
+  spare_y = (int)height - WINDOW_HEIGHT * data.pixel_scale - 2 * border;
+  XtMoveWidget(display.garden, spare_x > 0 ? spare_x / 2 : 0,
+      spare_y > 0 ? spare_y / 2 : 0);
+}
+
 /*{{{  void create_widget()*/
 extern VOIDFUNC create_widget FUNCARGVOID
 /*
@@ -83,7 +102,10 @@ extern VOIDFUNC create_widget FUNCARGVOID
       display.toplevel, XtNdefaultDistance, (XtArgVal)0, (String)NULL);
   display.garden = XtVaCreateManagedWidget(&names[data.gender != False][1],
       simpleWidgetClass, display.form, XtNwidth, (XtArgVal)(WINDOW_WIDTH * data.pixel_scale),
-      XtNheight, (XtArgVal)(WINDOW_HEIGHT * data.pixel_scale), (String)NULL);
+      XtNheight, (XtArgVal)(WINDOW_HEIGHT * data.pixel_scale),
+      XtNleft, XawChainLeft, XtNright, XawChainLeft,
+      XtNtop, XawChainTop, XtNbottom, XawChainTop, (String)NULL);
+  XtAddEventHandler(display.form, StructureNotifyMask, False, center_garden, NULL);
   create_resources(display.garden);
   assert(!(VEL_X_FAST * FAST_STEPS * 2 % VEL_X));
   assert(!(VEL_Y_FAST * FAST_STEPS * 2 % VEL_Y));
