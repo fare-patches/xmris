@@ -221,7 +221,7 @@ install :: initialize
 	@#keep gnumake happy
 
 XCOMM xmris build
-NormalProgramTarget(xmris,$(MRISOBJS),$(DEPLIBS),$(LOCAL_LIBRARIES),)
+NormalProgramTarget(xmris,$(MRISOBJS),$(DEPLIBS),-lXrender $(LOCAL_LIBRARIES),)
 
 
 InstallProgramWithFlags(xmris,$(THEBINDIR),$(INSTMRISFLAGS))

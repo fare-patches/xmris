@@ -562,9 +562,7 @@ extern VOIDFUNC timer_wait FUNCARGVOID
 	  xnew = t;
 	}
       /*}}}*/
-      XDrawLine(display.display, display.window, GCN(GC_LOAD),
-	  xold, PIXELY(CELLS_DOWN, CELL_HEIGHT),
-	  xnew, PIXELY(CELLS_DOWN, CELL_HEIGHT));
+      present_load(xold, xnew);
       global.dilation = dilation;
       timer.start = timer.stop;
       timer.missed = 0;
@@ -594,9 +592,7 @@ extern VOIDFUNC timer_wait FUNCARGVOID
     {
       if(global.missed)
 	{
-	  XDrawPoint(display.display, display.window, GCN(GC_LOAD),
-	      (int)(WINDOW_WIDTH - global.missed),
-	      PIXELY(CELLS_DOWN, CELL_HEIGHT));
+	  present_load((int)(WINDOW_WIDTH - global.missed), (int)(WINDOW_WIDTH - global.missed));
 	  global.missed--;
 	}
     }
@@ -605,9 +601,7 @@ extern VOIDFUNC timer_wait FUNCARGVOID
       if(global.missed < WINDOW_WIDTH)
 	{
 	  global.missed++;
-	  XDrawPoint(display.display, display.window, GCN(GC_LOAD),
-	      (int)(WINDOW_WIDTH - global.missed),
-	      PIXELY(CELLS_DOWN, CELL_HEIGHT));
+	  present_load((int)(WINDOW_WIDTH - global.missed), (int)(WINDOW_WIDTH - global.missed));
 	}
     }
   /*}}}*/

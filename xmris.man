@@ -219,6 +219,10 @@ The game is known as xmris (eks mister iz), because the arcade game was masculin
 .br
 .ne 3
 .TP
+.BI "-scale " "1|2"
+Draw each game pixel at its original size (1, the default) or as a 2 by 2
+block (2). The corresponding X resource is Scale.
+.TP
 .B -busywait
 Forces the game timing to be done by busy waiting, rather than with an
 alarm timeout. Some systems have particularly inaccurate alarms, and

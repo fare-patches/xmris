@@ -18,7 +18,7 @@ I suppose sound was not generally available on Unix in 1992.
 
 On Ubuntu, I needed to install `xmkmf`, the Athena widgets and the standard 75dpi bitmap fonts:
 ```
-apt install -y xutils-dev libxaw7-dev xfonts-75dpi
+apt install -y xutils-dev libxaw7-dev libxrender-dev xfonts-75dpi
 ```
 
 If you want the fonts to work the same X11 session, you might additionally need to:
@@ -40,6 +40,8 @@ make
 ```
 ./xmris
 ```
+
+Use `./xmris -scale 2` to double the game window with crisp pixels.
 
 ### To Install
 ```
@@ -73,7 +75,7 @@ Maybe we need to install additional X packages on the server side?
 ## TODO
 
 If you want to make this game better, have an AI add the following features:
-* [ ] Scaling the pictures, either to full screen, or to an integer factor for the pixels.
+* [ ] Fullscreen scaling.
 * [ ] Adding the do re mi fa sol la si do sounds as you eat cherries as in Mr Do!
 * [ ] Porting to other platforms beside X11.
 * [ ] Running in a TEE from a deterministic build so as to maintain

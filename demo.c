@@ -79,9 +79,8 @@ static FUNCANIMATE(animate_board, next)
 	    global.screen = board.boards;
 	  global.pressed &= ~0xF;
 	  new_board();
-	  XCopyArea(display.display, display.copy, display.window,
-	      GCN(GC_COPY), BORDER_LEFT, BORDER_TOP,
-	      BOARD_WIDTH, BOARD_HEIGHT, BORDER_LEFT, BORDER_TOP);
+	  present_area(BORDER_LEFT, BORDER_TOP,
+	      BOARD_WIDTH, BOARD_HEIGHT);
 	  add_background(PIXELX(8, -GAP_WIDTH), PIXELY(-1, 0),
 	      (CELL_WIDTH + GAP_WIDTH) * 4 + GAP_WIDTH, CELL_HEIGHT);
 	}

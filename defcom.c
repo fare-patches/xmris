@@ -218,6 +218,7 @@ XrmOptionDescRec options[] =
   {"-username",".username",     XrmoptionNoArg, (XtPointer)XtEyes},
   {"-realname",".username",     XrmoptionNoArg, (XtPointer)XtEno},
   {"-static",  ".static",       XrmoptionNoArg, (XtPointer)XtEyes},
+  {"-scale", ".scale", XrmoptionSepArg, (XtPointer)NULL},
   {"-busywait", ".busywait",    XrmoptionNoArg, (XtPointer)XtEyes},
 #endif /* XMRED */
   {NULL}
@@ -253,6 +254,8 @@ XtResource resources[] =
       XtOffsetOf(DATA, username), XtRImmediate, (XtPointer)False},
   {"static", "Static", XtRBoolean, sizeof(Boolean),
       XtOffsetOf(DATA, nodynamic), XtRImmediate, (XtPointer)False},
+  {"scale", "Scale", XtRInt, sizeof(int),
+      XtOffsetOf(DATA, pixel_scale), XtRImmediate, (XtPointer)1},
   {"busywait", "Busywait", XtRBoolean, sizeof(Boolean),
       XtOffsetOf(DATA, busywait), XtRImmediate, (XtPointer)False},
 #endif /* XMRED */
@@ -385,6 +388,7 @@ HELP CONST help[] =
   {"Remove user's scores",          "-remove",    "", "<name>"},
   {"Do not open display",           "+display", "", ""},
   {"Store date format change",      "-format",    "", ""},
+  {"Game pixel scale", "-scale", "Scale:", "<1|2>"},
   {"Force busywaiting",             "-busywait",  "Busywait:yes", ""},
 #endif /* XMRED */
   {NULL}

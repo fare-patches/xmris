@@ -2,6 +2,50 @@
 /* RCS $Id: draw.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 #include "xmris.h"
 #include "time.h"
+#include <X11/extensions/Xrender.h>
+
+static Picture source_picture, window_picture;
+
+void init_presentation(void)
+{
+  XRenderPictFormat *format;
+  XFixed half = XDoubleToFixed(0.5);
+  XTransform transform = {{{half, 0, 0}, {0, half, 0}, {0, 0, XDoubleToFixed(1)}}};
+  int major, minor;
+
+  if(data.pixel_scale == 1)
+    return;
+  if(!XRenderQueryVersion(display.display, &major, &minor) ||
+      (major == 0 && minor < 6))
+    XtError("-scale 2 requires X Render 0.6 or later");
+  format = XRenderFindVisualFormat(display.display, display.visual);
+  if(!format)
+    XtError("-scale 2 requires an X Render format for the selected visual");
+  source_picture = XRenderCreatePicture(display.display, display.copy, format, 0, NULL);
+  window_picture = XRenderCreatePicture(display.display, display.window, format, 0, NULL);
+  XRenderSetPictureTransform(display.display, source_picture, &transform);
+  XRenderSetPictureFilter(display.display, source_picture, FilterNearest, NULL, 0);
+}
+
+/* All game coordinates and off-screen pixmaps stay at their native size. */
+void present_area(int x, int y, unsigned width, unsigned height)
+{
+  if(data.pixel_scale == 1)
+    XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
+        x, y, width, height, x, y);
+  else if(width && height)
+    XRenderComposite(display.display, PictOpSrc, source_picture, None, window_picture,
+        2 * x, 2 * y, 0, 0, 2 * x, 2 * y, 2 * width, 2 * height);
+}
+
+void present_load(int left, int right)
+{
+  int scale = data.pixel_scale;
+  XFillRectangle(display.display, display.window, GCN(GC_LOAD),
+      left * scale, PIXELY(CELLS_DOWN, CELL_HEIGHT) * scale,
+      (right - left + 1) * scale, scale);
+}
+
 /*{{{  board load error masks*/
 #define ERROR_FILL              0x0001
 #define ERROR_BACKGROUND        0x0002
@@ -171,10 +215,8 @@ extern FUNCANIMATE(animate_zoom, next)
     /*{{{  end*/
     {
       if(!demo && global.count < BOARD_HEIGHT / (2 * ZOOM_Y))
-	XCopyArea(display.display, display.copy, display.window,
-	    GCN(GC_COPY), BORDER_LEFT + 1, BORDER_TOP + 1,
-	    BOARD_WIDTH - 2, BOARD_HEIGHT - 2,
-	    BORDER_LEFT + 1, BORDER_TOP + 1);
+	present_area(BORDER_LEFT + 1, BORDER_TOP + 1,
+	    BOARD_WIDTH - 2, BOARD_HEIGHT - 2);
       if(!demo && global.throw == 1)
 	global.throw = 2;
       assert(rts != (PROTOANIMATE((*)))NULL);
@@ -188,22 +230,14 @@ extern FUNCANIMATE(animate_zoom, next)
       
       x = global.count * ZOOM_X;
       y = global.count * ZOOM_Y;
-      XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
-	  CENTER_X - ZOOM_X - (int)x, CENTER_Y - ZOOM_Y - (int)y,
-	  ZOOM_X, 2 * y + 2 * ZOOM_Y,
-	  CENTER_X - ZOOM_X - (int)x, CENTER_Y - ZOOM_Y - (int)y);
-      XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
-	  CENTER_X + (int)x, CENTER_Y - ZOOM_Y - (int)y,
-	  ZOOM_X, 2 * y + 2 * ZOOM_Y,
-	  CENTER_X + (int)x, CENTER_Y - ZOOM_Y - (int)y);
-      XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
-	  CENTER_X - (int)x, CENTER_Y - ZOOM_Y - (int)y,
-	  2 * x, ZOOM_Y,
-	  CENTER_X - (int)x, CENTER_Y - ZOOM_Y - (int)y);
-      XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
-	  CENTER_X - (int)x, CENTER_Y + (int)y,
-	  2 * x, ZOOM_Y,
-	  CENTER_X - (int)x, CENTER_Y + (int)y);
+      present_area(CENTER_X - ZOOM_X - (int)x, CENTER_Y - ZOOM_Y - (int)y,
+	  ZOOM_X, 2 * y + 2 * ZOOM_Y);
+      present_area(CENTER_X + (int)x, CENTER_Y - ZOOM_Y - (int)y,
+	  ZOOM_X, 2 * y + 2 * ZOOM_Y);
+      present_area(CENTER_X - (int)x, CENTER_Y - ZOOM_Y - (int)y,
+	  2 * x, ZOOM_Y);
+      present_area(CENTER_X - (int)x, CENTER_Y + (int)y,
+	  2 * x, ZOOM_Y);
       global.count++;
     }
     /*}}}*/
@@ -1443,35 +1477,27 @@ extern VOIDFUNC refresh_window FUNCARGVOID
       
       x = global.count * ZOOM_X;
       y = global.count * ZOOM_Y;
-      XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
-	  0, 0, WINDOW_WIDTH, BORDER_TOP + 1, 0, 0);
-      XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
-	  0, BORDER_TOP + BOARD_HEIGHT - 1, WINDOW_WIDTH, BORDER_BOTTOM + 1,
-	  0, BORDER_TOP + BOARD_HEIGHT - 1);
+      present_area(0, 0,
+	  WINDOW_WIDTH, BORDER_TOP + 1);
+      present_area(0, BORDER_TOP + BOARD_HEIGHT - 1,
+	  WINDOW_WIDTH, BORDER_BOTTOM + 1);
       if(BORDER_LEFT > 0)
-	XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
-	    0, BORDER_TOP, BORDER_LEFT + 1, BOARD_HEIGHT, 0, BORDER_TOP);
+	present_area(0, BORDER_TOP,
+	    BORDER_LEFT + 1, BOARD_HEIGHT);
       if(BORDER_RIGHT > 0)
-	XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
-	    BORDER_LEFT + BOARD_WIDTH - 1, BORDER_TOP, BORDER_RIGHT + 1,
-	    BOARD_HEIGHT, BORDER_LEFT + BOARD_WIDTH - 1, BORDER_TOP);
-      XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
-	  CENTER_X - (int)x, CENTER_Y - (int)y, 2 * x, 2 * y,
-	  CENTER_X - (int)x, CENTER_Y - (int)y);
+	present_area(BORDER_LEFT + BOARD_WIDTH - 1, BORDER_TOP,
+	    BORDER_RIGHT + 1, BOARD_HEIGHT);
+      present_area(CENTER_X - (int)x, CENTER_Y - (int)y,
+	  2 * x, 2 * y);
     }
   else
-    XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
-	0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
+    present_area(0, 0,
+	WINDOW_WIDTH, WINDOW_HEIGHT);
   if(global.missed)
-    XDrawLine(display.display, display.window, GCN(GC_LOAD),
-	WINDOW_WIDTH - (int)global.missed,
-	PIXELY(CELLS_DOWN, CELL_HEIGHT),
-	WINDOW_WIDTH, PIXELY(CELLS_DOWN, CELL_HEIGHT));
+    present_load(WINDOW_WIDTH - (int)global.missed, WINDOW_WIDTH);
   if(global.dilation != FRAME_SCALE)
-    XDrawLine(display.display, display.window, GCN(GC_LOAD),
-	0, PIXELY(CELLS_DOWN, CELL_HEIGHT),
-	WINDOW_WIDTH - (int)((unsigned long)WINDOW_WIDTH * FRAME_SCALE /
-	    global.dilation), PIXELY(CELLS_DOWN, CELL_HEIGHT));
+    present_load(0, WINDOW_WIDTH - (int)((unsigned long)WINDOW_WIDTH * FRAME_SCALE /
+	    global.dilation));
   return;
 }
 /*}}}*/
@@ -1782,9 +1808,8 @@ extern VOIDFUNC show_updates FUNCARGVOID
     BACKGROUND *bptr;
 	
     for(bptr = update.back.list, i = update.back.backs; i--; bptr++)
-      XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
-	  bptr->place.x, bptr->place.y, bptr->size.x, bptr->size.y,
-	  bptr->place.x, bptr->place.y);
+      present_area(bptr->place.x, bptr->place.y,
+	  bptr->size.x, bptr->size.y);
   }
   /*}}}*/
   /*{{{  scores to window*/
@@ -1793,9 +1818,8 @@ extern VOIDFUNC show_updates FUNCARGVOID
     SCORE     *sptr;
 	
     for(sptr = update.score.list, i = update.score.scores; i--; sptr++)
-      XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
-	  sptr->place.x, sptr->place.y, DIGIT_WIDTH * 4, DIGIT_HEIGHT,
-	  sptr->place.x, sptr->place.y);
+      present_area(sptr->place.x, sptr->place.y,
+	  DIGIT_WIDTH * 4, DIGIT_HEIGHT);
   }
   /*}}}*/
   /*{{{  delete monsters*/

@@ -77,11 +77,13 @@ extern VOIDFUNC create_widget FUNCARGVOID
  * sets visual and stuff for the toplevel widget
  */
 {
+  if(data.pixel_scale != 1 && data.pixel_scale != 2)
+    XtError("-scale must be 1 or 2");
   display.form = XtVaCreateManagedWidget("form", formWidgetClass,
       display.toplevel, XtNdefaultDistance, (XtArgVal)0, (String)NULL);
   display.garden = XtVaCreateManagedWidget(&names[data.gender != False][1],
-      simpleWidgetClass, display.form, XtNwidth, (XtArgVal)WINDOW_WIDTH,
-      XtNheight, (XtArgVal)WINDOW_HEIGHT, (String)NULL);
+      simpleWidgetClass, display.form, XtNwidth, (XtArgVal)(WINDOW_WIDTH * data.pixel_scale),
+      XtNheight, (XtArgVal)(WINDOW_HEIGHT * data.pixel_scale), (String)NULL);
   create_resources(display.garden);
   assert(!(VEL_X_FAST * FAST_STEPS * 2 % VEL_X));
   assert(!(VEL_Y_FAST * FAST_STEPS * 2 % VEL_Y));

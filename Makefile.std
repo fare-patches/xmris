@@ -593,7 +593,7 @@ install :: initialize
 
 xmris: $(MRISOBJS) $(DEPLIBS)
 	$(RM) $@
-	$(CCLINK) -o $@ $(LDOPTIONS) $(MRISOBJS) $(LOCAL_LIBRARIES) $(LDLIBS)  $(EXTRA_LOAD_FLAGS)
+	$(CCLINK) -o $@ $(LDOPTIONS) $(MRISOBJS) -lXrender $(LOCAL_LIBRARIES) $(LDLIBS)  $(EXTRA_LOAD_FLAGS)
 
 clean::
 	$(RM) xmris

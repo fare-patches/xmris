@@ -291,6 +291,7 @@ typedef struct Data
   Boolean username; /* use username of user */
   Boolean nodynamic; /* don't take advantage of dynamic visuals */
   Boolean nodisplay; /* don't open the display, even to get X resources */
+  int pixel_scale;
   Boolean busywait; /* do busy waiting */
 #endif /* XMRED */
   Boolean gender;   /* he or she? */

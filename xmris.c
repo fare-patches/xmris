@@ -513,10 +513,8 @@ static FUNCANIMATE(animate_pause, next)
 	  CENTER_X - (int)(length * font.width / 2),
 	  PIXELY(CELLS_DOWN, CELL_HEIGHT / 2) + font.center,
 	  buffer, (int)length);
-      XCopyArea(display.display, display.copy, display.window, GCN(GC_COPY),
-	  BORDER_LEFT + 1, PIXELY(CELLS_DOWN, 0),
-	  BOARD_WIDTH - 2, CELL_HEIGHT,
-	  BORDER_LEFT + 1, PIXELY(CELLS_DOWN, 0));
+      present_area(BORDER_LEFT + 1, PIXELY(CELLS_DOWN, 0),
+	  BOARD_WIDTH - 2, CELL_HEIGHT);
       face = monster.list[0].face;
       monster.list[0].cycle = MONSTER_CYCLES * 3;
       cptr = BOARDCELL(monster.list[0].cell.x, monster.list[0].cell.y);
@@ -1307,6 +1305,7 @@ ARGSEP  char CONST **argv
   printf("Garden is 0x%lx\n", (long)XtWindow(display.garden));
 #endif /* DEBUGEVENTLOOP */
   display.window = XtWindow(display.garden);
+  init_presentation();
   timer_open();
   animate = animate_demo;
   while(!global.quit)
