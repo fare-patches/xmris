@@ -69,8 +69,8 @@ on a garden. Cherries may be located anywhere on the board.
 This controls where the initial path is. Each location on the board consists
 of a centre and four edges. Depending on the exact location of the pointer,
 you will select either the centre, or an edge. Filling a path will place a
-random apple in the filled location. The four locations immediately below the
-'EXTRA' letters must be clear.
+random apple in the filled location. The four locations immediately below
+the 'EXTRA' letters must be clear.
 .TP
 .B Player
 This controls where the player starts from. There must be exactly one

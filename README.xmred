@@ -99,7 +99,8 @@ Games and Demos                                          XMRED(6)
           Depending on the exact location  of  the  pointer,  you
           will  select  either  the centre, or an edge. Filling a
           path will place a random apple in the filled  location.
-          The four locations immediately below the
+          The four locations immediately below the 'EXTRA' letters
+          must be clear.
 
      PPPPllllaaaayyyyeeeerrrr
           This controls where the player starts from. There  must
