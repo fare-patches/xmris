@@ -34,6 +34,7 @@ XCOMM
 EXTRACCOPTIONS = -Wall -Wpointer-arith -Wno-write-strings
 #endif /* HasGcc */
 #if defined(LinuxArchitecture)
+PLATFORM_DEFINES = -D_DEFAULT_SOURCE
 #define STATICDEBUG
 XCOMM XINTL=-lXintl
 #else
@@ -111,7 +112,7 @@ FONT = thefont
 #endif
 #endif
 
-DEFINES = $(EXTRACCOPTIONS) -DFONT_NAME='$(FONT)' $(NDEBUG) \
+DEFINES = $(PLATFORM_DEFINES) $(EXTRACCOPTIONS) -DFONT_NAME='$(FONT)' $(NDEBUG) \
 	$(TIME) $(KNR) -DSCROLLBARBUGFIX
 LOCAL_LIBRARIES = $(XAWLIB) $(XTOOLLIB) $(XMULIB) $(XINTL) $(XLIB) $(MATHSLIB)
 DEPLIBS = $(DEPXLIB)
