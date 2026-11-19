@@ -70,18 +70,19 @@ ARGSEP  time_t    then
  * check to see if the score is now too old
  */
 {
-  struct tm *ptr;
-  int now_day, then_day;
-  int now_hour, then_hour;
-  
-  ptr = localtime(&now);
-  now_day = ptr->tm_yday;
-  now_hour = ptr->tm_hour;
-  ptr = localtime(&then);
-  then_day = ptr->tm_yday;
-  then_hour = ptr->tm_hour;
-  return !(now_day == then_day || (now_day == then_day + 1 &&
-      then_hour >= 21 && now_hour < 12));
+  struct tm today, played;
+
+  if(!localtime_r(&now, &today) || !localtime_r(&then, &played))
+    return 1;
+  if(today.tm_year == played.tm_year && today.tm_yday == played.tm_yday)
+    return 0;
+  if(today.tm_hour >= 12 || played.tm_hour < 21)
+    return 1;
+  today.tm_mday--;
+  today.tm_hour = 12;
+  today.tm_isdst = -1;
+  return mktime(&today) == (time_t)-1 || today.tm_year != played.tm_year ||
+      today.tm_yday != played.tm_yday;
 }
 /*}}}*/
 /*{{{  void file_changed(name)*/
@@ -388,6 +389,7 @@ FUNCARG((sptr),
   
   memcpy(&new, sptr, sizeof(new));
   ptr = ctime(&new.stamp);
+  if(!ptr) return 0;
   memcpy(&new.name[0], &ptr[11], 5);
   memcpy(&new.name[5], &ptr[7], 3);
   memcpy(&new.name[8], &ptr[3], 5);
