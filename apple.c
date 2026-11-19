@@ -802,7 +802,8 @@ extern VOIDFUNC move_apples FUNCARGVOID
 			aptr->pixel.x + CELL_WIDTH / 2,
 			aptr->pixel.y + (int)(apple_sizes[4].size.y / 2));
 		  if(!aptr->offset.x && !aptr->offset.y && !global.diamond &&
-		      global.state != 4 && chaotic() < DIAMOND_PROB)
+		      global.state != 4 && !chaotic() &&
+                      (!data.diamond_mask || !(chaotic() & data.diamond_mask)))
 		    {
 		      global.diamond = 1;
 		      spawn_monster(1, 6, 1, 1, aptr->cell.x, aptr->cell.y,

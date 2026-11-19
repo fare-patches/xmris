@@ -955,7 +955,7 @@ extern FUNCANIMATE(animate_game, next)
 		state = 1;
 		timer_set(FRAME_RATE, TIMING_ON);
 		global.count = SCORE_SHOW;
-		if(global.diamond < 3)
+		if(data.diamond_mask || global.diamond < 3)
 		  global.diamond = 0;
 		/*{{{  initialize stuff*/
 		{

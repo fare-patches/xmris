@@ -292,6 +292,8 @@ typedef struct Data
   Boolean nodynamic; /* don't take advantage of dynamic visuals */
   Boolean nodisplay; /* don't open the display, even to get X resources */
   String scale_option;
+  String diamond_difficulty;
+  unsigned diamond_mask; /* second random byte: easy 1, hard 7, classic 0 */
   int pixel_scale; /* current presentation scale */
   Boolean sound, music;
   Boolean busywait; /* do busy waiting */

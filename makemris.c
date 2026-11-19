@@ -372,6 +372,16 @@ ARGSEP  String  *argv
 	    /* EMPTY */;
 	  XtGetApplicationResources(display.toplevel, (XtPointer)&data,
 	      resources, (Cardinal)(ptr - resources), (Arg *)NULL, 0);
+          if(!strcmp(data.diamond_difficulty, "classic"))
+            data.diamond_mask = 0;
+          else if(!strcmp(data.diamond_difficulty, "hard"))
+            data.diamond_mask = 7;
+          else
+            {
+              data.diamond_mask = 1;
+              if(strcmp(data.diamond_difficulty, "easy"))
+                XtAppWarning(display.context, "unknown diamondDifficulty; using easy");
+            }
 	  gettoplevelresources();
 	  XtVaSetValues(display.toplevel,
 	      XtNtitle, (XtArgVal)names[data.gender != False],

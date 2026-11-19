@@ -87,6 +87,11 @@ or run `xmris -nosound`.
 Use `-sound` to enable audio for a single session.
 For effects and fanfares without the looping soundtrack,
 use `-nomusic` or `Xmris.music: false`.
+
+`Xmris.diamondDifficulty` controls the chance that an eligible split apple
+reveals a diamond. The default, `easy`, gives a 1 in 512 chance. Use `hard`
+for 1 in 2048. Both allow another diamond after collecting one. The historical
+`classic` setting gives a 1 in 256 chance and allows one collection per game.
 In xmris, the music accelerates when the normal monsters speed up;
 it changes when the center prize releases the drones.
 

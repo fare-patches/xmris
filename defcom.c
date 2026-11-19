@@ -260,6 +260,8 @@ XtResource resources[] =
       XtOffsetOf(DATA, nodynamic), XtRImmediate, (XtPointer)False},
   {"scale", "Scale", XtRString, sizeof(String),
       XtOffsetOf(DATA, scale_option), XtRString, (XtPointer)"auto"},
+  {"diamondDifficulty", "DiamondDifficulty", XtRString, sizeof(String),
+      XtOffsetOf(DATA, diamond_difficulty), XtRString, (XtPointer)"easy"},
   {"music", "Music", XtRBoolean, sizeof(Boolean),
       XtOffsetOf(DATA, music), XtRImmediate, (XtPointer)True},
   {"sound", "Sound", XtRBoolean, sizeof(Boolean),

@@ -118,7 +118,6 @@
 #define DIAMOND_IMAGES    3
 #define DIAMOND_CYCLES    2
 /*{{{  diamond stuff*/
-#define DIAMOND_PROB      1     /* chance of apple turning to diamond */
 #define DIAMOND_VEL_Y     ((CELL_HEIGHT + GAP_HEIGHT) / 4)
 #define DIAMOND_DELAY     (20 * FRAMES_PER_SECOND)
 #define DIAMOND_GHOSTING  (5 * FRAMES_PER_SECOND)
