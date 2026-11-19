@@ -52,6 +52,13 @@ void game_keypress(KeySym keysym)
 {
   unsigned ix;
   global.key = keysym;
+  if (in_attract_mode && global.state != MODE_KEY_DEF) {
+    const char *name = portable_key_name(keysym);
+    if (name && !strcmp(name,"F1")) {
+      global.pressed |= 1 << KEY_KEYBOARD;
+      return;
+    }
+  }
   if(global.state != MODE_KEY_DEF)
     for(ix = KEYS; ix--;)
       if(keysym == data.keysyms[ix])

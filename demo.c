@@ -9,6 +9,7 @@ static char CONST *table_names[2] = {"Roll of honour", "Today's contenders"};
 /*{{{  prototypes*/
 static PROTOANIMATE(animate_board);
 static PROTOANIMATE(animate_def_keys);
+static PROTOANIMATE(animate_options);
 static PROTOANIMATE(animate_keys);
 static PROTOANIMATE(animate_name);
 static PROTOANIMATE(animate_score);
@@ -208,163 +209,82 @@ static FUNCANIMATE(animate_board, next)
   return then;
 }
 /*}}}*/
-/*{{{  ANIMATE animate_def_keys(next)*/
-static FUNCANIMATE(animate_def_keys, next)
-/*
- * Alter the control keys. This is a bit weird, compared to the other
- * animate functions, 'cos there is no timeout on it. It's entirely
- * driven by the user pressing enough keys.
- * Don't let the user define one key to two functions.
- */
-{
-  static PROTOANIMATE((*rts));
-  PROTOVOID(*then);
-  
-  then = (PROTOVOID(*))animate_def_keys;
-  if(next)
-    /*{{{  start*/
-    {
-      unsigned  ix;
-      
-      rts = (PROTOANIMATE((*)))next;
-      global.state = MODE_KEY_DEF;
-      global.key = NoSymbol;
-      monster.monsters = 0;
-      apple.apples = 0;
-      update.back.backs = 0;
-      update.score.scores = 0;
-      player.ball.state = 0;
-      player.ball.count = 16;
-      player.old_ball.state = 0;
-      player.old_ball.count = 16;
-      video_fill(display.back, GCN(GC_CLEAR),
-    	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-      back_mris(0);
-      monster.den = 0;
-      monster.delay = 0;
-      while(!strchr(title_text[monster.delay].text, '%'))
-    	{
-    	  back_title(&title_text[monster.delay], monster.delay);
-    	  monster.delay++;
-    	}
-      for(ix = monster.delay; strchr(title_text[ix + 1].text, '%'); ix++)
-    	back_title(&title_text[ix], ix);
-      video_copy(display.back, display.copy, GCN(GC_COPY),
-    	  0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, 0);
-      global.count = 0;
-    }
-    /*}}}*/
-  else
-    /*{{{  start again*/
-    {
-      TITLE CONST *tptr;
-      unsigned  lookup;
-      KeySym    key;
-      
-      tptr = &title_text[monster.delay + global.count];
-      key = global.key;
-      if(key == data.keysyms[KEY_THROW])
-    	key = data.keysyms[tptr->ix];
-      for(lookup = 0; lookup != KEYS; lookup++)
-    	if((monster.den & 1 << lookup) && data.keysyms[lookup] == key)
-    	  break;
-      if(lookup == KEYS)
-    	{
-    	  data.keysyms[tptr->ix] = key;
-    	  monster.den |= 1 << tptr->ix;
-          video_fill(display.back, GCN(GC_CLEAR),
-    	      0, PIXELY(monster.delay + global.count, 0),
-    	      WINDOW_WIDTH, CELL_HEIGHT);
-    	  back_title(tptr, monster.delay + global.count);
-          video_copy(display.back, display.copy,
-    	      GCN(GC_COPY), 0, PIXELY(monster.delay + global.count, 0),
-    	      WINDOW_WIDTH, CELL_HEIGHT,
-    	      0, PIXELY(monster.delay + global.count, 0));
-    	  while(lookup--)
-    	    if(!(monster.den & 1 << lookup) && data.keysyms[lookup] == key)
-    	      {
-    		unsigned  ix;
-    		
-    		for(ix = monster.delay; title_text[ix].ix != lookup; ix++)
-    		  /* EMPTY */;
-                video_fill(display.back, GCN(GC_CLEAR),
-    		    CENTER_X + (font.width + 1) / 2, PIXELY(ix, 0),
-    		    WINDOW_WIDTH / 2, CELL_HEIGHT);
-                video_copy(display.back, display.copy,
-    		    GCN(GC_COPY), CENTER_X + (font.width + 1) / 2,
-    		    PIXELY(ix, 0), WINDOW_WIDTH / 2,
-    		    CELL_HEIGHT, CENTER_X + (font.width + 1) / 2,
-    		    PIXELY(ix, 0));
-    		monster.den |= 1 << lookup;
-    	      }
-    	  global.count++;
-    	}
-    }
-    /*}}}*/
-  global.pause = 0;
-  if(global.count < KEYS)
-    /*{{{  animate*/
-    {
-      /*{{{  help line*/
-      {
-      	TITLE CONST *tptr;
-      	char    buffer[49];
-      	size_t  length;
-      	    
-        video_fill(display.back, GCN(GC_CLEAR),
-      	    0, PIXELY(CELLS_DOWN - 1, 0), WINDOW_WIDTH,
-      	    CELL_HEIGHT * 2 + GAP_HEIGHT);
-      	strcpy(buffer, "Press new ");
-      	tptr = &title_text[monster.delay + global.count];
-      	strncat(buffer, tptr->text, strchr(tptr->text, ' ') - tptr->text);
-      	strcat(buffer, " key");
-      	length = strlen(buffer);
-      	assert(length < sizeof(buffer));
-        video_opaque_text(display.back, GCN(GC_TEXT),
-      	    CENTER_X - (int)(length * font.width / 2),
-      	    PIXELY(CELLS_DOWN - 1, CELL_HEIGHT / 2) + font.center,
-      	    buffer, (int)length);
-      	if(!(monster.den & 1 << tptr->ix))
-      	  {
-      	    sprintf(buffer, "%s for current binding",
-                key_name(data.keysyms[KEY_THROW]));
-      	    length = strlen(buffer);
-      	    assert(length < sizeof(buffer));
-            video_opaque_text(display.back, GCN(GC_TEXT),
-      		CENTER_X - (int)(length * font.width / 2),
-      		PIXELY(CELLS_DOWN, CELL_HEIGHT / 2) + font.center,
-      		buffer, (int)length);
-      	  }
-        video_copy(display.back, display.copy, GCN(GC_COPY),
-      	    0, PIXELY(CELLS_DOWN - 1, 0), WINDOW_WIDTH,
-      	    CELL_HEIGHT * 2 + GAP_HEIGHT, 0, PIXELY(CELLS_DOWN - 1, 0));
-      }
-      /*}}}*/
-      refresh_window();
-      global.key = NoSymbol;
-    }
-    /*}}}*/
-  else
-    /*{{{  end*/
-    {
-      global.pressed = 0;
-      global.throw = 0;
-      if (!options_save(3)) perror("saving key bindings");
-      assert(rts != (PROTOANIMATE((*)))NULL);
-      then = (*rts)((PROTOVOID(*))NULL);
-    }
-    /*}}}*/
-  return then;
-}
-/*}}}*/
-/* Use the key-definition event loop so the menu also waits quietly. */
 static int menu_save_ok = 1;
+
+static void controls_line(int y, const char *line)
+{
+  video_text(display.back, GCN(GC_TEXT), 20, y, line, strlen(line));
+}
+
+static FUNCANIMATE(animate_def_keys, next)
+{
+  static KeySym pending[KEYS];
+  static int selected, capturing;
+  static const char *message;
+  static const char *const labels[] = {
+    "Up","Down","Left","Right","Throw","Pause","Quit","Iconize","Options",
+    "Restore defaults","Save and return"
+  };
+  const char *name = next ? NULL : portable_key_name(global.key);
+  if (next) {
+    memcpy(pending,data.keysyms,sizeof(pending));
+    selected = capturing = 0;
+    message = NULL;
+    global.state = MODE_KEY_DEF;
+  } else if (name) {
+    if (!strcmp(name,"Escape")) {
+      if (!capturing) return animate_options((PROTOVOID(*))animate_demo);
+      capturing = 0;
+      message = NULL;
+    } else if (capturing) {
+      message = NULL;
+      if (!strcmp(name,"F1") || !strcmp(name,"F11"))
+        message = "Reserved key. Choose another.";
+      for (int i=0;i<KEYS;++i)
+        if (i!=selected && pending[i]==global.key)
+          message = "Already assigned. Choose another.";
+      if (!message) {
+        pending[selected] = global.key;
+        capturing = 0;
+      }
+    } else if (!strcmp(name,"Up")) selected=(selected+KEYS+1)%(KEYS+2);
+    else if (!strcmp(name,"Down")) selected=(selected+1)%(KEYS+2);
+    else if (!strcmp(name,"Return")) {
+      message = NULL;
+      if (selected<KEYS) capturing=1;
+      else if (selected==KEYS) {
+        default_bindings(pending);
+        message="Defaults ready. Select Save to apply.";
+      } else {
+        memcpy(data.keysyms,pending,sizeof(pending));
+        menu_save_ok=options_save(3);
+        return animate_options((PROTOVOID(*))animate_demo);
+      }
+    }
+  }
+  global.key=NoSymbol;
+  video_fill(display.back,GCN(GC_CLEAR),0,0,WINDOW_WIDTH,WINDOW_HEIGHT);
+  controls_line(46,"Controls");
+  for (int i=0;i<KEYS+2;++i) {
+    char line[96];
+    const char *binding=i<KEYS ? key_name(pending[i]) : "";
+    snprintf(line,sizeof(line),"%c %-18s %.15s",i==selected ? '>' : ' ',
+        labels[i],binding ? binding : "?");
+    controls_line(90+i*29,line);
+  }
+  controls_line(445,capturing ? "Press a new key. Esc cancels." :
+      "Up/Down: select   Enter: choose");
+  controls_line(480,message ? message : "Esc: discard edits and return");
+  video_copy(display.back,display.copy,GCN(GC_COPY),0,0,WINDOW_WIDTH,WINDOW_HEIGHT,0,0);
+  refresh_window();
+  return (PROTOVOID(*))animate_def_keys;
+}
 
 static FUNCANIMATE(animate_options, next)
 {
   static int selected;
   const char *labels[] = {"Sound effects", "Background music",
-                          "Diamond difficulty", "Change keys", "Done"};
+                          "Diamond difficulty", "Controls", "Done"};
   const char *values[] = {data.effects ? "On" : "Off", data.music ? "On" : "Off",
       data.diamond_mask == 0 ? "Classic" : data.diamond_mask == 7 ? "Hard" : "Easy"};
   KeySym key = global.key;
@@ -373,15 +293,17 @@ static FUNCANIMATE(animate_options, next)
     global.state = MODE_KEY_DEF;
     global.pressed = global.throw = 0;
     monster.monsters = apple.apples = 0;
+    player.ball.state = player.old_ball.state = 0;
+    player.ball.count = player.old_ball.count = 16;
     update.back.backs = update.score.scores = 0;
   } else {
     const char *name = portable_key_name(key);
-    int activate = key == data.keysyms[KEY_THROW] || (name && !strcmp(name,"Return"));
+    int activate = name && !strcmp(name,"Return");
     if (name && !strcmp(name,"Escape")) {
       selected = 4;
       activate = 1;
-    } else if (key == data.keysyms[0]) selected = (selected+4)%5;
-    else if (key == data.keysyms[1]) selected = (selected+1)%5;
+    } else if (name && !strcmp(name,"Up")) selected = (selected+4)%5;
+    else if (name && !strcmp(name,"Down")) selected = (selected+1)%5;
     if (activate) {
       if (selected == 4) {
         global.key = NoSymbol;
@@ -421,6 +343,8 @@ static FUNCANIMATE(animate_options, next)
 }
 
 /*{{{  ANIMATE animate_demo(next)*/
+int in_attract_mode = 1;
+
 extern FUNCANIMATE(animate_demo, next)
 /*
  * The main demonstration control loop. Start or quit the game
@@ -433,6 +357,7 @@ extern FUNCANIMATE(animate_demo, next)
 
   then = NULL;
   assert(!next);
+  in_attract_mode = 1;
   global.pause = 0;
   if(global.pressed & 1 << KEY_QUIT)
     global.quit = 1;
@@ -440,6 +365,7 @@ extern FUNCANIMATE(animate_demo, next)
     {
       state = 0;
       global.throw = 2;
+      in_attract_mode = 0;
       then = animate_game((PROTOVOID(*))NULL);
     }
   else if(global.pressed & 1 << KEY_KEYBOARD)

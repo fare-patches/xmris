@@ -78,10 +78,13 @@ and the xmred garden editor use the existing imake build and X resources.
 
 ### Game options
 
-Press **K** at the title screen in either frontend. Use the movement keys
-to select a row and Enter or Throw to change it. You can toggle sound
+Press **F1** at the title screen in either frontend. The original **K**
+shortcut also works until rebound. The menus always use the arrow keys,
+Enter, and Esc. You can toggle sound
 effects and background music independently, choose Easy, Hard, or Classic
-diamond behavior, or open the keyboard setup. Esc returns to the title.
+diamond behavior, or open Controls to review your bindings. Select an action and press Enter
+to change just that key. Restore defaults resets the working copy. Save and
+return applies your edits, while Esc discards them. Esc returns to the title.
 Changes are saved under `$XDG_CONFIG_HOME/xmris/config`, which defaults
 to `~/.config/xmris/config`. Command-line settings and explicit X resources
 take precedence at startup. The `-nosound` switch disables the audio device

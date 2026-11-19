@@ -18,3 +18,4 @@ void video_line(Pixmap dst, GC gc, int x, int y, int dx, int dy);
 void video_rect(Pixmap dst, GC gc, int x, int y, unsigned w, unsigned h);
 void video_text(Pixmap dst, GC gc, int x, int y, const char *str, int n);
 void video_opaque_text(Pixmap dst, GC gc, int x, int y, const char *str, int n);
+void default_bindings(KeySym *keys);

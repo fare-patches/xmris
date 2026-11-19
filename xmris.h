@@ -563,3 +563,5 @@ extern int main PROTOARG((int, char CONST **));
 /*}}}*/
 
 #include "platform.h"
+
+extern int in_attract_mode;

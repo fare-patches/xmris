@@ -195,6 +195,12 @@ ARGSEP  Cardinal  *num_params
 }
 /*}}}*/
 /*{{{  int main(argc, argv)*/
+void default_bindings(KeySym *keys)
+{
+  const KeySym defaults[KEYS]={XK_Up,XK_Down,XK_Left,XK_Right,XK_space,XK_p,XK_q,XK_i,XK_k};
+  memcpy(keys,defaults,sizeof(defaults));
+}
+
 const char *portable_key_name(KeySym key) { return key_name(key); }
 
 extern int main
@@ -261,7 +267,7 @@ ARGSEP  char CONST **argv
   while(!global.quit)
     {
       color_cycle();
-      while(!global.quit && (XtAppPending(display.context) || !display.mapped ||
+      while(!global.quit && !(display.mapped && global.state == MODE_KEY_DEF && global.key) && (XtAppPending(display.context) || !display.mapped ||
 	  global.pressed & 1 << KEY_PAUSE ||
 	  (!global.key && global.state == MODE_KEY_DEF)))
 	{

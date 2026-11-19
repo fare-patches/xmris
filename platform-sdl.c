@@ -23,6 +23,12 @@ static const struct { KeySym key; const char *name; } key_names[] = {
   {SDLK_LCTRL,"Control_L"}, {SDLK_RCTRL,"Control_R"},
   {SDLK_LALT,"Alt_L"}, {SDLK_RALT,"Alt_R"}
 };
+void default_bindings(KeySym *keys)
+{
+  const KeySym defaults[KEYS]={SDLK_UP,SDLK_DOWN,SDLK_LEFT,SDLK_RIGHT,SDLK_SPACE,SDLK_P,SDLK_Q,SDLK_I,SDLK_K};
+  memcpy(keys,defaults,sizeof(defaults));
+}
+
 const char *portable_key_name(KeySym key)
 {
   static char ascii[2];
@@ -105,14 +111,12 @@ static void handle_event(SDL_Window *window, const SDL_Event *event)
 
 int main(int argc,char **argv)
 {
-  const KeySym keys[KEYS]={SDLK_UP,SDLK_DOWN,SDLK_LEFT,SDLK_RIGHT,SDLK_SPACE,
-      SDLK_P,SDLK_Q,SDLK_I,SDLK_K};
   int scale=0, fullscreen=0;
   SDL_Window *window;
   sigset_t alarm, previous;
   myname=argv[0];
   init_scores_early();
-  memcpy(data.keysyms,keys,sizeof(keys));
+  default_bindings(data.keysyms);
   data.music=data.sound=True;
   options_read();
   load_keys();
@@ -162,7 +166,7 @@ int main(int argc,char **argv)
   timer_open();
   while (!global.quit) {
     SDL_Event event;
-    while (SDL_PollEvent(&event)) handle_event(window,&event);
+    while (!(display.mapped && global.state==MODE_KEY_DEF && global.key) && SDL_PollEvent(&event)) handle_event(window,&event);
     if (global.quit) break;
     if (!display.mapped || (global.pressed & (1<<KEY_PAUSE)) ||
         (global.state==MODE_KEY_DEF && !global.key)) {
