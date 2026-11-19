@@ -1,6 +1,7 @@
 /* Copyright (C) 1993, 1992 Nathan Sidwell */
 /* RCS $Id: demo.c 1.2 Tue, 16 Mar 1999 11:28:16 +0000 nathan $ */
 #include "xmris.h"
+#include "sound.h"
 #define SCORING_LEN 22
 /*{{{  static*/
 static char CONST *table_names[2] = {"Roll of honour", "Today's contenders"};
@@ -458,7 +459,8 @@ extern FUNCANIMATE(animate_diamond, next)
     	{
     	  monster.list[0].pushing = 1;
     	  new_face(&monster.list[0]);
-    	  monster.list[1].cell.x = CELLS_ACROSS + 1;
+	  sound_play(FX_CREDIT);
+	  monster.list[1].cell.x = CELLS_ACROSS + 1;
     	  monster.list[1].offset.x = -(CELL_WIDTH + GAP_WIDTH) *
     	    (CELLS_ACROSS + 1 - CELLS_ACROSS / 2);
     	}

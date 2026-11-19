@@ -608,6 +608,30 @@ static FUNCANIMATE(animate_pause, next)
   return then;
 }
 /*}}}*/
+/* Distance in arcade pixels (16 per cell). Normal monsters follow the
+ * tunnel distance field; digging monsters can approach through earth. */
+static unsigned danger_distance(void)
+{
+  unsigned i, nearest = 255;
+  for (i = 1; i < monster.monsters; ++i) {
+    const MONSTER *enemy = &monster.list[i];
+    unsigned distance;
+    if (enemy->type > 1 || enemy->shot || enemy->squished)
+      continue;
+    if (enemy->type == 1) {
+      unsigned dx = abs(enemy->pixel.x - monster.list[0].pixel.x) * 16 / (CELL_WIDTH + GAP_WIDTH);
+      unsigned dy = abs(enemy->pixel.y - monster.list[0].pixel.y) * 16 / (CELL_HEIGHT + GAP_HEIGHT);
+      distance = dx > dy ? dx : dy;
+    } else {
+      unsigned cells = BOARDCELL(enemy->cell.x, enemy->cell.y)->distance;
+      if (!cells || cells > 8) continue;
+      distance = (cells - 1) * 16;
+    }
+    if (distance < nearest) nearest = distance;
+  }
+  return nearest;
+}
+
 /*{{{  ANIMATE animate_game(next)*/
 extern FUNCANIMATE(animate_game, next)
 /*
@@ -620,6 +644,7 @@ extern FUNCANIMATE(animate_game, next)
   static int state = 0;
   static int den_x = 0;
   static int den_y = 0;
+  static unsigned fast_music;
   PROTOVOID(*then);
   
   assert(!next);
@@ -659,9 +684,15 @@ extern FUNCANIMATE(animate_game, next)
 	      /*{{{  game frame*/
 	      {
 		then = (PROTOVOID(*))animate_game;
-                if(data.music && global.state < 4)
-                  sound_music(global.state == 2 ? MUSIC_PRIZE :
-                      global.state == 3 ? MUSIC_CHASE : MUSIC_GARDEN);
+                if(data.music && global.state < 4) {
+                  unsigned distance = danger_distance();
+                  if(distance <= 80) fast_music = 1;
+                  else if(distance >= 113) fast_music = 0;
+                  sound_music((fast_music ? MUSIC_CHASE : MUSIC_GARDEN) |
+                      (extra.escape ? MUSIC_EXTRA : 0) |
+                      (monster.drones ? MUSIC_DRONES : 0) |
+                      (global.diamond == 1 ? MUSIC_DIAMOND : 0));
+                }
 		age_scores();
 		/*{{{  den?*/
 		while(cell_y != CELLS_DOWN)
@@ -879,7 +910,8 @@ extern FUNCANIMATE(animate_game, next)
 		    global.diamond = 3;
 		    history.ending |= 3;
 		    state = global.lives ? 3 : extra.got == 0x1F ? 1 : 2;
-		    then = animate_diamond((PROTOVOID(*))animate_game);
+		    sound_play(FX_DIAMOND);
+                    then = animate_diamond((PROTOVOID(*))animate_game);
 		  }
 		else if(extra.got == 0x1F)
 		  /*{{{  extra life*/
@@ -911,7 +943,10 @@ extern FUNCANIMATE(animate_game, next)
 		state = 0;
 		timer_set((unsigned long)0, TIMING_OFF);
 		history.msec += global.msec;
-		high_score(global.score, global.screen, history.msec);
+		sound_play(global.score >= SCORE_THRESHOLD &&
+                    global.score >= scoring.high[HIGH_SCORES - 1].score ?
+                    FX_HIGH_SCORE : FX_GAME_OVER);
+                high_score(global.score, global.screen, history.msec);
 		set_key_default();
 		then = animate_demo((PROTOVOID(*))NULL);
 	      }
@@ -930,6 +965,7 @@ extern FUNCANIMATE(animate_game, next)
 		  monster.delay = 0;
 		  monster.den = monster.normals;
 		  monster.drones = 0;
+                  fast_music = 0;
 		  spawn_monster(0, 4, 3, 3, global.start.x, global.start.y,
 		      0, 0);
 		  monster.list[0].stop = 1;

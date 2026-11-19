@@ -7,32 +7,17 @@
 enum { SAMPLE_RATE = 24000 };
 static SDL_AudioDeviceID device;
 
-/* Each entry is a pitch in Hz. Zero is a rest. Each pattern has its
- * own step length so the music and the short event cues can overlap. */
-struct pattern {
-  const unsigned short *notes;
-  unsigned count, step_ms;
-  const unsigned char *lengths; /* steps per note, or NULL for one each */
-};
-
-struct voice {
-  const struct pattern *pattern;
-  unsigned index, sample;
-  double phase;
-};
-
-#define SCORE(notes, ms) {notes, sizeof(notes) / sizeof(notes[0]), ms, 0}
-
 #include <stdint.h>
 #include "music-score.h"
 
 struct playback {
   const struct tune *tune;
   unsigned row, ticks, clock;
-  uint32_t phase[3];
+  uint32_t phase[4];
 };
 static struct playback music, fanfare, apple_fall, apple_impact;
-static const struct tune *const themes[] = {NULL, &garden, &prize, &chase};
+static const struct tune *encore;
+static struct playback letter, drones, gem, effect, cherry;
 
 static void begin_tune(struct playback *player, const struct tune *tune)
 {
@@ -44,14 +29,14 @@ static void begin_tune(struct playback *player, const struct tune *tune)
 static int tune_sample(struct playback *player)
 {
   /* The score uses PSG attenuation steps of 2 dB. */
-  static const int gain[] = {1450, 1152, 915, 727, 577, 459, 364, 289, 230, 183};
+  static const int gain[] = {1450, 1152, 915, 727, 577, 459, 364, 289, 230, 183, 145, 115, 91, 73, 58};
   const struct chord *row;
   int sum = 0;
   unsigned i;
   if (!player->tune)
     return 0;
   row = &player->tune->rows[player->row];
-  for (i = 0; i < 3; ++i) {
+  for (i = 0; i < 4; ++i) {
     unsigned note = row->voice[i][0];
     if (note) {
       sum += player->phase[i] < UINT32_C(0x80000000)
@@ -75,53 +60,6 @@ static int tune_sample(struct playback *player)
   return sum;
 }
 
-static const unsigned short throw_notes[] = {880, 659, 440};
-static const unsigned short hit[] = {784, 392, 196, 98};
-static const unsigned short recovered[] = {587, 1175};
-static const unsigned short bonus[] = {523, 659, 784, 1047};
-static const unsigned short death[] = {494, 466, 392, 311, 247, 196, 131};
-static const unsigned short life[] = {659, 784, 988, 1319};
-static const struct pattern cues[] = {
-  SCORE(throw_notes, 24), SCORE(hit, 35), SCORE(recovered, 55),
-  SCORE(bonus, 65), SCORE(death, 110), {0}, {0}, {0}, SCORE(life, 90)
-};
-static const unsigned short scale[] = {523, 587, 659, 698, 784, 880, 988, 1047};
-static struct pattern cherry_note = {NULL, 1, 125, 0};
-static struct voice cherry, effect, jingle;
-
-static int next_sample(struct voice *v, int volume, int loop)
-{
-  const struct pattern *p = v->pattern;
-  double triangle, envelope;
-  unsigned duration, hz;
-  int value;
-
-  if (!p)
-    return 0;
-  duration = p->step_ms * (SAMPLE_RATE / 1000);
-  if (p->lengths)
-    duration *= p->lengths[v->index];
-  hz = p->notes[v->index];
-  triangle = v->phase < 0.5 ? 4 * v->phase - 1 : 3 - 4 * v->phase;
-  envelope = (double)(duration - 1 - v->sample) / duration;
-  if (v->sample < 48)
-    envelope *= v->sample / 48.0;
-  value = hz ? (int)(volume * triangle * envelope) : 0;
-  v->phase += (double)hz / SAMPLE_RATE;
-  if (v->phase >= 1)
-    v->phase -= 1;
-  if (++v->sample == duration) {
-    v->sample = 0;
-    v->phase = 0;
-    if (++v->index == p->count) {
-      v->index = 0;
-      if (!loop)
-        v->pattern = NULL;
-    }
-  }
-  return value;
-}
-
 static void mix_audio(void *unused, Uint8 *stream, int bytes)
 {
   Sint16 *out = (Sint16 *)stream;
@@ -129,18 +67,20 @@ static void mix_audio(void *unused, Uint8 *stream, int bytes)
   (void)unused;
   for (i = 0; i < bytes / (int)sizeof(*out); i++)
     {
-      int background = fanfare.tune ? tune_sample(&fanfare) : tune_sample(&music);
-      out[i] = background + tune_sample(&apple_fall) + tune_sample(&apple_impact)
-          + next_sample(&cherry, 7500, 0)
-          + next_sample(&effect, 5800, 0) + next_sample(&jingle, 6200, 0);
+      int sample = tune_sample(&music);
+      if (letter.tune) sample = tune_sample(&letter);
+      if (drones.tune) sample = tune_sample(&drones);
+      if (gem.tune) sample = tune_sample(&gem);
+      if (fanfare.tune) {
+        sample = tune_sample(&fanfare);
+        if (!fanfare.tune && encore) {
+          begin_tune(&fanfare, encore);
+          encore = NULL;
+        }
+      }
+      out[i] = sample + tune_sample(&apple_fall) + tune_sample(&apple_impact)
+          + tune_sample(&effect) + tune_sample(&cherry);
     }
-}
-
-static void start_voice(struct voice *v, const struct pattern *p)
-{
-  v->pattern = p;
-  v->sample = v->index = 0;
-  v->phase = 0;
 }
 
 /* All apples share the arcade fall channel. A fresh drop retriggers it;
@@ -159,41 +99,49 @@ void sound_apples(int started, int falling, int crushed)
 
 void sound_play(enum sound_effect cue)
 {
+  static const struct tune *const scores[] = {
+    &bounce, &burst, &returning, &center_bonus, &apple_break, &chew, &credit,
+    &death_song, &opening, &victory, &interlude, &extra_life, &diamond_show, &game_over, &game_over
+  };
   if (!device)
     return;
   SDL_LockAudioDevice(device);
   if (cue >= FX_DEATH) {
-    const struct tune *score = cue == FX_START ? &opening :
-        cue == FX_CLEAR ? &victory : cue == FX_HISTORY ? &interlude : NULL;
+    encore = cue == FX_HIGH_SCORE ? &initials : NULL;
     begin_tune(&apple_fall, NULL);
-    if (cue == FX_START)
-      begin_tune(&apple_impact, NULL);
-    begin_tune(&fanfare, score);
-    start_voice(&jingle, score ? NULL : &cues[cue]);
+    if (cue == FX_START) begin_tune(&apple_impact, NULL);
+    begin_tune(&fanfare, scores[cue]);
   } else {
-    start_voice(&effect, &cues[cue]);
+    begin_tune(&effect, scores[cue]);
   }
   SDL_UnlockAudioDevice(device);
 }
 
-void sound_music(enum music_theme theme)
+void sound_music(unsigned flags)
 {
-  static enum music_theme current = MUSIC_OFF;
-  if (!device || theme == current)
+  static unsigned current;
+  unsigned changed = flags ^ current;
+  if (!device || !changed)
     return;
   SDL_LockAudioDevice(device);
-  begin_tune(&music, themes[theme]);
-  current = theme;
+  if (changed & (MUSIC_GARDEN | MUSIC_CHASE))
+    begin_tune(&music, flags & MUSIC_CHASE ? &chase : flags & MUSIC_GARDEN ? &garden : NULL);
+  if (changed & MUSIC_EXTRA) begin_tune(&letter, flags & MUSIC_EXTRA ? &prize : NULL);
+  if (changed & MUSIC_DRONES) begin_tune(&drones, flags & MUSIC_DRONES ? &minions : NULL);
+  if (changed & MUSIC_DIAMOND) begin_tune(&gem, flags & MUSIC_DIAMOND ? &diamond_song : NULL);
+  current = flags;
   SDL_UnlockAudioDevice(device);
 }
 
 void sound_cherry(unsigned count)
 {
+  static const struct tune *const notes[] = {
+    &cherry1, &cherry2, &cherry3, &cherry4, &cherry5, &cherry6, &cherry7, &cherry8
+  };
   if (!device || count < 1 || count > 8)
     return;
   SDL_LockAudioDevice(device);
-  cherry_note.notes = &scale[count - 1];
-  start_voice(&cherry, &cherry_note);
+  begin_tune(&cherry, notes[count - 1]);
   SDL_UnlockAudioDevice(device);
 }
 

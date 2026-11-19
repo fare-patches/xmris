@@ -361,6 +361,7 @@ extern VOIDFUNC move_apples FUNCARGVOID
       cptr = BOARDCELL(aptr->cell.x, aptr->cell.y);
       if(aptr->chewed)
 	{
+          if(global.state < 4) sound_play(FX_CHEW);
 	  assert(!aptr->monsters);
 	  aptr->state = 6;
 	}
@@ -840,6 +841,7 @@ extern VOIDFUNC move_apples FUNCARGVOID
       else if(was_falling)
         {
           landed = 1;
+          if(global.state < 4 && aptr->state == 3 && !aptr->monsters) sound_play(FX_BREAK);
           crushed |= aptr->state == 3 && aptr->monsters != 0;
         }
       aptr->push = 0;

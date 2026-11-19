@@ -128,7 +128,6 @@ extern VOIDFUNC bounce_ball FUNCARGVOID
 	  }
 	  if(player.ball.state)
 	    {
-	      if(global.state < 4) sound_play(FX_THROW);
 	      player.ball.pixel.x = PIXELX(player.ball.cell.x,
 		  player.ball.offset.x + CELL_WIDTH / 2);
 	      player.ball.pixel.y = PIXELY(player.ball.cell.y,
@@ -481,6 +480,7 @@ extern VOIDFUNC bounce_ball FUNCARGVOID
 	  if((walls & 0xC) == 0xC || (walls & 0x03) == 0x03)
 	    /*{{{  trapped*/
 	    {
+              if(global.state < 4) sound_play(FX_HIT);
 	      player.count = 0;
 	      player.ball.state = 2;
 	      player.ball.count = 0;
@@ -490,6 +490,7 @@ extern VOIDFUNC bounce_ball FUNCARGVOID
 	  else
 	    {
 	      /*{{{  bounce?*/
+              unsigned incoming = player.ball.count;
 	      switch(player.ball.count)
 	      {
 		/*{{{  case 0: (up left)*/
@@ -548,6 +549,8 @@ extern VOIDFUNC bounce_ball FUNCARGVOID
 		    player.ball.count = chaotic() & 1 ? 1 : 0;
 		  break;
 		/*}}}*/
+              if(global.state < 4 && player.ball.count != incoming)
+                sound_play(FX_BOUNCE);
 	      }
 	      /*}}}*/
 	      /*{{{  move ball*/
@@ -614,6 +617,7 @@ extern VOIDFUNC bounce_ball FUNCARGVOID
 	if(!player.count--)
 	  {
 	    player.ball.state = 4;
+            if(global.state < 4) sound_play(FX_RETURN);
 	    player.ball.count--;
 	  }
       }
@@ -626,10 +630,7 @@ extern VOIDFUNC bounce_ball FUNCARGVOID
       player.ball.pixel.x = monster.list[0].pixel.x + CELL_WIDTH / 2;
       player.ball.pixel.y = monster.list[0].pixel.y + CELL_HEIGHT / 2;
       if(!player.ball.count)
-        {
-          player.ball.state = 0;
-          if(global.state < 4) sound_play(FX_RETURN);
-        }
+        player.ball.state = 0;
       break;
     }
     /*}}}*/
@@ -735,10 +736,7 @@ extern VOIDFUNC bounce_ball FUNCARGVOID
 	    INRANGE(mptr->pixel.y, tl.y, br.y))
 	  {
 	    if(mptr->type == 4)
-              {
-                player.ball.state = 0;
-                if(global.state < 4) sound_play(FX_RETURN);
-              }
+              player.ball.state = 0;
 	    else
 	      {
 		if(global.state == 2 || mptr->type == 2)
