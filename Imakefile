@@ -284,27 +284,12 @@ clean ::
 	$(RM) $(WIDGETOBJS)
 	$(RM) $(SCRAMOBJS)
 
-XCOMM tar is somewhat complicated because we want it to untar into an xmris
-XCOMM subdirectory with the correct version number (ie xmris.4.00)
-XCOMM this is done by cd'ing up, creating a link of the correct name to
-XCOMM where we are and then tarring the files in here with the directory
-XCOMM prefix tacked on. But we don't know the directory name we're in so
-XCOMM we have to determine that, and if it is already what we want, then
-XCOMM don't make a link
-tar : $(ALLFILES) README.xmris README.xmred
-	@echo Tarring \& feathering into $(APP).$(VERSION).tgz
-	@DIR=`pwd | sed "s+/.*/++"` ; rm="" ; \
-	if [ ! -x ../$(APP).$(VERSION) ] ; then \
-	  rm="$(RM) ../$(APP).$(VERSION)" ; \
-	  $(LN) ./$$DIR ../$(APP).$(VERSION) ; \
-	fi ; \
-	(cd .. ;  tar cf - `set README.xmris README.xmred Makefile.std \
-	    $(ALLFILES) ; \
-	  while [ $$# -ne 0 ] ; \
-	  do echo $(APP).$(VERSION)/$$1 ; shift ; \
-	  done`) | \
-	gzip -f > $(APP).$(VERSION).tgz ; \
-	$$rm
+tar : $(ALLFILES) README.xmris README.xmred Makefile.std
+	@set -e; archive=$(APP).$(VERSION).tgz; tmp=`mktemp "$$archive.XXXXXX"`; \
+	trap 'rm -f "$$tmp"' EXIT; \
+	tar czf "$$tmp" --transform='s,^,$(APP).$(VERSION)/,' \
+	    README.xmris README.xmred Makefile.std $(ALLFILES); \
+	chmod 644 "$$tmp"; mv -f "$$tmp" "$$archive"
 
 XCOMM these are the o dependencies
 sound.o : music-score.h
