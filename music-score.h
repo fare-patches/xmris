@@ -3,6 +3,7 @@
 struct chord { unsigned char ticks, voice[4][2]; };
 struct tune { const struct chord *rows; unsigned count, repeat; };
 
+/* $0F, regular play. Jacques Offenbach, "Galop infernal" from Orphée aux enfers. */
 static const struct chord garden_rows[] = {
   {14, {{0,15}, {0,15}, {0,15}}},
   {4, {{0,15}, {0,15}, {0,15}}},
@@ -73,6 +74,7 @@ static const struct chord garden_rows[] = {
 };
 static const struct tune garden = {garden_rows, 66, 1};
 
+/* $10, danger. The same Offenbach can-can at 1.5 times the regular tempo. */
 static const struct chord chase_rows[] = {
   {4, {{60,0}, {0,15}, {76,2}}},
   {2, {{60,0}, {0,15}, {0,15}}},
@@ -320,6 +322,7 @@ static const struct chord opening_rows[] = {
 };
 static const struct tune opening = {opening_rows, 25, 25};
 
+/* $22, level clear. Tommy Walker's six-note "Charge!" fanfare. */
 static const struct chord victory_rows[] = {
   {4, {{72,2}, {84,2}, {57,2}}},
   {4, {{0,15}, {0,15}, {0,15}}},
@@ -335,6 +338,7 @@ static const struct chord victory_rows[] = {
 };
 static const struct tune victory = {victory_rows, 11, 11};
 
+/* $1F, three-level recap. Beethoven's Turkish March from The Ruins of Athens. */
 static const struct chord interlude_rows[] = {
   {6, {{91,0}, {48,2}, {66,2}}},
   {2, {{91,0}, {48,2}, {67,2}}},
@@ -692,7 +696,8 @@ static const struct chord returning_rows[] = {
 };
 static const struct tune returning = {returning_rows, 18, 18};
 
-/* Arcade cue $1D */
+/* $1D, diamond celebration. The traditional French melody "Ah ! vous dirai-je, maman",
+ * also known as "Twinkle, Twinkle, Little Star". */
 static const struct chord diamond_show_rows[] = {
   {6, {{91,1}, {103,0}, {96,2}, {0,15}}},
   {6, {{91,1}, {101,0}, {103,2}, {0,15}}},
@@ -787,7 +792,7 @@ static const struct chord diamond_show_rows[] = {
 };
 static const struct tune diamond_show = {diamond_show_rows, 90, 90};
 
-/* Arcade cue $1E */
+/* $1E, extra-life celebration. Tatsuo Takai's theme for Tetsuwan Atom (Astro Boy). */
 static const struct chord extra_life_rows[] = {
   {9, {{76,0}, {0,15}, {60,2}, {0,15}}},
   {9, {{76,0}, {0,15}, {67,2}, {0,15}}},
