@@ -1000,7 +1000,6 @@ extern unsigned move_player FUNCARGVOID
 	    {
 	      cptr->sprite = 0;
 	      global.cherries--;
-	      add_score(50 / SCORE_ROUND, 0, 0);
 	      player.cherry++;
 	      sound_cherry(player.cherry);
 	      if(player.cherry == 8)
@@ -1011,8 +1010,10 @@ extern unsigned move_player FUNCARGVOID
 		  player.cherry = 0;
 		}
 	      else
-		player.distance =
-		    (CELL_WIDTH + GAP_WIDTH) / VEL_X;
+		{
+		  add_score(50 / SCORE_ROUND, 0, 0);
+		  player.distance = (CELL_WIDTH + GAP_WIDTH) / VEL_X;
+		}
 	    }
 	    /*}}}*/
 	  else if(cptr->sprite && global.state == 1)
