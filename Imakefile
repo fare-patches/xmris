@@ -239,11 +239,11 @@ InstallProgram(xmred,$(THEBINDIR))
 XCOMM manual pages
 README.xmris : xmris.man
 	$(RM) README.xmris
-	nroff -man xmris.man > README.xmris
+	nroff -rLL=65n -man xmris.man > README.xmris
 
 README.xmred : xmred.man
 	$(RM) README.xmred
-	nroff -man xmred.man > README.xmred
+	nroff -rLL=65n -man xmred.man > README.xmred
 
 InstallManPage(xmris,$(THEMANDIR))
 
