@@ -19,3 +19,16 @@ build/sdl/defmris.o: bitmaps/sprites
 
 bitmaps/sprites: scram.c ansiknr.h Makefile.std $(wildcard bitmaps/*/*.rgb bitmaps/*/*.bw)
 	$(MAKE) -f Makefile.std SDL_SPRITES_ONLY=1 CC="$(CC)" CCLINK="$(CC)" CFLAGS="$(CFLAGS)" LDOPTIONS= LDLIBS= EXTRA_LOAD_FLAGS= bitmaps/sprites
+
+PREFIX ?= /usr/local
+INSTALL ?= install
+gardens = alphabet.gdn digits.gdn puzzle.gdn xmred.gdn
+
+.PHONY: install install.man
+install: xmris-sdl $(gardens)
+	$(INSTALL) -D -m 755 xmris-sdl "$(DESTDIR)$(PREFIX)/bin/xmris-sdl"
+	$(INSTALL) -d "$(DESTDIR)$(PREFIX)/share/xmris"
+	$(INSTALL) -m 644 $(gardens) "$(DESTDIR)$(PREFIX)/share/xmris/"
+
+install.man: xmris-sdl.6
+	$(INSTALL) -D -m 644 $< "$(DESTDIR)$(PREFIX)/share/man/man6/xmris-sdl.6"

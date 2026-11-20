@@ -131,12 +131,17 @@ char *garden_resource(const char *name, const char *suffix)
 {
   const char *base = SDL_GetBasePath();
   if (!base) return NULL;
-  char *path = malloc(strlen(base)+strlen(name)+(suffix?strlen(suffix):0)+1);
-  if (path) {
-    sprintf(path,"%s%s%s",base,name,suffix?suffix:"");
-    if (access(path,R_OK)) { free(path); return NULL; }
+  /* Support a source checkout and the installed bin/ and share/ layout. */
+  const char *dirs[] = {"", "../share/xmris/"};
+  for (unsigned i = 0; i < XtNumber(dirs); ++i) {
+    char *path = malloc(strlen(base) + strlen(dirs[i]) + strlen(name) +
+                        (suffix ? strlen(suffix) : 0) + 1);
+    if (!path) return NULL;
+    sprintf(path, "%s%s%s%s", base, dirs[i], name, suffix ? suffix : "");
+    if (!access(path, R_OK)) return path;
+    free(path);
   }
-  return path;
+  return NULL;
 }
 
 static void handle_event(SDL_Window *window, const SDL_Event *event)

@@ -192,7 +192,7 @@ BITMAPS = bitmaps/bitmaps/edge.r bitmaps/bitmaps/fill0.r \
 	bitmaps/bitmaps/oblong.r bitmaps/bitmaps/mris.r \
 	bitmaps/bitmaps/msit.r bitmaps/bitmaps/mred.r \
 	bitmaps/bitmaps/ghosting.r
-ALLFILES = courier18.h Makefile.sdl platform-sdl.c video-sdl.c $(FILES) $(GARDENS) $(COMMONHDRS) $(MRISHDRS) $(MREDHDRS) \
+ALLFILES = courier18.h xmris-sdl.6 Makefile.sdl platform-sdl.c video-sdl.c $(FILES) $(GARDENS) $(COMMONHDRS) $(MRISHDRS) $(MREDHDRS) \
 	$(COMMONSRCS) $(MRISSRCS) $(SCRAMSRCS) $(MREDSRCS) \
 	$(WIDGETSRCS) $(WIDGETHDRS) \
 	$(APPLE:.r=.bw) $(APPLE:.r=.rgb) $(BOARD:.r=.bw) $(BOARD:.r=.rgb) \
