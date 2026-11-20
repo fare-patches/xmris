@@ -1,0 +1,43 @@
+.TH XMRIS-SDL 6
+.SH NAME
+xmris-sdl \- play XMRIS using SDL3
+.SH SYNOPSIS
+.B xmris-sdl
+.RI [ options ]
+.SH DESCRIPTION
+Dig tunnels, collect cherries, and defeat monsters with your ball and falling
+apples. The default controls are the arrow keys for movement and Space to
+start or throw. Press F1 at the title screen to change controls and options.
+Press F11 to toggle fullscreen.
+.SH OPTIONS
+.TP
+.B \-fullscreen
+Start in fullscreen mode.
+.TP
+.BI \-scale " auto|fit|N"
+Use automatic integer scaling (the default), fit the game to the window
+while preserving its aspect ratio, or request an initial integer scale N.
+.TP
+.BI \-gardens " file"
+Load a garden file. For example, use \fB\-gardens puzzle\fP to play the
+installed puzzle gardens.
+.TP
+.B \-random
+Place apples randomly among the permitted locations.
+.TP
+.B \-nosound
+Disable the audio device.
+.TP
+.BR \-music ", " \-nomusic
+Enable or disable background music.
+.TP
+.B \-help
+Print command-line usage.
+.SH FILES
+.TP
+.I ~/.config/xmris/config
+Saved preferences, shared with the X11 game. XDG_CONFIG_HOME overrides
+the default configuration directory.
+.TP
+.I ~/.xmris.score
+Personal scores.
