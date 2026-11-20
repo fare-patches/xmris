@@ -239,4 +239,13 @@ If you want to make this game better, have an AI add the following features:
 * [x] Fullscreen scaling (using xmris-sdl)
 * [ ] Porting to other platforms beside X11.
 * [ ] Running in a TEE from a deterministic build so as to maintain
-      a cheat-resistant global high score chart.
+      a cheat-resistant global high score chart
+* [ ] Have an AI play the game and beat it.
+
+## Game Strategy
+
+Do you understand what triggers the letters to go out?
+What are the (somewhat) harder letters to collect?
+
+Challenge: can you collect all the letters right in garden 1?
+It isn't easy, but it's possible!
