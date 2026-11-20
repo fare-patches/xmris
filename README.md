@@ -100,8 +100,10 @@ diamond behavior, or open Controls to review your bindings. Select an action and
 to change just that key. Restore defaults resets the working copy. Save and
 return applies your edits, while Esc discards them. Esc returns to the title.
 Changes are saved under `$XDG_CONFIG_HOME/xmris/config`, which defaults
-to `~/.config/xmris/config`. Command-line settings and explicit X resources
-take precedence at startup. The `-nosound` switch disables the audio device
+to `~/.config/xmris/config`. Saved controls override X key resources, including bindings supplied with
+`-xrm`. For each action without a valid saved binding, X11 uses its usual
+resource lookup and built-in default. For other preferences, command-line
+settings and explicit X resources take precedence at startup. The `-nosound` switch disables the audio device
 for the whole session.
 
 ### Linux score files
