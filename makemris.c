@@ -370,16 +370,27 @@ ARGSEP  String  *argv
 	  display.display = XtDisplay(display.toplevel);
 	  for(ptr = resources; *(char CONST **)ptr; ptr++)
 	    /* EMPTY */;
+          /* Controls saved in the menu override even an installed Xmris.ad.
+           * Xt applies these arguments after resolving its resource database. */
+          Arg controls[KEYS];
+          Cardinal ncontrols = 0;
           options_read();
           for (XtResource *r = resources; r->resource_name; ++r) {
             const char *saved = option_default(r->resource_name);
-            if (saved) {
+            if (!saved) continue;
+            if (!strcmp(r->resource_type, XtRKeySym)) {
+              KeySym key = canonical_key(XStringToKeysym(saved));
+              if (key != NoSymbol) {
+                XtSetArg(controls[ncontrols], r->resource_name, key);
+                ++ncontrols;
+              }
+            } else {
               r->default_type = XtRString;
               r->default_addr = (XtPointer)saved;
             }
           }
-	  XtGetApplicationResources(display.toplevel, (XtPointer)&data,
-	      resources, (Cardinal)(ptr - resources), (Arg *)NULL, 0);
+          XtGetApplicationResources(display.toplevel, (XtPointer)&data,
+              resources, (Cardinal)(ptr - resources), controls, ncontrols);
           if(!strcmp(data.diamond_difficulty, "classic"))
             data.diamond_mask = 0;
           else if(!strcmp(data.diamond_difficulty, "hard"))

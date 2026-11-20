@@ -192,7 +192,6 @@ int main(int argc,char **argv)
   default_bindings(data.keysyms);
   data.music=data.sound=True;
   options_read();
-  load_keys();
   const char *difficulty=option_default("diamondDifficulty");
   data.diamond_mask=difficulty && !strcmp(difficulty,"classic") ? 0 :
       difficulty && !strcmp(difficulty,"hard") ? 7 : 1;
@@ -231,6 +230,8 @@ int main(int argc,char **argv)
   sigprocmask(SIG_BLOCK,&alarm,&previous);
   SDL_SetAppMetadata("xmris", XMRISVERSION, NULL);
   if (!SDL_Init(SDL_INIT_VIDEO)) fatal_error("%s",SDL_GetError());
+  /* Named keys are resolved using the active SDL keyboard layout. */
+  load_keys();
   if (!scale) {
     SDL_Rect bounds;
     scale=1;
