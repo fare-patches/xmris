@@ -956,6 +956,37 @@ ARGSEP  int       y
   return;
 }
 /*}}}*/
+/* Keep the resolved filename so includes are relative to this garden. */
+static FILE *open_user_garden(const char *name, char **filename)
+{
+  const char *base = getenv("XDG_DATA_HOME");
+  const char *dir = "/xmris/";
+  if(!base || *base != '/')
+    {
+      base = getenv("HOME");
+      if(!base || *base != '/') return NULL;
+      dir = "/.local/share/xmris/";
+    }
+  size_t length = strlen(base) + strlen(dir) + strlen(name);
+  char *path = malloc(length + FILE_SUFFIX_LEN + 1);
+  if(!path) return NULL;
+  sprintf(path, "%s%s%s%s", base, dir, name, FILE_SUFFIX);
+  FILE *stream = fopen(path, "r");
+  if(!stream)
+    {
+      path[length] = 0;
+      stream = fopen(path, "r");
+    }
+  if(stream)
+    {
+      free(*filename);
+      *filename = path;
+    }
+  else
+    free(path);
+  return stream;
+}
+
 /*{{{  void read_boards()*/
 static VOIDFUNC read_boards
 FUNCARG((name, parent),
@@ -1005,6 +1036,8 @@ ARGSEP  char CONST *parent
                 filename[offset + length] = 0;
                 stream = fopen(filename, "r");
               }
+            if(!stream && *name != '/')
+              stream = open_user_garden(name, &filename);
             if(!stream && *name != '/')
               {
                 char *resource = garden_resource(name, NULL);

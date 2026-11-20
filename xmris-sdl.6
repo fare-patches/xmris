@@ -35,6 +35,12 @@ Enable or disable background music.
 Print command-line usage.
 .SH FILES
 .TP
+.I $XDG_DATA_HOME/xmris
+Personal garden directory (default ~/.local/share/xmris).
+Relative garden names are tried beside the including garden, or in the
+current directory for the initial garden, before this directory and the
+installed resources.
+.TP
 .I ~/.config/xmris/config
 Saved preferences, shared with the X11 game. XDG_CONFIG_HOME overrides
 the default configuration directory.
