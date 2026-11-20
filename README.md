@@ -124,6 +124,15 @@ man 6 xmris
 xmris
 ```
 
+### Personal gardens
+
+Both games look for named gardens in `$XDG_DATA_HOME/xmris`, or
+`~/.local/share/xmris` when that variable is unset, empty, or relative.
+For example, save `mygarden.gdn` there and run `xmris-sdl -gardens mygarden`.
+A file in the current directory (or beside the including garden) takes
+precedence, followed by the personal directory and then the frontend's
+resource locations.
+
 ### Game options
 
 Press **F1** at the title screen in either frontend.

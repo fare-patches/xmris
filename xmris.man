@@ -845,6 +845,12 @@ option.
 Read to determine the name to use for the score tables, and the
 user's home directory, if getpwuid(3) fails.
 .SH FILES
+.TP
+.I $XDG_DATA_HOME/xmris
+Personal garden directory (default ~/.local/share/xmris).
+Relative garden names are tried beside the including garden, or in the
+current directory for the initial garden, before this directory and the
+installed resources.
 The loadable garden file must be fully named, or located in the
 score directory. They may have any name. The score files have the
 following names.
