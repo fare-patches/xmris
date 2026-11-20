@@ -32,7 +32,13 @@ that Nathan perfectly reproduced.
 
 ## Building and running XMRIS
 
-Choose a frontend. For the SDL3 game on Ubuntu, install its build dependencies:
+Choose a frontend: SDL3 or classic X11.
+
+### Building with SDL3
+
+#### SDL3 Build
+
+For the SDL3 game on Ubuntu, install its build dependencies:
 
 ```sh
 sudo apt install build-essential pkg-config libsdl3-dev
@@ -40,7 +46,44 @@ make -f Makefile.sdl
 ./xmris-sdl -fullscreen
 ```
 
-### X11 prerequisites
+#### SDL3 Test Run
+```
+./xmris-sdl
+```
+
+#### SDL3 Install
+To install in `/usr/local`, the default, you would:
+```
+sudo make -f Makefile.sdl install install.man
+```
+
+Or you can override the installation `PREFIX` as follows,
+assuming your `PATH` and `MANPATH` are prepared to deal with it:
+```
+make PREFIX=$HOME/.local -f Makefile.sdl install install.man
+```
+
+#### SDL3 Run
+```
+man 6 xmris-sdl
+xmris-sdl
+```
+
+#### SDL3 on Linux
+
+The SDL frontend builds from the same game, garden, score, and sound sources.
+F11 toggles fullscreen. The SDL window centers the garden and scales it in
+whole pixels by default. Use `-scale fit` to fill as much of the window as
+possible at the original aspect ratio, including in fullscreen.
+Use `-scale 2` to request a 2× initial window.
+Arrow keys move, Space starts or throws, and K on the title screen opens Options.
+Run `./xmris-sdl -help` for the supported options.
+The SDL frontend uses the bundled 18-pixel X11 Courier bitmap font and command-line settings.
+The X11 game and the xmred garden editor use the existing imake build and X resources.
+
+### Building with X11
+
+#### X11 Prerequisites
 
 On Ubuntu, I needed to install `xmkmf` from xutils, the Athena widgets,
 and the standard 75dpi bitmap fonts.
@@ -58,53 +101,50 @@ xset fp rehash
 The rpmfusion docs suggest you also need to install the 100dpi bitmap fonts
 (debian package `xfonts-100dpi`), but in my experience they are not necessary to run the game.
 
-### To Build
+#### X11 Build
 ```
 xmkmf
 make
 ```
 
-### To Check That It Runs
+#### X11 Test Run
 ```
 ./xmris
 ```
 
-### To Install
+#### X11 Install
 ```
 make install
 make install.man
 ```
 
-### To Run
+#### X11 Run
 ```
+man 6 xmris
 xmris
 ```
 
-### SDL3 on Linux
-
-The SDL frontend builds from the same game, garden, score, and sound sources.
-F11 toggles fullscreen. The SDL window centers the garden and scales it in
-whole pixels by default. Use `-scale fit` to fill as much of the window as
-possible at the original aspect ratio, including in fullscreen. Use `-scale 2` to request a 2× initial window.
-Arrow keys move, Space starts or throws, and K on the title screen opens Options. Run `./xmris-sdl -help` for the supported options. The SDL
-frontend uses the bundled 18-pixel X11 Courier bitmap font and command-line settings. The X11 game
-and the xmred garden editor use the existing imake build and X resources.
-
 ### Game options
 
-Press **F1** at the title screen in either frontend. The original **K**
-shortcut also works until rebound. The menus always use the arrow keys,
-Enter, and Esc. You can toggle sound
-effects and background music independently, choose Easy, Hard, or Classic
-diamond behavior, or open Controls to review your bindings. Select an action and press Enter
-to change just that key. Restore defaults resets the working copy. Save and
-return applies your edits, while Esc discards them. Esc returns to the title.
-Changes are saved under `$XDG_CONFIG_HOME/xmris/config`, which defaults
-to `~/.config/xmris/config`. Saved controls override X key resources, including bindings supplied with
-`-xrm`. For each action without a valid saved binding, X11 uses its usual
-resource lookup and built-in default. For other preferences, command-line
-settings and explicit X resources take precedence at startup. The `-nosound` switch disables the audio device
-for the whole session.
+Press **F1** at the title screen in either frontend.
+The original **K** shortcut also works until rebound.
+The menus always use the arrow keys, Enter, and Esc.
+You can toggle sound effects and background music independently,
+choose Easy, Hard, or Classic diamond behavior,
+or open Controls to review your bindings.
+Select an action and press Enter to change just that key.
+Restore defaults resets the working copy.
+Save and return applies your edits, while Esc discards them.
+Esc returns to the title.
+Changes are saved under `$XDG_CONFIG_HOME/xmris/config`,
+which defaults to `~/.config/xmris/config`.
+Saved controls override X key resources,
+including bindings supplied with `-xrm`.
+For each action without a valid saved binding,
+X11 uses its usual resource lookup and built-in default.
+For other preferences, command-line settings and explicit X resources
+take precedence at startup.
+The `-nosound` switch disables the audio device for the whole session.
 
 ### Linux score files
 
@@ -187,7 +227,7 @@ Solution: install and configure the good old fonts.
 If you want to make this game better, have an AI add the following features:
 * [x] Integer factor window scaling.
 * [x] Adding the do re mi fa sol la si do sounds as you eat cherries as in Mr Do!
-* [ ] Fullscreen scaling.
+* [x] Fullscreen scaling (using xmris-sdl)
 * [ ] Porting to other platforms beside X11.
 * [ ] Running in a TEE from a deterministic build so as to maintain
       a cheat-resistant global high score chart.
