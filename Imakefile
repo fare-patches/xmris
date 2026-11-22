@@ -300,7 +300,7 @@ makemris.o : defmris.h defcom.h makecom.c
 
 defmris.o : defmris.h defcom.h defcom.c bitmaps/sprites
 
-draw.o : digits.gdn
+draw.o : $(GARDENS)
 
 $(MREDOBJS) : xmred.h common.h ansiknr.h patchlevel.h
 
