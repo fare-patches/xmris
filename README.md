@@ -122,6 +122,15 @@ Build Tools 35.0.0, NDK 28.2.13676358, SDK CMake 3.22.1, zip, make and a C
 compiler. Set ANDROID_HOME and run `bash android/build.sh`. The APK is in
 `build/android/`. To update in place, use the same debug signing key.
 
+### SDL joystick controls
+
+Connect a controller before launch or during play. Use the D-pad or left
+stick to steer and the bottom face button to start, throw, or select.
+Start opens Options on the title screen, pauses during play, and goes back
+in a menu. Press the throw button to resume. For an unmapped joystick,
+use its first two axes or first hat, first button to throw and second to pause.
+These controls are shared by the Android and desktop SDL builds.
+
 ### Windows SDL3 game
 
 Extract the Windows zip for your processor and run `xmris.exe` from the

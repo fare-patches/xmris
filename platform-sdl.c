@@ -152,9 +152,132 @@ char *garden_resource(const char *name, const char *suffix)
   return NULL;
 }
 
+/* Use SDL's mappings for gamepads and conventional axes for arcade sticks. */
+static SDL_Gamepad *pad;
+static SDL_Joystick *stick;
+static SDL_JoystickID controller_id;
+static KeySym held_move, held_fire, held_pause;
+static int axes[2], hat, last_axis;
+
+static void controller_key(KeySym *held, KeySym next)
+{
+  if (*held == next) return;
+  if (*held) game_keyrelease(*held);
+  *held = next;
+  if (next) game_keypress(next);
+}
+
+static void reset_controller(void)
+{
+  controller_key(&held_move,0);
+  controller_key(&held_fire,0);
+  controller_key(&held_pause,0);
+  axes[0] = axes[1] = hat = last_axis = 0;
+}
+
+static void open_controller(SDL_JoystickID id)
+{
+  if (controller_id) return;
+  if (SDL_IsGamepad(id)) pad = SDL_OpenGamepad(id);
+  if (!pad) stick = SDL_OpenJoystick(id);
+  if (pad || stick) controller_id = id;
+}
+
+static void close_controller(void)
+{
+  reset_controller();
+  if (pad) SDL_CloseGamepad(pad);
+  if (stick) SDL_CloseJoystick(stick);
+  pad = NULL;
+  stick = NULL;
+  controller_id = 0;
+}
+
+static void controller_move(void)
+{
+  static const KeySym arrows[] = {SDLK_UP,SDLK_DOWN,SDLK_LEFT,SDLK_RIGHT};
+  int x = !!(hat & SDL_HAT_RIGHT) - !!(hat & SDL_HAT_LEFT);
+  int y = !!(hat & SDL_HAT_DOWN) - !!(hat & SDL_HAT_UP);
+  if (!hat) {
+    x = axes[0];
+    y = axes[1];
+    if (SDL_abs(x) < 12000) x = 0;
+    if (SDL_abs(y) < 12000) y = 0;
+  }
+  int dir = -1;
+  if (x && (SDL_abs(x)>SDL_abs(y) || (SDL_abs(x)==SDL_abs(y) && last_axis==0)))
+    dir = x<0 ? 2 : 3;
+  else if (y) dir = y<0 ? 0 : 1;
+  KeySym key = 0;
+  if (dir >= 0) key = global.state == MODE_KEY_DEF ? arrows[dir] : data.keysyms[dir];
+  controller_key(&held_move,key);
+}
+
+static void controller_button(int button, int down)
+{
+  if (pad) {
+    static const int bits[] = {SDL_HAT_UP, SDL_HAT_DOWN, SDL_HAT_LEFT, SDL_HAT_RIGHT};
+    if (button >= SDL_GAMEPAD_BUTTON_DPAD_UP && button <= SDL_GAMEPAD_BUTTON_DPAD_RIGHT) {
+      int bit = bits[button-SDL_GAMEPAD_BUTTON_DPAD_UP];
+      if (down) { hat |= bit; last_axis = !(bit & (SDL_HAT_LEFT|SDL_HAT_RIGHT)); }
+      else hat &= ~bit;
+      controller_move();
+      return;
+    }
+  }
+  if (button == (pad ? SDL_GAMEPAD_BUTTON_SOUTH : 0))
+    controller_key(&held_fire,down ? (global.state==MODE_KEY_DEF ? SDLK_RETURN : data.keysyms[KEY_THROW]) : 0);
+  if (button == (pad ? SDL_GAMEPAD_BUTTON_START : 1))
+    controller_key(&held_pause,down ? (global.state==MODE_KEY_DEF ? SDLK_ESCAPE :
+        in_attract_mode ? data.keysyms[KEY_KEYBOARD] : data.keysyms[KEY_PAUSE]) : 0);
+}
+
+static void controller_event(const SDL_Event *e)
+{
+  switch (e->type) {
+    case SDL_EVENT_JOYSTICK_ADDED: open_controller(e->jdevice.which); break;
+    case SDL_EVENT_JOYSTICK_REMOVED:
+      if (e->jdevice.which == controller_id) {
+        close_controller();
+        int count;
+        SDL_JoystickID *ids = SDL_GetJoysticks(&count);
+        for (int i=0; ids && i<count && !controller_id; i++) open_controller(ids[i]);
+        SDL_free(ids);
+      }
+      break;
+    case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+    case SDL_EVENT_JOYSTICK_AXIS_MOTION: {
+      int mapped = e->type == SDL_EVENT_GAMEPAD_AXIS_MOTION;
+      if (mapped != !!pad || (mapped ? e->gaxis.which : e->jaxis.which) != controller_id) break;
+      int axis = mapped ? e->gaxis.axis : e->jaxis.axis;
+      if (axis>1) break;
+      axes[axis] = mapped ? e->gaxis.value : e->jaxis.value;
+      last_axis = axis;
+      controller_move();
+      break;
+    }
+    case SDL_EVENT_JOYSTICK_HAT_MOTION:
+      if (stick && e->jhat.which==controller_id && !e->jhat.hat) {
+        hat=e->jhat.value;
+        controller_move();
+      }
+      break;
+    case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+    case SDL_EVENT_GAMEPAD_BUTTON_UP:
+      if (pad && e->gbutton.which==controller_id) controller_button(e->gbutton.button,e->gbutton.down);
+      break;
+    case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+    case SDL_EVENT_JOYSTICK_BUTTON_UP:
+      if (stick && e->jbutton.which==controller_id) controller_button(e->jbutton.button,e->jbutton.down);
+      break;
+    case SDL_EVENT_WINDOW_FOCUS_LOST: reset_controller(); break;
+  }
+}
+
 static void handle_event(SDL_Window *window, const SDL_Event *event)
 {
   static int resume_timer;
+  controller_event(event);
 #ifdef __ANDROID__
   phone_event(window,event);
 #endif
@@ -258,6 +381,7 @@ int main(int argc,char **argv)
 #endif
   SDL_SetAppMetadata("xmris", XMRISVERSION, NULL);
   if (!SDL_Init(SDL_INIT_VIDEO)) fatal_error("%s",SDL_GetError());
+  SDL_InitSubSystem(SDL_INIT_GAMEPAD);
   /* Named keys are resolved using the active SDL keyboard layout. */
   load_keys();
   if (!scale) {
@@ -300,6 +424,7 @@ int main(int argc,char **argv)
 #ifdef __ANDROID__
   phone_reset();
 #endif
+  close_controller();
   SDL_Quit();
   return 0;
 }
