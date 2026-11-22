@@ -17,3 +17,4 @@ bitmaps/*/sprites
 /xmris-sdl
 /build/sdl/
 /build/windows-*/
+/build/android/

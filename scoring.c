@@ -16,7 +16,7 @@
 #define lock_file(stream) win_lock(stream, 1)
 #define unlock_file(stream) win_lock(stream, 0)
 #elif !defined(SYSV)
-#ifdef linux
+#if defined(linux) || defined(__ANDROID__)
 #include <sys/file.h>
 #endif
 #define lock_file(stream) flock(fileno(stream), LOCK_EX)
@@ -209,7 +209,7 @@ extern VOIDFUNC init_scores_early FUNCARGVOID
  * sgid rights
  */
 {
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__ANDROID__)
   score_file = NULL;
 #else
   /* Figure out who we really are. */
@@ -252,7 +252,10 @@ extern VOIDFUNC init_scores FUNCARGVOID
   user = NULL;
 
   reallife = NULL;
-#ifdef _WIN32
+#ifdef __ANDROID__
+  user = "Player";
+  home = SDL_GetAndroidInternalStoragePath();
+#elif defined(_WIN32)
   user = getenv("USERNAME");
 #else
   /*{{{  read passwd information*/
@@ -561,7 +564,7 @@ FUNCARG((insert),
   }
   /*}}}*/
   /* expire person? */
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__ANDROID__)
   if(getuid() != 0)
     {
       if(data.remove)

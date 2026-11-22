@@ -19,7 +19,12 @@ static char *config_path(int create)
   (void)create;
   return win_pref_file("config");
 #else
+#ifdef __ANDROID__
+  const char *base = SDL_GetAndroidInternalStoragePath();
+  if (!base) return NULL;
+#else
   const char *base = getenv("XDG_CONFIG_HOME");
+#endif
   const char *parent = "";
   if (!base || *base != '/') {
     base = getenv("HOME");
