@@ -16,7 +16,7 @@
 #define lock_file(stream) win_lock(stream, 1)
 #define unlock_file(stream) win_lock(stream, 0)
 #elif !defined(SYSV)
-#if defined(linux) || defined(__ANDROID__)
+#if defined(linux) || defined(__ANDROID__) || defined(__APPLE__)
 #include <sys/file.h>
 #endif
 #define lock_file(stream) flock(fileno(stream), LOCK_EX)
@@ -209,7 +209,7 @@ extern VOIDFUNC init_scores_early FUNCARGVOID
  * sgid rights
  */
 {
-#if defined(_WIN32) || defined(__ANDROID__)
+#if defined(_WIN32) || defined(__ANDROID__) || defined(SDL_PLATFORM_APPLE)
   score_file = NULL;
 #else
   /* Figure out who we really are. */
@@ -252,7 +252,10 @@ extern VOIDFUNC init_scores FUNCARGVOID
   user = NULL;
 
   reallife = NULL;
-#ifdef __ANDROID__
+#if defined(SDL_PLATFORM_IOS)
+  user = "Player";
+  home = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
+#elif defined(__ANDROID__)
   user = "Player";
   home = SDL_GetAndroidInternalStoragePath();
 #elif defined(_WIN32)
@@ -564,7 +567,7 @@ FUNCARG((insert),
   }
   /*}}}*/
   /* expire person? */
-#if !defined(_WIN32) && !defined(__ANDROID__)
+#if !defined(_WIN32) && !defined(__ANDROID__) && !defined(SDL_PLATFORM_APPLE)
   if(getuid() != 0)
     {
       if(data.remove)

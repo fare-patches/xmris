@@ -1,5 +1,5 @@
 #include "xmris.h"
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(SDL_PLATFORM_IOS)
 #include "android/input.h"
 #endif
 #include "defmris.h"
@@ -128,11 +128,11 @@ void video_sync(void)
   SDL_SetRenderDrawColor(renderer,0,0,0,255);
   SDL_RenderClear(renderer);
   SDL_FRect board_rect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(SDL_PLATFORM_IOS)
   board_rect = phone_board(renderer);
 #endif
   SDL_RenderTexture(renderer,texture,NULL,&board_rect);
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(SDL_PLATFORM_IOS)
   phone_draw(renderer);
 #endif
   SDL_RenderPresent(renderer);
@@ -230,7 +230,7 @@ SDL_Window *sdl_video_open(int scale, int fullscreen, SDL_RendererLogicalPresent
   if (!texture) fatal_error("%s",SDL_GetError());
   SDL_SetTextureScaleMode(texture,SDL_SCALEMODE_NEAREST);
   int logical_height = WINDOW_HEIGHT;
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(SDL_PLATFORM_IOS)
   mode = SDL_LOGICAL_PRESENTATION_DISABLED;
 #endif
   if (!SDL_SetRenderLogicalPresentation(renderer,WINDOW_WIDTH,logical_height,mode))
