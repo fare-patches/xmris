@@ -134,7 +134,7 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
       tap(data.keysyms[KEY_THROW]);
       return;
     }
-    if (steering && action != STOP) return;
+    /* The newest direction owns steering, including its eventual release. */
     steering = 1;
     finger = f->fingerID;
     steer(action == STOP ? -1 : action);

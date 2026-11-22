@@ -63,6 +63,9 @@ void game_keypress(KeySym keysym)
     for(ix = KEYS; ix--;)
       if(keysym == data.keysyms[ix])
 	{
+	  /* A new direction supersedes older holds. Keep action keys held. */
+	  if(ix < 4)
+	    global.pressed &= ~0xFU;
 	  global.pressed |= 1 << ix;
 	  if(ix == KEY_PAUSE)
 	    {
