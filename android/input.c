@@ -33,9 +33,13 @@ static void button(SDL_Renderer *r, struct layout layout, int row, int column,
   SDL_FRect rect = layout.controls;
   rect.w /= count;
   rect.x += column*rect.w;
-  rect.y += row*layout.row;
-  if (global.state != MODE_KEY_DEF)
+  if (global.state == MODE_KEY_DEF) {
+    rect.h /= 2;
+    rect.y += row*rect.h;
+  } else {
+    rect.y += row*layout.row;
     rect.h = row == 3 ? rect.h-3*layout.row : row == 1 ? 2*layout.row : layout.row;
+  }
   rect.x++; rect.y++; rect.w-=2; rect.h-=2;
   SDL_SetRenderDrawColor(r, active ? 40 : 32, active ? 104 : 47, active ? 115 : 59, 255);
   SDL_RenderFillRect(r, &rect);
@@ -49,13 +53,17 @@ static void button(SDL_Renderer *r, struct layout layout, int row, int column,
   SDL_SetRenderScale(r,sx,sy);
 }
 
+static const struct { const char *label; KeySym key; } menu[] = {
+  {"Up", SDLK_UP}, {"Select", SDLK_RETURN},
+  {"Down", SDLK_DOWN}, {"Back", SDLK_ESCAPE}
+};
+
 void phone_draw(SDL_Renderer *r)
 {
   static const char *const labels[] = {"Up","Down","Left","Right"};
-  static const char *const menu[] = {"Up", "Down", "Select", "Back"};
   struct layout layout = phone_layout(r);
   if (global.state == MODE_KEY_DEF) {
-    for (int i=0; i<4; i++) button(r,layout,0,i,4,menu[i],0);
+    for (int i=0; i<4; i++) button(r,layout,i/2,i%2,2,menu[i].label,0);
     return;
   }
   button(r,layout,0,0,3,in_attract_mode ? "Start" : "Throw",0);
@@ -120,8 +128,11 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
   if (event->type == SDL_EVENT_FINGER_DOWN) {
     if (!inside && !board) return;
     if (global.state == MODE_KEY_DEF) {
-      const KeySym menu[] = {SDLK_UP,SDLK_DOWN,SDLK_RETURN,SDLK_ESCAPE};
-      if (inside) game_keypress(menu[SDL_min(3,(int)(4*fraction))]);
+      if (inside) {
+        int lower = y >= controls.y + controls.h/2;
+        int right = fraction >= 0.5f;
+        game_keypress(menu[2*lower + right].key);
+      }
       return;
     }
     if (row == 3) {
