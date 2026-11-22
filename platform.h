@@ -8,6 +8,7 @@ KeySym canonical_key(KeySym key);
 const char *portable_key_name(KeySym key);
 void game_tick(void);
 void game_wake(void);
+int game_is_paused(void);
 void game_keypress(KeySym key);
 void game_keyrelease(KeySym key);
 void set_key_default(void);

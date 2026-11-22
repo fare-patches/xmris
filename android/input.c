@@ -2,7 +2,7 @@
 #include "input.h"
 
 /* The indices of the four movement bindings are up, down, left, right. */
-static int direction = -1, steering;
+static int direction = -1, steering, confirming_quit;
 static SDL_FingerID finger;
 static SDL_FPoint anchor;
 static KeySym release_key;
@@ -66,6 +66,13 @@ void phone_draw(SDL_Renderer *r)
     for (int i=0; i<4; i++) button(r,layout,menu[i].row,menu[i].column,3,menu[i].label,0);
     return;
   }
+  if (game_is_paused()) {
+    button(r,layout,0,0,1,"Resume",0);
+    if (confirming_quit)
+      button(r,layout,2,0,1,"Confirm end game",0);
+    button(r,layout,3,0,1,confirming_quit ? "Cancel" : "End game...",0);
+    return;
+  }
   button(r,layout,0,0,1,direction < 0 ? "Swipe to steer" : labels[direction],direction >= 0);
   button(r,layout,2,0,1,in_attract_mode ? "Start" : "Throw",0);
   button(r,layout,3,0,1,in_attract_mode ? "Options" : "Pause",0);
@@ -81,6 +88,7 @@ static void steer(int next)
 
 void phone_after_tick(void)
 {
+  if (!game_is_paused()) confirming_quit = 0;
   if (release_key) {
     game_keyrelease(release_key);
     release_key = 0;
@@ -97,7 +105,7 @@ static void tap(KeySym key)
 void phone_reset(void)
 {
   steer(-1);
-  steering = 0;
+  steering = confirming_quit = 0;
   phone_after_tick();
 }
 
@@ -135,9 +143,20 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
       }
       return;
     }
+    if (game_is_paused()) {
+      if (row == 3) {
+        confirming_quit = !confirming_quit;
+        refresh_window();
+      } else if (row == 2 && confirming_quit) {
+        tap(data.keysyms[KEY_QUIT]);
+      } else {
+        game_wake();
+      }
+      return;
+    }
     if (row == 3) {
       if (in_attract_mode) tap(data.keysyms[KEY_KEYBOARD]);
-      else global.pause = 1;
+      else { steer(-1); steering = 0; global.pause = 1; }
       return;
     }
     game_wake();
@@ -150,7 +169,7 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
     finger = f->fingerID;
     anchor = point;
     steer(-1);
-  } else if (steering && finger == f->fingerID) {
+  } else if (!game_is_paused() && steering && finger == f->fingerID) {
     float dx = x-anchor.x, dy = y-anchor.y;
     float ax = SDL_fabsf(dx), ay = SDL_fabsf(dy);
     float threshold = controls.w/32;
