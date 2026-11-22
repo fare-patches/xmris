@@ -104,8 +104,10 @@ Android Virtual Device, use `adb -e install -r xmris-android.apk` and
 Use `adb -s SERIAL` if several devices are connected.
 
 Tap **Start**. The **Mode** button cycles through the available controls and
-saves your choice. **Zones** gives you four directional buttons. Slide between
-them or lift to stop. In **Tilt**, hold the phone at the angle you want as
+saves your choice. **Zones** gives you a directional diamond. Slide between directions or lift to
+stop. The center and both lower corners also stop movement. Either upper
+corner throws. The separate bottom row holds Mode and Pause (Options on
+the title screen). In **Tilt**, hold the phone at the angle you want as
 neutral and tap **Tap to center tilt** to recalibrate. **Flick** lets you
 swipe on the left side in the desired direction and then lift. Tap the left
 side to stop. Tap **Throw** or the right side of the board with another finger
