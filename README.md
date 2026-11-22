@@ -47,24 +47,24 @@ make -f Makefile.sdl
 ```
 
 #### SDL3 Test Run
-```
+```sh
 ./xmris-sdl
 ```
 
 #### SDL3 Install
 To install in `/usr/local`, the default, you would:
-```
+```sh
 sudo make -f Makefile.sdl install install.man
 ```
 
 Or you can override the installation `PREFIX` as follows,
 assuming your `PATH` and `MANPATH` are prepared to deal with it:
-```
+```sh
 make PREFIX=$HOME/.local -f Makefile.sdl install install.man
 ```
 
 #### SDL3 Run
-```
+```sh
 man 6 xmris-sdl
 xmris-sdl
 ```
@@ -102,6 +102,14 @@ make -f Makefile.windows ARCH=x86_64 SDL_DIR=/opt/SDL3-3.4.20
 Each build lands in `build/windows-$ARCH/`. On ARM64 Linux with native
 Wine, run `wine build/windows-aarch64/xmris.exe -scale fit`.
 
+_NB_: On my Linux box using stumpwm, I couldn't get keyboard focus
+onto the xmris window unless I started with the following command, and
+even then, I had to switch away from the window and back to it to get focus:
+```sh
+wine explorer /desktop=XmrisPanel,1920x1200 ./xmris.exe -fullscreen -scale auto
+```
+
+
 ### Building with X11
 
 #### X11 Prerequisites
@@ -123,24 +131,24 @@ The rpmfusion docs suggest you also need to install the 100dpi bitmap fonts
 (debian package `xfonts-100dpi`), but in my experience they are not necessary to run the game.
 
 #### X11 Build
-```
+```sh
 xmkmf
 make
 ```
 
 #### X11 Test Run
-```
+```sh
 ./xmris
 ```
 
 #### X11 Install
-```
+```sh
 make install
 make install.man
 ```
 
 #### X11 Run
-```
+```sh
 man 6 xmris
 xmris
 ```
@@ -268,5 +276,5 @@ If you want to make this game better, have an AI add the following features:
 Do you understand what triggers the letters to go out?
 What are the (somewhat) harder letters to collect?
 
-Challenge: can you collect all the letters right in garden 1?
-It isn't easy, but it's possible!
+_Challenge_: Can you collect all the EXTRA letters right in garden 1
+without losing a life? It isn't easy, but it's possible!
