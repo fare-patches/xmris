@@ -1,4 +1,4 @@
-# XMRIS 4.1.1 in 2026
+# XMRIS 4.1.2 in 2026
 
 xmris (1992-1995) by Nathan Sidwell is a remarkably faithful Unix clone of
 Mr. Do!, a 1982 game for 8-bit consoles by Kazutoshi Ueda.
@@ -18,6 +18,12 @@ dying and gaining a life at the same time, etc.),
 that Nathan perfectly reproduced.
 
 2026 revival and SDL port maintained by François-René (Faré) Rideau.
+
+## What's new in 4.1.2
+
+* Android adds full-screen swipe steering, touch menus, and pause-to-end confirmation.
+* SDL supports gamepads and joysticks. Windows builds include SDL and the distributed gardens.
+* macOS and iOS have experimental app-bundle builds and an Apple CI workflow.
 
 ## What's new in 4.1.1
 

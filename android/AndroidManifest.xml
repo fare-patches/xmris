@@ -1,4 +1,4 @@
-<manifest package="org.xmris.game" android:versionCode="1" android:versionName="4.1.1-dev" xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest package="org.xmris.game" android:versionCode="2" android:versionName="4.1.2" xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="35"/>
     <application android:label="XMRiS" android:icon="@drawable/xmris"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen" android:appCategory="game" android:extractNativeLibs="true" android:debuggable="true">

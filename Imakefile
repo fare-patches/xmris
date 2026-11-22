@@ -6,7 +6,7 @@ XCOMM Copyright (C) 1993,1999 Nathan Sidwell
 XCOMM RCS $Id: Imakefile 1.4 Mon, 22 Nov 1999 13:56:06 +0000 nathan $
 
 XCOMM $Format: "VERSION = $ReleaseVersion$"$
-VERSION = 4.1.1
+VERSION = 4.1.2
 XCOMM $Format: "APP = $Project$"$
 APP = xmris
 
