@@ -207,21 +207,10 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
     if (finger != f->fingerID) return;
     float dx = x-anchor.x, dy = y-anchor.y;
     float ax = SDL_fabsf(dx), ay = SDL_fabsf(dy);
-    /* Track forward travel continuously so a turn starts at the thumb tip. */
-    if ((direction == RIGHT && dx > 0) || (direction == LEFT && dx < 0)) {
-      anchor.x = x;
-      if (ax > 2*ay) { anchor.y = y; ay = 0; }
-      ax = 0;
-    } else if ((direction == DOWN && dy > 0) || (direction == UP && dy < 0)) {
-      anchor.y = y;
-      if (ay > 2*ax) { anchor.x = x; ax = 0; }
-      ay = 0;
-    }
     if (SDL_max(ax,ay) < threshold) return;
-    /* Keep a short ambiguous diagonal quiet, but resolve a deliberate stroke. */
-    if (SDL_max(ax,ay) < 1.5f*threshold && ax < ay*1.2f && ay < ax*1.2f) return;
-    if (ax >= ay) steer(dx < 0 ? LEFT : RIGHT);
-    else steer(dy < 0 ? UP : DOWN);
+    if (ax > ay*1.2f) steer(dx < 0 ? LEFT : RIGHT);
+    else if (ay > ax*1.2f) steer(dy < 0 ? UP : DOWN);
+    else return; /* An ambiguous diagonal preserves the current direction. */
     anchor = point;
   }
 }

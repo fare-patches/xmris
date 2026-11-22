@@ -104,7 +104,7 @@ Android Virtual Device, use `adb -e install -r xmris-android.apk` and
 Use `adb -s SERIAL` if several devices are connected.
 
 Tap **Start**. Swipe anywhere on the game screen to steer. Hold still to
-keep moving, change swipe direction to turn, and lift to stop. A second
+keep moving, change swipe direction to turn, and lift to stop. A near-diagonal swipe keeps the current direction until one axis clearly dominates. A second
 swipe takes over even while the first thumb is down. At a screen edge,
 rest your other thumb near the center, then lift the first to carry the
 current direction over to the new thumb. Tap the Throw strip
