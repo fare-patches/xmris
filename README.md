@@ -103,9 +103,9 @@ Android Virtual Device, use `adb -e install -r xmris-android.apk` and
 `adb -e shell am start -n org.xmris.game/org.libsdl.app.SDLActivity`.
 Use `adb -s SERIAL` if several devices are connected.
 
-Tap either **Start** button. Swipe on the steering pad to move. Hold your thumb
+Tap **Start**. Swipe on the steering pad to move. Hold your thumb
 still to keep going, swipe in another direction to turn, and lift to stop.
-Either upper corner or the board throws independently of the steering thumb.
+Tap the Throw strip below the swipe area, or tap the board, to fire with a second thumb.
 Pause has its own row. A fresh steering touch, throw, or keyboard press
 resumes play, except for Pause itself. The configured quit key still quits.
 The Options screen has touch controls for Up, Down, Select and Back.
