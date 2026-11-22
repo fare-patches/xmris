@@ -215,7 +215,9 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
       steer(dy < 0 ? UP : DOWN);
     else if ((direction == DOWN && dy < 0) || (direction == UP && dy > 0))
       steer(dx < 0 ? LEFT : RIGHT);
-    else return;
+    else if (direction < 0) return;
+    /* A forward diagonal is a completed stroke in the held direction.
+     * Measure the next turn from here, however long the diagonal lasted. */
     anchor = point;
   }
 }
