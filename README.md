@@ -131,6 +131,35 @@ in a menu. Press the throw button to resume. For an unmapped joystick,
 use its first two axes or first hat, first button to throw and second to pause.
 These controls are shared by the Android and desktop SDL builds.
 
+### macOS and iOS
+
+On a Mac with Xcode and CMake, generate the sprite headers using the host
+compiler, then build the macOS app:
+
+```sh
+make -f Makefile.sdl CC=clang bitmaps/sprites
+cmake -S apple -B build/mac -G Xcode
+cmake --build build/mac --config Release --target XMRiS
+open build/mac/Release/XMRiS.app
+```
+
+For iOS, configure a separate build directory and open its Xcode project:
+
+```sh
+cmake -S apple -B build/ios -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_SYSROOT=iphonesimulator -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0
+open build/ios/XMRiS.xcodeproj
+```
+
+Select the XMRiS scheme and an iPhone simulator, then Run. For a physical
+iPhone, configure another directory with `-DCMAKE_OSX_SYSROOT=iphoneos`
+and select your signing team in Xcode. iOS uses the same touch controls
+as Android. Both Apple targets support SDL controllers.
+
+The **Apple SDL** workflow builds macOS, iOS Simulator, and unsigned iOS
+device app bundles. The simulator job installs and launches the game.
+These are development artifacts. The device bundle needs provisioning and
+signing for installation, and the macOS artifact is not notarized.
+
 ### Windows SDL3 game
 
 Extract the Windows zip for your processor and run `xmris.exe` from the

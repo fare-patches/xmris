@@ -1,6 +1,6 @@
 #include "xmris.h"
 #include "sound.h"
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(SDL_PLATFORM_IOS)
 #include <SDL3/SDL_main.h>
 #include "android/input.h"
 #endif
@@ -278,7 +278,7 @@ static void handle_event(SDL_Window *window, const SDL_Event *event)
 {
   static int resume_timer;
   controller_event(event);
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(SDL_PLATFORM_IOS)
   phone_event(window,event);
 #endif
   switch (event->type) {
@@ -325,13 +325,13 @@ int main(int argc,char **argv)
   int scale=0, fullscreen=0;
   SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_INTEGER_SCALE;
   SDL_Window *window;
-#if !defined(_WIN32) && !defined(__ANDROID__)
+#if !defined(_WIN32) && !defined(__ANDROID__) && !defined(SDL_PLATFORM_APPLE)
   sigset_t alarm, previous;
 #endif
 #ifdef _WIN32
   setlocale(LC_CTYPE, ".UTF8");
 #endif
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(SDL_PLATFORM_IOS)
   fullscreen=1;
   SDL_SetHint(SDL_HINT_ORIENTATIONS, "Portrait");
   mode=SDL_LOGICAL_PRESENTATION_LETTERBOX;
@@ -373,7 +373,7 @@ int main(int argc,char **argv)
   }
   init_scores();
   create_boards();
-#if !defined(_WIN32) && !defined(__ANDROID__)
+#if !defined(_WIN32) && !defined(__ANDROID__) && !defined(SDL_PLATFORM_APPLE)
   /* Worker threads must leave SIGALRM to the shared game timer. */
   sigemptyset(&alarm);
   sigaddset(&alarm,SIGALRM);
@@ -392,7 +392,7 @@ int main(int argc,char **argv)
   }
   window=sdl_video_open(scale,fullscreen,mode);
   if (data.sound) sound_open();
-#if !defined(_WIN32) && !defined(__ANDROID__)
+#if !defined(_WIN32) && !defined(__ANDROID__) && !defined(SDL_PLATFORM_APPLE)
   sigprocmask(SIG_SETMASK,&previous,NULL);
 #endif
   display.mapped=1;
@@ -411,7 +411,7 @@ int main(int argc,char **argv)
       SDL_MinimizeWindow(window);
     } else {
       game_tick();
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(SDL_PLATFORM_IOS)
       phone_after_tick();
 #endif
       video_sync();
@@ -421,7 +421,7 @@ int main(int argc,char **argv)
   timer_close();
   sound_close();
   cleanup_scores();
-#ifdef __ANDROID__
+#if defined(__ANDROID__) || defined(SDL_PLATFORM_IOS)
   phone_reset();
 #endif
   close_controller();

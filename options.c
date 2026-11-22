@@ -20,7 +20,9 @@ static char *config_path(int create)
   (void)create;
   return win_pref_file("config");
 #else
-#ifdef __ANDROID__
+#if defined(SDL_PLATFORM_IOS)
+  const char *base = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS);
+#elif defined(__ANDROID__)
   const char *base = SDL_GetAndroidInternalStoragePath();
   if (!base) return NULL;
 #else
