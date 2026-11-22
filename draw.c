@@ -64,6 +64,25 @@ static BOARD internal_boards[] =
 {
 #include "digits.gdn"
 };
+static BOARD alphabet_boards[] = {
+#include "alphabet.gdn"
+};
+static BOARD puzzle_boards[] = {
+#include "puzzle.gdn"
+};
+static BOARD editor_boards[] = {
+#include "xmred.gdn"
+};
+static const struct {
+  const char *name;
+  BOARD *boards;
+  size_t count;
+} bundled[] = {
+  {"digits", internal_boards, XtNumber(internal_boards)},
+  {"alphabet", alphabet_boards, XtNumber(alphabet_boards)},
+  {"puzzle", puzzle_boards, XtNumber(puzzle_boards)},
+  {"xmred", editor_boards, XtNumber(editor_boards)}
+};
 /*}}}*/
 /*{{{  static char CONST *text_error[] =*/
 static char CONST *text_error[] =
@@ -484,6 +503,14 @@ FUNCARG((map),
 	  {
 	    if(*cptr == GARDEN_CHERRY || ISPATHCHERRY(*cptr))
 	      totals[4]--;
+            else if(ISPATHDEN(*cptr))
+              totals[5]--;
+            else if(ISPATHPLAYER(*cptr))
+              totals[6]--;
+            /* Account for the replacement before checking for missing cells again. */
+            if(c == GARDEN_PATH_CHERRY) totals[4]++;
+            else if(c == GARDEN_PATH_DEN) totals[5]++;
+            else totals[6]++;
 	    if(ISPATH(*cptr))
 	      c = (GARDENPATH(*cptr) & 3) + c + GARDEN_PATH;
 	    else if(c == GARDEN_PATH_CHERRY)
@@ -1002,6 +1029,7 @@ ARGSEP  char CONST *parent
   unsigned  error;
   BOARD   *bptr;
 
+  size_t builtin = 0;
   sptr = &parse.stack[parse.depth];
   sptr->name = NULL;
   error = 0;
@@ -1060,6 +1088,16 @@ ARGSEP  char CONST *parent
               }
           }
       }
+      if(filename && !stream)
+        for(builtin = 0; builtin < XtNumber(bundled); builtin++) {
+          size_t n = strlen(bundled[builtin].name);
+          if(!strncmp(name, bundled[builtin].name, n) &&
+              (!name[n] || !strcmp(name+n, FILE_SUFFIX))) {
+            free(filename);
+            filename = NULL;
+            break;
+          }
+        }
       sptr->name = filename;
       if(filename && !stream)
 	{
@@ -1328,9 +1366,8 @@ ARGSEP  char CONST *parent
 	    break;
 	}
 	/*}}}*/
-      else if(sptr->garden != sizeof(internal_boards) /
-	  sizeof(internal_boards[0]))
-	bptr = &internal_boards[sptr->garden];
+      else if(sptr->garden < bundled[builtin].count)
+	bptr = &bundled[builtin].boards[sptr->garden];
       else
 	break;
       /*{{{  a new garden?*/

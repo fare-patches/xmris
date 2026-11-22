@@ -1,38 +1,16 @@
-# Cross-build on Linux using LLVM-MinGW and the official SDL3 VC development zip.
+# Cross-build the game and its private static SDL using LLVM-MinGW.
 ARCH ?= aarch64
-SDL_ARCH_aarch64 = arm64
-SDL_ARCH_x86_64 = x64
 TARGET = $(ARCH)-w64-mingw32
-CC = $(TARGET)-clang
 OUT = build/windows-$(ARCH)
-SDL_LIBDIR = $(SDL_DIR)/lib/$(SDL_ARCH_$(ARCH))
-sources = options.c platform-sdl.c video-sdl.c apple.c defmris.c demo.c draw.c monster.c move.c player.c scoring.c timer.c sound.c xmris.c win-files.c
-objects = $(sources:%.c=$(OUT)/%.o)
-CFLAGS ?= -O2 -g
+SDL_DIR ?= build/SDL3-3.4.20
 .PHONY: all
-all: $(OUT)/xmris.exe $(OUT)/SDL3.dll $(addprefix $(OUT)/,alphabet.gdn digits.gdn puzzle.gdn xmred.gdn)
+all: bitmaps/sprites
+	cmake -S windows -B $(OUT) -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_SYSTEM_PROCESSOR=$(ARCH) \
+	  -DCMAKE_C_COMPILER=$(TARGET)-clang -DCMAKE_CXX_COMPILER=$(TARGET)-clang++ \
+	  -DCMAKE_RC_COMPILER=$(TARGET)-windres -DCMAKE_BUILD_TYPE=Release \
+	  -DCMAKE_C_FLAGS="-ffunction-sections -fdata-sections" -DSDL_SOURCE="$(abspath $(SDL_DIR))" \
+	  -DSDL_STATIC=ON -DSDL_SHARED=OFF -DSDL_TEST_LIBRARY=OFF
+	cmake --build $(OUT) --target xmris
 
-$(OUT)/xmris.exe: $(objects) $(OUT)/manifest.o
-	$(CC) $(LDFLAGS) -o $@ $^ "$(SDL_LIBDIR)/SDL3.lib"
-
-$(OUT)/%.o: %.c
-	@mkdir -p $(@D)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -I"$(SDL_DIR)/include" -DXMRIS_SDL -MMD -MP -c $< -o $@
-
-$(OUT)/manifest.o: windows.rc windows.manifest
-	@mkdir -p $(@D)
-	$(TARGET)-windres windows.rc -o $@
-
-$(OUT)/defmris.o: bitmaps/sprites
 bitmaps/sprites: scram.c ansiknr.h Makefile.std $(wildcard bitmaps/*/*.rgb bitmaps/*/*.bw)
 	$(MAKE) -f Makefile.sdl bitmaps/sprites CC=cc
-
-$(OUT)/SDL3.dll: $(SDL_LIBDIR)/SDL3.dll
-	@mkdir -p $(@D)
-	cp $< $@
-
-$(OUT)/%.gdn: %.gdn
-	@mkdir -p $(@D)
-	cp $< $@
-
--include $(objects:.o=.d)

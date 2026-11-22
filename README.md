@@ -81,18 +81,55 @@ Run `./xmris-sdl -help` for the supported options.
 The SDL frontend uses the bundled 18-pixel X11 Courier bitmap font and command-line settings.
 The X11 game and the xmred garden editor use the existing imake build and X resources.
 
+The Linux executables also contain the digits, alphabet, puzzle and xmred
+gardens. Use e.g. `-gardens alphabet` to select one. External garden files
+retain priority, including explicitly supplied custom gardens.
+
+### Android game
+
+The debug APK supports ARM64 phones and x86-64 Android emulators. Extract
+`xmris-android.apk` from the Android workflow artifact. With USB debugging
+enabled and the phone authorized, install and launch from Linux:
+
+```sh
+adb devices
+adb install -r xmris-android.apk
+adb shell am start -n org.xmris.game/org.libsdl.app.SDLActivity
+```
+
+On an ARM64 Linux laptop, run the APK on a connected phone and use
+`scrcpy` to see and control it on the laptop. On a computer with a running
+Android Virtual Device, use `adb -e install -r xmris-android.apk` and
+`adb -e shell am start -n org.xmris.game/org.libsdl.app.SDLActivity`.
+Use `adb -s SERIAL` if several devices are connected.
+
+Tap **Start**. The **Mode** button cycles through the available controls and
+saves your choice. **Zones** gives you four directional buttons. Slide between
+them or lift to stop. In **Tilt**, hold the phone at the angle you want as
+neutral and tap **Tap to center tilt** to recalibrate. **Flick** lets you
+swipe on the left side in the desired direction and then lift. Tap the left
+side to stop. Tap **Throw** or the right side of the board with another finger
+to fire. Tilt requires an accelerometer. A hardware keyboard can also play.
+The Options screen has touch controls for Up, Down, Select and Back.
+Scores and preferences live in the app's private storage.
+
+To build on an x86-64 Linux SDK host, install JDK 17, Android SDK Platform 35,
+Build Tools 35.0.0, NDK 28.2.13676358, SDK CMake 3.22.1, zip, make and a C
+compiler. Set ANDROID_HOME and run `bash android/build.sh`. The APK is in
+`build/android/`. To update in place, use the same debug signing key.
+
 ### Windows SDL3 game
 
 Extract the Windows zip for your processor and run `xmris.exe` from the
-extracted folder. Keep `SDL3.dll` and the four garden files beside it.
+extracted folder. The executable contains SDL and all four garden sets.
 Arrow keys move, Space starts or throws, and F11 toggles fullscreen.
 Preferences and personal scores are saved in the user's SDL preference
 directory (normally `%APPDATA%\xmris`), in `config` and `score`.
 
-To cross-compile on Linux, install make and a native C compiler for the
+To cross-compile on Linux, install CMake, make and a native C compiler for the
 sprite generator. Put the bin directory of the UCRT edition of LLVM-MinGW
-on PATH and unpack the SDL3 VC development zip. It includes both Windows
-import libraries. Set SDL_DIR to its extracted directory, for example:
+on PATH and unpack the SDL3 3.4.20 source archive. Set SDL_DIR to that
+source directory, for example:
 
 ```sh
 make -f Makefile.windows ARCH=aarch64 SDL_DIR=/opt/SDL3-3.4.20
@@ -278,25 +315,3 @@ What are the (somewhat) harder letters to collect?
 
 _Challenge_: Can you collect all the EXTRA letters right in garden 1
 without losing a life? It isn't easy, but it's possible!
-
-### Android ARM64 play-test
-
-Download the `xmris-android-arm64` artifact from the Android SDL workflow,
-extract it and open the debug APK on your phone, or install over USB:
-
-```sh
-adb install -r xmris-arm64-debug.apk
-adb shell am start -n org.xmris.game/org.libsdl.app.SDLActivity
-```
-
-Tap the right half to start or throw. On the left half, touch and drag away
-from the initial touch point to move; lift to release. To try tilt steering,
-hold the phone at a comfortable angle and tap the top tenth of the screen.
-Tap there again to return to touch steering. Losing focus resets tilt.
-Hardware keyboards use the desktop bindings. Scores and preferences live in
-app-private storage. The default gardens are built in.
-
-To build locally on an x86-64 Linux Android SDK host, install JDK 17,
-the Android 35 SDK, Build Tools 35.0.0, NDK 28.2.13676358, SDK CMake 3.22.1, zip, make and a host C compiler.
-Set ANDROID_HOME and run `bash android/build.sh`. The script signs the test APK
-with the local debug key. Separate CI runs can use different signing keys.

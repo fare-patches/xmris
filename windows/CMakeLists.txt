@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.22)
+project(xmris_windows C CXX RC)
+add_subdirectory("${SDL_SOURCE}" SDL)
+set(root "${CMAKE_CURRENT_SOURCE_DIR}/..")
+set(sources options.c platform-sdl.c video-sdl.c apple.c defmris.c demo.c draw.c
+    monster.c move.c player.c scoring.c timer.c sound.c xmris.c win-files.c windows.rc)
+list(TRANSFORM sources PREPEND "${root}/")
+add_executable(xmris ${sources})
+target_include_directories(xmris PRIVATE "${root}")
+target_compile_definitions(xmris PRIVATE XMRIS_SDL)
+target_link_options(xmris PRIVATE -static -Wl,--gc-sections)
+target_link_libraries(xmris PRIVATE SDL3::SDL3-static)
