@@ -4,12 +4,10 @@
 /* The indices of the four movement bindings are up, down, left, right. */
 static int direction = -1, steering;
 static SDL_FingerID finger;
+static SDL_FPoint anchor;
 static KeySym release_key;
 
-enum pad_action { UP, DOWN, LEFT, RIGHT, STOP, THROW };
-static const enum pad_action pad[3][3] = {
-  {THROW, UP, THROW}, {LEFT, STOP, RIGHT}, {STOP, DOWN, STOP}
-};
+enum direction_index { UP, DOWN, LEFT, RIGHT };
 
 /* Work in drawable pixels. Android can change the usable area while playing. */
 struct layout { SDL_FRect board, controls; float row; };
@@ -37,7 +35,7 @@ static void button(SDL_Renderer *r, struct layout layout, int row, int column,
   rect.x += column*rect.w;
   rect.y += row*layout.row;
   if (global.state != MODE_KEY_DEF)
-    rect.h = row == 3 ? rect.h-3*layout.row : layout.row;
+    rect.h = row == 3 ? rect.h-3*layout.row : row == 1 ? 2*layout.row : layout.row;
   rect.x++; rect.y++; rect.w-=2; rect.h-=2;
   SDL_SetRenderDrawColor(r, active ? 40 : 32, active ? 104 : 47, active ? 115 : 59, 255);
   SDL_RenderFillRect(r, &rect);
@@ -53,19 +51,17 @@ static void button(SDL_Renderer *r, struct layout layout, int row, int column,
 
 void phone_draw(SDL_Renderer *r)
 {
-  static const char *const labels[] = {"Up","Down","Left","Right","Stop","Throw"};
+  static const char *const labels[] = {"Up","Down","Left","Right"};
   static const char *const menu[] = {"Up", "Down", "Select", "Back"};
   struct layout layout = phone_layout(r);
   if (global.state == MODE_KEY_DEF) {
     for (int i=0; i<4; i++) button(r,layout,0,i,4,menu[i],0);
     return;
   }
-  for (int row=0; row<3; row++)
-    for (int col=0; col<3; col++) {
-      int action = pad[row][col];
-      button(r,layout,row,col,3,action == THROW && in_attract_mode ? "Start" : labels[action],
-          action == direction);
-    }
+  button(r,layout,0,0,3,in_attract_mode ? "Start" : "Throw",0);
+  button(r,layout,0,1,3,"Swipe",0);
+  button(r,layout,0,2,3,in_attract_mode ? "Start" : "Throw",0);
+  button(r,layout,1,0,1,direction < 0 ? "Swipe to steer" : labels[direction],direction >= 0);
   button(r,layout,3,0,1,in_attract_mode ? "Options" : "Pause",0);
 }
 
@@ -105,6 +101,10 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
   if (event->type != SDL_EVENT_FINGER_DOWN && event->type != SDL_EVENT_FINGER_UP &&
       event->type != SDL_EVENT_FINGER_MOTION && event->type != SDL_EVENT_FINGER_CANCELED) return;
   const SDL_TouchFingerEvent *f = &event->tfinger;
+  if (event->type == SDL_EVENT_FINGER_UP || event->type == SDL_EVENT_FINGER_CANCELED) {
+    if (steering && finger == f->fingerID) { steer(-1); steering=0; }
+    return;
+  }
   int w,h;
   float x,y;
   if (!SDL_GetWindowSize(window,&w,&h) ||
@@ -129,22 +129,24 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
       else global.pause = 1;
       return;
     }
-    int action = row < 0 ? THROW : pad[row][column];
-    if (action == THROW) {
+    game_wake();
+    if ((board && !inside) || (row == 0 && column != 1)) {
       tap(data.keysyms[KEY_THROW]);
       return;
     }
     /* The newest direction owns steering, including its eventual release. */
     steering = 1;
     finger = f->fingerID;
-    steer(action == STOP ? -1 : action);
+    anchor = point;
+    steer(-1);
   } else if (steering && finger == f->fingerID) {
-    int next = -1;
-    if (event->type == SDL_EVENT_FINGER_MOTION && inside && row >= 0 && row < 3) {
-      int action = pad[row][column];
-      if (action < STOP) next = action;
-    }
-    steer(next);
-    if (event->type != SDL_EVENT_FINGER_MOTION) steering=0;
+    float dx = x-anchor.x, dy = y-anchor.y;
+    float ax = SDL_fabsf(dx), ay = SDL_fabsf(dy);
+    float threshold = controls.w/32;
+    if (SDL_max(ax,ay) < threshold) return;
+    if (ax > ay*1.2f) steer(dx < 0 ? LEFT : RIGHT);
+    else if (ay > ax*1.2f) steer(dy < 0 ? UP : DOWN);
+    else return;
+    anchor = point;
   }
 }

@@ -48,9 +48,17 @@ static PROTOANIMATE(animate_pause);
 #ifndef NDEBUG
 static VOIDFUNC game_assert PROTOARG((VOIDARG));
 #endif /* NDEBUG */
+static int paused, wake_requested;
+
+void game_wake(void)
+{
+  if (paused) wake_requested = 1;
+}
+
 void game_keypress(KeySym keysym)
 {
   unsigned ix;
+  if (keysym != data.keysyms[KEY_PAUSE]) game_wake();
   global.key = keysym;
   if (in_attract_mode && global.state != MODE_KEY_DEF) {
     const char *name = portable_key_name(keysym);
@@ -328,11 +336,12 @@ static FUNCANIMATE(animate_pause, next)
       int       depth;
       
       timer_set((unsigned long)0, TIMING_PAUSE);
+      paused = 1;
+      wake_requested = 0;
       set_key_default();
       rts = (PROTOANIMATE((*)))next;
       sound_music(MUSIC_OFF);
-      snprintf(buffer, sizeof(buffer), "%.21s to continue, %.21s to quit",
-	  key_name(data.keysyms[KEY_THROW]),
+      snprintf(buffer, sizeof(buffer), "Press a key to resume, %.21s to quit",
 	  key_name(data.keysyms[KEY_QUIT]));
       length = strlen(buffer);
       video_fill(display.copy, GCN(GC_CLEAR),
@@ -366,12 +375,13 @@ static FUNCANIMATE(animate_pause, next)
 	seat = NULL;
     }
     /*}}}*/
-  if(global.pressed & (1 << KEY_QUIT) || global.throw == 1)
+  if(wake_requested)
     /*{{{  end*/
     {
       MONSTER   *mptr;
       unsigned  count;
       
+      paused = wake_requested = 0;
       global.throw = 2;
       if(global.pressed & (1 << KEY_QUIT))
 	{
