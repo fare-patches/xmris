@@ -13,33 +13,51 @@ static SDL_Sensor *sensor;
 
 const char *phone_style_name(void) { return styles[style]; }
 
+enum pad_action { UP, DOWN, LEFT, RIGHT, STOP, THROW };
+static const enum pad_action pad[3][3] = {
+  {THROW, UP, THROW}, {LEFT, STOP, RIGHT}, {STOP, DOWN, STOP}
+};
+
 static void button(SDL_Renderer *r, int row, int column, int count, const char *label, int active)
 {
   float width = (float)WINDOW_WIDTH/count;
-  SDL_FRect rect = {column*width+1, WINDOW_HEIGHT+row*PHONE_ROW+1, width-2, PHONE_ROW-2};
+  int height = row == 3 ? PHONE_TOOLBAR : PHONE_ROW;
+  SDL_FRect rect = {column*width+1, WINDOW_HEIGHT+row*PHONE_ROW+1, width-2, height-2};
   SDL_SetRenderDrawColor(r, active ? 40 : 32, active ? 104 : 47, active ? 115 : 59, 255);
   SDL_RenderFillRect(r, &rect);
   SDL_SetRenderDrawColor(r, 255, 255, 255, 255);
-  SDL_RenderDebugText(r, rect.x+(rect.w-strlen(label)*8)/2, rect.y+(rect.h-8)/2, label);
+  float sx, sy;
+  SDL_GetRenderScale(r,&sx,&sy);
+  float scale = strlen(label)*16+8 <= rect.w ? 2 : 1;
+  SDL_SetRenderScale(r,sx*scale,sy*scale);
+  SDL_RenderDebugText(r,(rect.x+(rect.w-strlen(label)*8*scale)/2)/scale,
+      (rect.y+(rect.h-8*scale)/2)/scale,label);
+  SDL_SetRenderScale(r,sx,sy);
 }
 
 void phone_draw(SDL_Renderer *r)
 {
-  static const char *const directions[] = {"Up", "Down", "Left", "Right"};
+  static const char *const labels[] = {"Up","Down","Left","Right","Stop","Throw"};
   static const char *const menu[] = {"Up", "Down", "Select", "Back"};
   if (global.state == MODE_KEY_DEF) {
     for (int i=0; i<4; i++) button(r,0,i,4,menu[i],0);
     return;
   }
-  if (style == ZONES)
-    for (int i=0; i<4; i++) button(r,0,i,4,directions[i],direction==i);
-  else
+  if (style == ZONES) {
+    for (int row=0; row<3; row++)
+      for (int col=0; col<3; col++) {
+        int action = pad[row][col];
+        button(r,row,col,3,action == THROW && in_attract_mode ? "Start" : labels[action],
+            action == direction);
+      }
+  } else {
     button(r,0,0,1,style == TILT ? "Tap to center tilt" : "Flick to steer / tap to stop",0);
+    button(r,1,0,1,in_attract_mode ? "Start" : "Throw",0);
+  }
   char mode[20];
   snprintf(mode,sizeof(mode),"Mode: %s",phone_style_name());
-  button(r,1,0,3,mode,0);
-  button(r,1,1,3,in_attract_mode ? "Start" : "Throw",0);
-  button(r,1,2,3,in_attract_mode ? "Options" : "Pause",0);
+  button(r,3,0,2,mode,0);
+  button(r,3,1,2,in_attract_mode ? "Options" : "Pause",0);
 }
 
 static void steer(int next)
@@ -149,14 +167,21 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
       if (row == 0) game_keypress(menu[col]);
       return;
     }
-    if (row == 1) {
-      int slot = (int)(3*x/WINDOW_WIDTH);
-      if (slot == 0) cycle_style();
-      else if (slot == 1) tap(data.keysyms[KEY_THROW]);
+    if (row == 3) {
+      if (x < WINDOW_WIDTH/2) cycle_style();
       else if (in_attract_mode) tap(data.keysyms[KEY_KEYBOARD]);
       else global.pause = 1;
       return;
     }
+    int action = -1;
+    if (style == ZONES && row >= 0)
+      action = pad[row][(int)(3*x/WINDOW_WIDTH)];
+    if (action == THROW || (style != ZONES && row == 1)) {
+      tap(data.keysyms[KEY_THROW]);
+      return;
+    }
+    if (style != ZONES && row == 2) return;
+    if (action == STOP) { steer(-1); steering=0; return; }
     if (row == 0 && style == TILT) { calibrated=0; steer(-1); return; }
     if (row < 0 && (style != FLICK || x >= WINDOW_WIDTH/2)) {
       tap(data.keysyms[KEY_THROW]);
@@ -165,10 +190,16 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
     if (steering) return;
     steering=1; finger=f->fingerID; origin_x=x; origin_y=y; flicked=0;
     zone_touch = style == ZONES;
-    if (zone_touch) steer(col);
+    if (zone_touch) steer(action);
   } else if (steering && finger == f->fingerID) {
-    if (zone_touch)
-      steer(event->type == SDL_EVENT_FINGER_MOTION && inside && row == 0 ? col : -1);
+    if (zone_touch) {
+      int next = -1;
+      if (event->type == SDL_EVENT_FINGER_MOTION && inside && row >= 0 && row < 3) {
+        int action = pad[row][(int)(3*x/WINDOW_WIDTH)];
+        if (action < STOP) next = action;
+      }
+      steer(next);
+    }
     else if (event->type == SDL_EVENT_FINGER_CANCELED) steer(-1);
     else {
       vector(x-origin_x,y-origin_y,12,1);
