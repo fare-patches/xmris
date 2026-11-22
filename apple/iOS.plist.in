@@ -5,8 +5,8 @@
 <key>CFBundleIdentifier</key><string>org.xmris.game</string>
 <key>CFBundleName</key><string>XMRiS</string>
 <key>CFBundlePackageType</key><string>APPL</string>
-<key>CFBundleShortVersionString</key><string>4.1.1</string>
-<key>CFBundleVersion</key><string>1</string>
+<key>CFBundleShortVersionString</key><string>4.1.2</string>
+<key>CFBundleVersion</key><string>2</string>
 <key>LSRequiresIPhoneOS</key><true/>
 <key>UILaunchScreen</key><dict/>
 <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>
