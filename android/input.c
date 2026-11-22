@@ -4,7 +4,9 @@
 /* The indices of the four movement bindings are up, down, left, right. */
 static int direction = -1, steering, confirming_quit;
 static SDL_FingerID finger;
-static SDL_FPoint anchor;
+static SDL_FPoint anchor, pending_start;
+static SDL_FingerID pending_finger;
+static int pending;
 /* Action strips distinguish a tap from the start of a swipe. */
 static struct strip_touch {
   int active;
@@ -112,7 +114,7 @@ static void tap(KeySym key)
 void phone_reset(void)
 {
   steer(-1);
-  steering = confirming_quit = 0;
+  steering = pending = confirming_quit = 0;
   strips[0].active = strips[1].active = 0;
   phone_after_tick();
 }
@@ -153,7 +155,12 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
     break;
   }
   if (event->type == SDL_EVENT_FINGER_UP || event->type == SDL_EVENT_FINGER_CANCELED) {
-    if (steering && finger == f->fingerID) { steer(-1); steering=0; }
+    if (pending && pending_finger == f->fingerID) pending = 0;
+    if (steering && finger == f->fingerID) {
+      if (pending && event->type == SDL_EVENT_FINGER_UP) {
+        finger = pending_finger; anchor = pending_start; pending = 0;
+      } else { steer(-1); steering=0; }
+    }
     return;
   }
   if (event->type == SDL_EVENT_FINGER_DOWN) {
@@ -179,21 +186,42 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
       return;
     }
     newest_touch = f->fingerID;
+    pending = 0;
     if (row >= 2) {
       strips[row-2] = (struct strip_touch){1, f->fingerID, point};
       return;
     }
-    /* The newest direction owns steering, including its eventual release. */
+    if (steering) {
+      pending = 1; pending_finger = f->fingerID; pending_start = point;
+      return;
+    }
     steering = 1;
     finger = f->fingerID;
     anchor = point;
-  } else if (!game_is_paused() && steering && finger == f->fingerID) {
+  } else if (!game_is_paused() && steering) {
+    if (pending && pending_finger == f->fingerID) {
+      if (SDL_max(SDL_fabsf(x-pending_start.x),SDL_fabsf(y-pending_start.y)) < threshold)
+        return;
+      finger = pending_finger; anchor = pending_start; pending = 0;
+    }
+    if (finger != f->fingerID) return;
     float dx = x-anchor.x, dy = y-anchor.y;
     float ax = SDL_fabsf(dx), ay = SDL_fabsf(dy);
+    /* Track forward travel continuously so a turn starts at the thumb tip. */
+    if ((direction == RIGHT && dx > 0) || (direction == LEFT && dx < 0)) {
+      anchor.x = x;
+      if (ax > 2*ay) { anchor.y = y; ay = 0; }
+      ax = 0;
+    } else if ((direction == DOWN && dy > 0) || (direction == UP && dy < 0)) {
+      anchor.y = y;
+      if (ay > 2*ax) { anchor.x = x; ax = 0; }
+      ay = 0;
+    }
     if (SDL_max(ax,ay) < threshold) return;
-    if (ax > ay*1.2f) steer(dx < 0 ? LEFT : RIGHT);
-    else if (ay > ax*1.2f) steer(dy < 0 ? UP : DOWN);
-    else return;
+    /* Keep a short ambiguous diagonal quiet, but resolve a deliberate stroke. */
+    if (SDL_max(ax,ay) < 1.5f*threshold && ax < ay*1.2f && ay < ax*1.2f) return;
+    if (ax >= ay) steer(dx < 0 ? LEFT : RIGHT);
+    else steer(dy < 0 ? UP : DOWN);
     anchor = point;
   }
 }

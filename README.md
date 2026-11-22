@@ -105,7 +105,9 @@ Use `adb -s SERIAL` if several devices are connected.
 
 Tap **Start**. Swipe anywhere on the game screen to steer. Hold still to
 keep moving, change swipe direction to turn, and lift to stop. A second
-swipe takes over even while the first thumb is down. Tap the Throw strip
+swipe takes over even while the first thumb is down. At a screen edge,
+rest your other thumb near the center, then lift the first to carry the
+current direction over to the new thumb. Tap the Throw strip
 to fire with the other thumb. Swiping across or from a button still steers.
 Pause has its own row. A fresh steering touch, throw, or keyboard press
 resumes play, except for Pause itself. To end the current run by touch, tap Pause, then End game, then Confirm
