@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 3.22)
+project(xmris C CXX)
+add_subdirectory("${SDL_SOURCE}" SDL)
+set(root "$ENV{XMRIS_SOURCE}")
+set(sources options.c platform-sdl.c video-sdl.c apple.c defmris.c demo.c draw.c
+    monster.c move.c player.c scoring.c timer.c sound.c xmris.c android/input.c)
+list(TRANSFORM sources PREPEND "${root}/")
+add_library(main SHARED ${sources})
+target_include_directories(main PRIVATE "${root}")
+target_compile_definitions(main PRIVATE XMRIS_SDL)
+target_link_libraries(main PRIVATE SDL3::SDL3)

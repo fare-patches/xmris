@@ -54,7 +54,7 @@
  */
 /*}}}*/
 #include "xmris.h"
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__ANDROID__)
 typedef Uint64 tick_t;
 #define TICKTIME 1
 #define gettick(ptr) (*(ptr) = SDL_GetTicksNS() / 1000)
@@ -398,7 +398,7 @@ ARGSEP  unsigned  state
 #ifdef BUSYWAIT
       timer.delay = (tick_t)(tick / TICKTIME);
 #endif /* BUSYWAIT */
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__ANDROID__)
       timer.deadline = 0;
 #else
       timer.interval.it_value.tv_usec = tick;
@@ -477,7 +477,7 @@ extern VOIDFUNC timer_wait FUNCARGVOID
  */
 {
   int       point;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__ANDROID__)
   tick_t now;
   gettick(&now);
   if (now < timer.deadline) {

@@ -278,3 +278,25 @@ What are the (somewhat) harder letters to collect?
 
 _Challenge_: Can you collect all the EXTRA letters right in garden 1
 without losing a life? It isn't easy, but it's possible!
+
+### Android ARM64 play-test
+
+Download the `xmris-android-arm64` artifact from the Android SDL workflow,
+extract it and open the debug APK on your phone, or install over USB:
+
+```sh
+adb install -r xmris-arm64-debug.apk
+adb shell am start -n org.xmris.game/org.libsdl.app.SDLActivity
+```
+
+Tap the right half to start or throw. On the left half, touch and drag away
+from the initial touch point to move; lift to release. To try tilt steering,
+hold the phone at a comfortable angle and tap the top tenth of the screen.
+Tap there again to return to touch steering. Losing focus resets tilt.
+Hardware keyboards use the desktop bindings. Scores and preferences live in
+app-private storage. The default gardens are built in.
+
+To build locally on an x86-64 Linux Android SDK host, install JDK 17,
+the Android 35 SDK, Build Tools 35.0.0, NDK 28.2.13676358, SDK CMake 3.22.1, zip, make and a host C compiler.
+Set ANDROID_HOME and run `bash android/build.sh`. The script signs the test APK
+with the local debug key. Separate CI runs can use different signing keys.

@@ -1,5 +1,9 @@
 #include "xmris.h"
 #include "sound.h"
+#ifdef __ANDROID__
+#include <SDL3/SDL_main.h>
+#include "android/input.h"
+#endif
 #ifdef _WIN32
 #include <locale.h>
 #else
@@ -151,6 +155,9 @@ char *garden_resource(const char *name, const char *suffix)
 static void handle_event(SDL_Window *window, const SDL_Event *event)
 {
   static int resume_timer;
+#ifdef __ANDROID__
+  phone_event(window,event);
+#endif
   switch (event->type) {
     case SDL_EVENT_QUIT:
     case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
@@ -195,11 +202,15 @@ int main(int argc,char **argv)
   int scale=0, fullscreen=0;
   SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_INTEGER_SCALE;
   SDL_Window *window;
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__ANDROID__)
   sigset_t alarm, previous;
 #endif
 #ifdef _WIN32
   setlocale(LC_CTYPE, ".UTF8");
+#endif
+#ifdef __ANDROID__
+  fullscreen=1;
+  mode=SDL_LOGICAL_PRESENTATION_LETTERBOX;
 #endif
   myname=argv[0];
   init_scores_early();
@@ -238,7 +249,7 @@ int main(int argc,char **argv)
   }
   init_scores();
   create_boards();
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__ANDROID__)
   /* Worker threads must leave SIGALRM to the shared game timer. */
   sigemptyset(&alarm);
   sigaddset(&alarm,SIGALRM);
@@ -256,7 +267,7 @@ int main(int argc,char **argv)
   }
   window=sdl_video_open(scale,fullscreen,mode);
   if (data.sound) sound_open();
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(__ANDROID__)
   sigprocmask(SIG_SETMASK,&previous,NULL);
 #endif
   display.mapped=1;
@@ -275,6 +286,9 @@ int main(int argc,char **argv)
       SDL_MinimizeWindow(window);
     } else {
       game_tick();
+#ifdef __ANDROID__
+      phone_after_tick();
+#endif
       video_sync();
       timer_wait();
     }
@@ -282,6 +296,9 @@ int main(int argc,char **argv)
   timer_close();
   sound_close();
   cleanup_scores();
+#ifdef __ANDROID__
+  phone_reset();
+#endif
   SDL_Quit();
   return 0;
 }
