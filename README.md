@@ -103,13 +103,11 @@ Android Virtual Device, use `adb -e install -r xmris-android.apk` and
 `adb -e shell am start -n org.xmris.game/org.libsdl.app.SDLActivity`.
 Use `adb -s SERIAL` if several devices are connected.
 
-Tap either **Start** zone. The board sits at the top. The touch zones and Pause row fill the
-remaining usable area below it, adapting to the phone’s proportions.
-Hold a direction or slide between directions. Pressing a second direction
-takes over immediately, even while the first is held. Lift to stop, or touch Stop
-in the center or either lower corner. Tap either upper corner with another
-finger to throw. Pause (Options on the title screen) has its own row below
-the pad. A hardware keyboard works alongside the touch controls.
+Tap either **Start** button. Swipe on the steering pad to move. Hold your thumb
+still to keep going, swipe in another direction to turn, and lift to stop.
+Either upper corner or the board throws independently of the steering thumb.
+Pause has its own row. A fresh steering touch, throw, or keyboard press
+resumes play, except for Pause itself. The configured quit key still quits.
 The Options screen has touch controls for Up, Down, Select and Back.
 Scores and preferences live in the app's private storage.
 
