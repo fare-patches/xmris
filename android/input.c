@@ -34,7 +34,7 @@ static void button(SDL_Renderer *r, struct layout layout, int row, int column,
   rect.w /= count;
   rect.x += column*rect.w;
   if (global.state == MODE_KEY_DEF) {
-    rect.h /= 2;
+    if (column == 1) rect.h /= 2;
     rect.y += row*rect.h;
   } else {
     rect.y += row*layout.row;
@@ -53,9 +53,9 @@ static void button(SDL_Renderer *r, struct layout layout, int row, int column,
   SDL_SetRenderScale(r,sx,sy);
 }
 
-static const struct { const char *label; KeySym key; } menu[] = {
-  {"Up", SDLK_UP}, {"Select", SDLK_RETURN},
-  {"Down", SDLK_DOWN}, {"Back", SDLK_ESCAPE}
+static const struct { const char *label; KeySym key; int row, column; } menu[] = {
+  {"Back", SDLK_ESCAPE, 0, 0}, {"Up", SDLK_UP, 0, 1},
+  {"Down", SDLK_DOWN, 1, 1}, {"Select", SDLK_RETURN, 0, 2}
 };
 
 void phone_draw(SDL_Renderer *r)
@@ -63,7 +63,7 @@ void phone_draw(SDL_Renderer *r)
   static const char *const labels[] = {"Up","Down","Left","Right"};
   struct layout layout = phone_layout(r);
   if (global.state == MODE_KEY_DEF) {
-    for (int i=0; i<4; i++) button(r,layout,i/2,i%2,2,menu[i].label,0);
+    for (int i=0; i<4; i++) button(r,layout,menu[i].row,menu[i].column,3,menu[i].label,0);
     return;
   }
   button(r,layout,0,0,3,in_attract_mode ? "Start" : "Throw",0);
@@ -130,8 +130,10 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
     if (global.state == MODE_KEY_DEF) {
       if (inside) {
         int lower = y >= controls.y + controls.h/2;
-        int right = fraction >= 0.5f;
-        game_keypress(menu[2*lower + right].key);
+        int menu_row = column == 1 && lower;
+        for (int i=0; i<4; i++)
+          if (menu[i].column == column && menu[i].row == menu_row)
+            game_keypress(menu[i].key);
       }
       return;
     }
