@@ -107,7 +107,9 @@ Tap **Start**. Swipe on the steering pad to move. Hold your thumb
 still to keep going, swipe in another direction to turn, and lift to stop.
 Tap the Throw strip below the swipe area, or tap the board, to fire with a second thumb.
 Pause has its own row. A fresh steering touch, throw, or keyboard press
-resumes play, except for Pause itself. The configured quit key still quits.
+resumes play, except for Pause itself. To end the current run by touch, tap Pause, then End game, then Confirm
+end game. Cancel keeps the game paused. The configured quit key also ends
+the run while paused.
 The Options screen has touch controls for Up, Down, Select and Back.
 Scores and preferences live in the app's private storage.
 

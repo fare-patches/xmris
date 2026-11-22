@@ -48,7 +48,9 @@ static PROTOANIMATE(animate_pause);
 #ifndef NDEBUG
 static VOIDFUNC game_assert PROTOARG((VOIDARG));
 #endif /* NDEBUG */
-static int paused, wake_requested;
+static int paused, wake_requested, quit_requested;
+
+int game_is_paused(void) { return paused; }
 
 void game_wake(void)
 {
@@ -58,6 +60,7 @@ void game_wake(void)
 void game_keypress(KeySym keysym)
 {
   unsigned ix;
+  if (paused && keysym == data.keysyms[KEY_QUIT]) quit_requested = 1;
   if (keysym != data.keysyms[KEY_PAUSE]) game_wake();
   global.key = keysym;
   if (in_attract_mode && global.state != MODE_KEY_DEF) {
@@ -337,7 +340,7 @@ static FUNCANIMATE(animate_pause, next)
       
       timer_set((unsigned long)0, TIMING_PAUSE);
       paused = 1;
-      wake_requested = 0;
+      wake_requested = quit_requested = 0;
       set_key_default();
       rts = (PROTOANIMATE((*)))next;
       sound_music(MUSIC_OFF);
@@ -383,7 +386,7 @@ static FUNCANIMATE(animate_pause, next)
       
       paused = wake_requested = 0;
       global.throw = 2;
-      if(global.pressed & (1 << KEY_QUIT))
+      if(quit_requested)
 	{
 	  global.lives = 1;
 	  global.count = 1;
