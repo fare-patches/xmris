@@ -5,6 +5,13 @@
 static int direction = -1, steering, confirming_quit;
 static SDL_FingerID finger;
 static SDL_FPoint anchor;
+/* Action strips distinguish a tap from the start of a swipe. */
+static struct strip_touch {
+  int active;
+  SDL_FingerID finger;
+  SDL_FPoint start;
+} strips[2];
+static SDL_FingerID newest_touch;
 static KeySym release_key;
 
 enum direction_index { UP, DOWN, LEFT, RIGHT };
@@ -106,6 +113,7 @@ void phone_reset(void)
 {
   steer(-1);
   steering = confirming_quit = 0;
+  strips[0].active = strips[1].active = 0;
   phone_after_tick();
 }
 
@@ -115,10 +123,6 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
   if (event->type != SDL_EVENT_FINGER_DOWN && event->type != SDL_EVENT_FINGER_UP &&
       event->type != SDL_EVENT_FINGER_MOTION && event->type != SDL_EVENT_FINGER_CANCELED) return;
   const SDL_TouchFingerEvent *f = &event->tfinger;
-  if (event->type == SDL_EVENT_FINGER_UP || event->type == SDL_EVENT_FINGER_CANCELED) {
-    if (steering && finger == f->fingerID) { steer(-1); steering=0; }
-    return;
-  }
   int w,h;
   float x,y;
   if (!SDL_GetWindowSize(window,&w,&h) ||
@@ -127,12 +131,32 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
   SDL_FRect controls = layout.controls;
   SDL_FPoint point = {x,y};
   int inside = SDL_PointInRectFloat(&point,&controls);
-  int board = SDL_PointInRectFloat(&point,&layout.board);
+  float threshold = controls.w/32;
   float fraction = inside ? (x-controls.x)/controls.w : 0;
   int row = inside ? SDL_min(3,(int)((y-controls.y)/layout.row)) : -1;
   int column = SDL_min(2,(int)(3*fraction));
+  for (int i=0;i<2;i++) {
+    struct strip_touch *touch = &strips[i];
+    if (!touch->active || touch->finger != f->fingerID) continue;
+    float distance = SDL_max(SDL_fabsf(x-touch->start.x), SDL_fabsf(y-touch->start.y));
+    if (event->type == SDL_EVENT_FINGER_MOTION && distance < threshold) return;
+    touch->active = 0;
+    if (event->type == SDL_EVENT_FINGER_UP && distance < threshold && row == i+2 &&
+        !game_is_paused() && global.state != MODE_KEY_DEF) {
+      if (i == 0) tap(data.keysyms[KEY_THROW]);
+      else if (in_attract_mode) tap(data.keysyms[KEY_KEYBOARD]);
+      else { steer(-1); steering=0; global.pause=1; }
+    } else if (event->type == SDL_EVENT_FINGER_MOTION && newest_touch == f->fingerID &&
+               !game_is_paused() && global.state != MODE_KEY_DEF) {
+      steering=1; finger=f->fingerID; anchor=touch->start;
+    }
+    break;
+  }
+  if (event->type == SDL_EVENT_FINGER_UP || event->type == SDL_EVENT_FINGER_CANCELED) {
+    if (steering && finger == f->fingerID) { steer(-1); steering=0; }
+    return;
+  }
   if (event->type == SDL_EVENT_FINGER_DOWN) {
-    if (!inside && !board) return;
     if (global.state == MODE_KEY_DEF) {
       if (inside) {
         int lower = y >= controls.y + controls.h/2;
@@ -154,25 +178,18 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
       }
       return;
     }
-    if (row == 3) {
-      if (in_attract_mode) tap(data.keysyms[KEY_KEYBOARD]);
-      else { steer(-1); steering = 0; global.pause = 1; }
-      return;
-    }
-    game_wake();
-    if ((board && !inside) || row == 2) {
-      tap(data.keysyms[KEY_THROW]);
+    newest_touch = f->fingerID;
+    if (row >= 2) {
+      strips[row-2] = (struct strip_touch){1, f->fingerID, point};
       return;
     }
     /* The newest direction owns steering, including its eventual release. */
     steering = 1;
     finger = f->fingerID;
     anchor = point;
-    steer(-1);
   } else if (!game_is_paused() && steering && finger == f->fingerID) {
     float dx = x-anchor.x, dy = y-anchor.y;
     float ax = SDL_fabsf(dx), ay = SDL_fabsf(dy);
-    float threshold = controls.w/32;
     if (SDL_max(ax,ay) < threshold) return;
     if (ax > ay*1.2f) steer(dx < 0 ? LEFT : RIGHT);
     else if (ay > ax*1.2f) steer(dy < 0 ? UP : DOWN);
