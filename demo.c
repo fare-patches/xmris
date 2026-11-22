@@ -313,6 +313,7 @@ static FUNCANIMATE(animate_options, next)
         return animate_def_keys((PROTOVOID(*))animate_demo);
       if (selected == 0) {
         data.effects = !data.effects;
+        if (data.effects) sound_cherry(1);
         values[0] = data.effects ? "On" : "Off";
       } else if (selected == 1) {
         data.music = !data.music;

@@ -38,7 +38,7 @@ static void button(SDL_Renderer *r, struct layout layout, int row, int column,
     rect.y += row*rect.h;
   } else {
     rect.y += row*layout.row;
-    rect.h = row == 3 ? rect.h-3*layout.row : row == 1 ? 2*layout.row : layout.row;
+    rect.h = row == 3 ? rect.h-3*layout.row : row == 0 ? 2*layout.row : layout.row;
   }
   rect.x++; rect.y++; rect.w-=2; rect.h-=2;
   SDL_SetRenderDrawColor(r, active ? 40 : 32, active ? 104 : 47, active ? 115 : 59, 255);
@@ -66,10 +66,8 @@ void phone_draw(SDL_Renderer *r)
     for (int i=0; i<4; i++) button(r,layout,menu[i].row,menu[i].column,3,menu[i].label,0);
     return;
   }
-  button(r,layout,0,0,3,in_attract_mode ? "Start" : "Throw",0);
-  button(r,layout,0,1,3,"Swipe",0);
-  button(r,layout,0,2,3,in_attract_mode ? "Start" : "Throw",0);
-  button(r,layout,1,0,1,direction < 0 ? "Swipe to steer" : labels[direction],direction >= 0);
+  button(r,layout,0,0,1,direction < 0 ? "Swipe to steer" : labels[direction],direction >= 0);
+  button(r,layout,2,0,1,in_attract_mode ? "Start" : "Throw",0);
   button(r,layout,3,0,1,in_attract_mode ? "Options" : "Pause",0);
 }
 
@@ -143,7 +141,7 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
       return;
     }
     game_wake();
-    if ((board && !inside) || (row == 0 && column != 1)) {
+    if ((board && !inside) || row == 2) {
       tap(data.keysyms[KEY_THROW]);
       return;
     }
