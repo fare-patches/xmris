@@ -210,7 +210,12 @@ void phone_event(SDL_Window *window, const SDL_Event *event)
     if (SDL_max(ax,ay) < threshold) return;
     if (ax > ay*1.2f) steer(dx < 0 ? LEFT : RIGHT);
     else if (ay > ax*1.2f) steer(dy < 0 ? UP : DOWN);
-    else return; /* An ambiguous diagonal preserves the current direction. */
+    /* On a backward diagonal, take the corner instead of reversing. */
+    else if ((direction == RIGHT && dx < 0) || (direction == LEFT && dx > 0))
+      steer(dy < 0 ? UP : DOWN);
+    else if ((direction == DOWN && dy < 0) || (direction == UP && dy > 0))
+      steer(dx < 0 ? LEFT : RIGHT);
+    else return;
     anchor = point;
   }
 }
