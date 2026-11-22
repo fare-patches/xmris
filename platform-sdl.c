@@ -1,6 +1,10 @@
 #include "xmris.h"
 #include "sound.h"
+#ifdef _WIN32
+#include <locale.h>
+#else
 #include <signal.h>
+#endif
 
 extern SDL_Window *sdl_video_open(int, int, SDL_RendererLogicalPresentation);
 
@@ -191,7 +195,12 @@ int main(int argc,char **argv)
   int scale=0, fullscreen=0;
   SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_INTEGER_SCALE;
   SDL_Window *window;
+#ifndef _WIN32
   sigset_t alarm, previous;
+#endif
+#ifdef _WIN32
+  setlocale(LC_CTYPE, ".UTF8");
+#endif
   myname=argv[0];
   init_scores_early();
   default_bindings(data.keysyms);
@@ -229,10 +238,12 @@ int main(int argc,char **argv)
   }
   init_scores();
   create_boards();
+#ifndef _WIN32
   /* Worker threads must leave SIGALRM to the shared game timer. */
   sigemptyset(&alarm);
   sigaddset(&alarm,SIGALRM);
   sigprocmask(SIG_BLOCK,&alarm,&previous);
+#endif
   SDL_SetAppMetadata("xmris", XMRISVERSION, NULL);
   if (!SDL_Init(SDL_INIT_VIDEO)) fatal_error("%s",SDL_GetError());
   /* Named keys are resolved using the active SDL keyboard layout. */
@@ -245,7 +256,9 @@ int main(int argc,char **argv)
   }
   window=sdl_video_open(scale,fullscreen,mode);
   if (data.sound) sound_open();
+#ifndef _WIN32
   sigprocmask(SIG_SETMASK,&previous,NULL);
+#endif
   display.mapped=1;
   timer_open();
   while (!global.quit) {

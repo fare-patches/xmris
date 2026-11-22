@@ -1,0 +1,62 @@
+name: Windows SDL
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        arch: [aarch64, x86_64]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download LLVM-MinGW and SDL3
+        working-directory: ${{ runner.temp }}
+        run: |
+          curl -fsSLo llvm.tar.xz https://github.com/mstorsjo/llvm-mingw/releases/download/20261117/llvm-mingw-20261117-ucrt-ubuntu-22.04-x86_64.tar.xz
+          curl -fsSLo sdl.zip https://github.com/libsdl-org/SDL/releases/download/release-3.4.20/SDL3-devel-3.4.20-VC.zip
+          sha256sum -c <<'SUMS'
+          e7a15a49a2ea95e9f3d8a9d0cfabe5052a4b10fb4777cc54de5a8c27b64bb701  llvm.tar.xz
+          1ec3009655ee37b1f73e52b3b120acc5afd8abaf9532f3303b1bf1dfe91b5969  sdl.zip
+          SUMS
+          tar xf llvm.tar.xz
+          unzip -q sdl.zip
+          echo "$PWD/llvm-mingw-20261117-ucrt-ubuntu-22.04-x86_64/bin" >> "$GITHUB_PATH"
+      - name: Build and package
+        run: |
+          make -j4 -f Makefile.windows ARCH=${{ matrix.arch }} SDL_DIR="$RUNNER_TEMP/SDL3-3.4.20"
+          mkdir package
+          cp build/windows-${{ matrix.arch }}/{xmris.exe,SDL3.dll,*.gdn} package/
+          cp COPYING-2.0 COPYRIGHT README.md package/
+          cp "$RUNNER_TEMP/SDL3-3.4.20/LICENSE.txt" package/SDL-LICENSE.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xmris-windows-${{ matrix.arch }}
+          path: package/
+  smoke:
+    needs: build
+    strategy:
+      matrix:
+        include:
+          - {arch: x86_64, runner: windows-2025}
+          - {arch: aarch64, runner: windows-11-arm}
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: xmris-windows-${{ matrix.arch }}
+      - name: Launch the packaged game
+        shell: pwsh
+        run: |
+          ./xmris.exe -help
+          if ($LASTEXITCODE -ne 0) { throw 'Windows loader or argument processing failed' }
+          $env:SDL_VIDEO_DRIVER = 'dummy'
+          $env:SDL_AUDIO_DRIVER = 'dummy'
+          $env:SDL_RENDER_DRIVER = 'software'
+          $game = Start-Process ./xmris.exe -ArgumentList '-gardens','alphabet' -PassThru
+          try {
+            if ($game.WaitForExit(5000)) { throw "Game exited early ($($game.ExitCode))" }
+            if (!(Test-Path "$env:APPDATA/xmris/score")) { throw 'Missing personal score file' }
+          } finally {
+            if (!$game.HasExited) { $game.Kill() }
+          }
