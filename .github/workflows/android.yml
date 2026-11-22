@@ -13,15 +13,16 @@ jobs:
           java-version: '17'
       - name: Install Android build tools
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0" "ndk;28.2.13676358" "cmake;3.22.1"
-      - name: Build ARM64 debug APK
+      - name: Build Android debug APK
         run: bash android/build.sh
       - name: Verify package signature and native libraries
         run: |
-          apk=build/android/xmris-arm64-debug.apk
+          apk=build/android/xmris-android.apk
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify "$apk"
           unzip -Z1 "$apk" | grep -Fx lib/arm64-v8a/libmain.so
           unzip -Z1 "$apk" | grep -Fx lib/arm64-v8a/libSDL3.so
+          unzip -Z1 "$apk" | grep -Fx lib/x86_64/libmain.so
       - uses: actions/upload-artifact@v4
         with:
-          name: xmris-android-arm64
-          path: build/android/xmris-arm64-debug.apk
+          name: xmris-android
+          path: build/android/xmris-android.apk

@@ -1,4 +1,7 @@
 #include "xmris.h"
+#ifdef __ANDROID__
+#include "android/input.h"
+#endif
 #include "defmris.h"
 #include "courier18.h"
 
@@ -124,7 +127,11 @@ void video_sync(void)
   SDL_UpdateTexture(texture,NULL,frame->pixels,frame->pitch);
   SDL_SetRenderDrawColor(renderer,0,0,0,255);
   SDL_RenderClear(renderer);
-  SDL_RenderTexture(renderer,texture,NULL,NULL);
+  SDL_FRect board_rect = {0, 0, WINDOW_WIDTH, WINDOW_HEIGHT};
+  SDL_RenderTexture(renderer,texture,NULL,&board_rect);
+#ifdef __ANDROID__
+  phone_draw(renderer);
+#endif
   SDL_RenderPresent(renderer);
   dirty = 0;
 }
@@ -219,7 +226,11 @@ SDL_Window *sdl_video_open(int scale, int fullscreen, SDL_RendererLogicalPresent
       SDL_TEXTUREACCESS_STREAMING,WINDOW_WIDTH,WINDOW_HEIGHT);
   if (!texture) fatal_error("%s",SDL_GetError());
   SDL_SetTextureScaleMode(texture,SDL_SCALEMODE_NEAREST);
-  if (!SDL_SetRenderLogicalPresentation(renderer,WINDOW_WIDTH,WINDOW_HEIGHT,mode))
+  int logical_height = WINDOW_HEIGHT;
+#ifdef __ANDROID__
+  logical_height += PHONE_BAR_HEIGHT;
+#endif
+  if (!SDL_SetRenderLogicalPresentation(renderer,WINDOW_WIDTH,logical_height,mode))
     fatal_error("%s",SDL_GetError());
   return window;
 }

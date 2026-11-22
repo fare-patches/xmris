@@ -210,6 +210,7 @@ int main(int argc,char **argv)
 #endif
 #ifdef __ANDROID__
   fullscreen=1;
+  SDL_SetHint(SDL_HINT_ORIENTATIONS, "Portrait");
   mode=SDL_LOGICAL_PRESENTATION_LETTERBOX;
 #endif
   myname=argv[0];
@@ -266,6 +267,9 @@ int main(int argc,char **argv)
       scale=SDL_max(1,SDL_min(bounds.w/WINDOW_WIDTH,bounds.h/WINDOW_HEIGHT));
   }
   window=sdl_video_open(scale,fullscreen,mode);
+#ifdef __ANDROID__
+  phone_init();
+#endif
   if (data.sound) sound_open();
 #if !defined(_WIN32) && !defined(__ANDROID__)
   sigprocmask(SIG_SETMASK,&previous,NULL);

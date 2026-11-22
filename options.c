@@ -1,5 +1,8 @@
 #include "xmris.h"
 #include "sound.h"
+#ifdef __ANDROID__
+#include "android/input.h"
+#endif
 #include <sys/stat.h>
 #ifdef _WIN32
 #include "win-files.h"
@@ -10,7 +13,11 @@
 
 /* Store only preferences explicitly changed in the menu. */
 static const char *const names[] = {"effects", "music", "diamondDifficulty",
-  "up", "down", "left", "right", "throw", "pause", "quit", "iconize", "keyboard"};
+  "up", "down", "left", "right", "throw", "pause", "quit", "iconize", "keyboard"
+#ifdef __ANDROID__
+  , "inputStyle"
+#endif
+};
 static char values[XtNumber(names)][128];
 
 static char *config_path(int create)
@@ -104,6 +111,9 @@ int options_save(int which)
   }
 #endif
   options_read();
+#ifdef __ANDROID__
+  if (which==4) strcpy(values[3+KEYS],phone_style_name());
+#endif
   if (which==0) strcpy(values[0],data.effects ? "true" : "false");
   if (which==1) strcpy(values[1],data.music ? "true" : "false");
   if (which==2) strcpy(values[2],data.diamond_mask==0 ? "classic" : data.diamond_mask==7 ? "hard" : "easy");
