@@ -1,7 +1,11 @@
 #include "xmris.h"
 #include "sound.h"
 #include <sys/stat.h>
+#ifdef _WIN32
+#include "win-files.h"
+#else
 #include <sys/file.h>
+#endif
 #include <fcntl.h>
 
 /* Store only preferences explicitly changed in the menu. */
@@ -11,6 +15,10 @@ static char values[XtNumber(names)][128];
 
 static char *config_path(int create)
 {
+#ifdef _WIN32
+  (void)create;
+  return win_pref_file("config");
+#else
   const char *base = getenv("XDG_CONFIG_HOME");
   const char *parent = "";
   if (!base || *base != '/') {
@@ -29,6 +37,7 @@ static char *config_path(int create)
 failed:
   free(path);
   return NULL;
+#endif
 }
 
 void options_read(void)
@@ -63,6 +72,18 @@ int options_save(int which)
   if (!path) return 0;
   char *tmp = malloc(strlen(path)+8);
   if (!tmp) { free(path); return 0; }
+#ifdef _WIN32
+  char *lock_path = win_pref_file("config.lock");
+  FILE *lock = lock_path ? fopen(lock_path,"a+b") : NULL;
+  free(lock_path);
+  if (!lock || win_lock(lock,1)) {
+    if (lock) fclose(lock);
+    free(tmp);
+    free(path);
+    return 0;
+  }
+  sprintf(tmp,"%s.tmp",path);
+#else
   sprintf(tmp,"%s.XXXXXX",path);
   /* Serialize read-modify-write across running instances. The directory
    * stays in place while the preferences file is atomically replaced. */
@@ -76,6 +97,7 @@ int options_save(int which)
     free(path);
     return 0;
   }
+#endif
   options_read();
   if (which==0) strcpy(values[0],data.effects ? "true" : "false");
   if (which==1) strcpy(values[1],data.music ? "true" : "false");
@@ -85,19 +107,32 @@ int options_save(int which)
       const char *key = portable_key_name(data.keysyms[i]);
       if (key) snprintf(values[3+i],sizeof(values[0]),"%s",key);
     }
+#ifdef _WIN32
+  FILE *file = fopen(tmp,"wb");
+#else
   int fd = mkstemp(tmp);
   FILE *file = fd<0 ? NULL : fdopen(fd,"w");
+#endif
   int ok = file != NULL;
   if (file) {
     for (unsigned i=0;i<XtNumber(names);++i)
       if (values[i][0] && fprintf(file,"%s=%s\n",names[i],values[i])<0) ok=0;
     if (fclose(file)) ok=0;
-  } else if (fd>=0) close(fd);
+  }
+#ifdef _WIN32
+  if (ok) ok = win_replace(tmp,path);
+#else
+  else if (fd>=0) close(fd);
   if (ok) ok = rename(tmp,path)==0;
+#endif
   if (!ok) { perror(path); unlink(tmp); }
   free(tmp);
   free(path);
+#ifdef _WIN32
+  fclose(lock);
+#else
   close(directory);
+#endif
   return ok;
 }
 int sound_effects_enabled(void) { return data.effects; }

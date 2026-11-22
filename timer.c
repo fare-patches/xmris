@@ -54,6 +54,25 @@
  */
 /*}}}*/
 #include "xmris.h"
+#ifdef _WIN32
+typedef Uint64 tick_t;
+#define TICKTIME 1
+#define gettick(ptr) (*(ptr) = SDL_GetTicksNS() / 1000)
+#define tickdelta(later, earlier) ((later) - (earlier))
+static struct {
+  tick_t deadline, game, start, stop;
+  unsigned long usec;
+  unsigned state, count, missed;
+} timer;
+
+void timer_close(void) {}
+void timer_open(void)
+{
+  global.missed = 0;
+  global.dilation = FRAME_SCALE;
+  global.scale = SCORE_SCALE;
+}
+#else
 #include <sys/time.h>
 #include <signal.h>
 #ifdef SVR4
@@ -349,6 +368,7 @@ extern VOIDFUNC timer_open FUNCARGVOID
   return;
 }
 /*}}}*/
+#endif /* _WIN32 */
 /*{{{  int timer_set(tick, state)*/
 extern unsigned timer_set
 FUNCARG((tick, state),
@@ -378,7 +398,11 @@ ARGSEP  unsigned  state
 #ifdef BUSYWAIT
       timer.delay = (tick_t)(tick / TICKTIME);
 #endif /* BUSYWAIT */
+#ifdef _WIN32
+      timer.deadline = 0;
+#else
       timer.interval.it_value.tv_usec = tick;
+#endif
     }
   value = timer.state;
   switch(state)
@@ -453,6 +477,19 @@ extern VOIDFUNC timer_wait FUNCARGVOID
  */
 {
   int       point;
+#ifdef _WIN32
+  tick_t now;
+  gettick(&now);
+  if (now < timer.deadline) {
+    SDL_DelayPrecise((timer.deadline - now) * 1000);
+    timer.deadline += timer.usec;
+    point = -1;
+  } else {
+    timer.deadline = now + timer.usec;
+    timer.missed++;
+    point = 1;
+  }
+#else
   
   {
     MASK      mask;
@@ -517,6 +554,7 @@ extern VOIDFUNC timer_wait FUNCARGVOID
     }
   /*}}}*/
 #endif /* BUSYWAIT */
+#endif /* _WIN32 */
   if(timer.state != TIMING_ON)
     /* EMPTY */;
   else if(!timer.count)

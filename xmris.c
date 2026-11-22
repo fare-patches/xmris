@@ -109,7 +109,7 @@ ARGSEP  int       y
     char      text[10];
     int       x, y;
 	
-    length = itoa(text, global.score, 0);
+    length = format_number(text, global.score, 0);
     x = PIXELX(4, -GAP_WIDTH) - (length + 2) * font.width;
     y = PIXELY(-1, CELL_HEIGHT / 2) + font.center;
     video_opaque_text(display.back, GCN(GC_TEXT),
@@ -128,7 +128,7 @@ ARGSEP  int       y
       SPRITE    *dptr;
 	
       dptr = &sprites[SPRITE_DIGITS];
-      length = itoa(text, (unsigned long)points, 0);
+      length = format_number(text, (unsigned long)points, 0);
       /*{{{  remove oldest score?*/
       if(update.score.scores == BOARD_SCORES)
 	{
@@ -1078,8 +1078,8 @@ static VOIDFUNC game_assert FUNCARGVOID
 }
 /*}}}*/
 #endif /* NDEBUG */
-/*{{{  size_t itoa(text, n, width)*/
-extern size_t itoa
+/*{{{  size_t format_number(text, n, width)*/
+extern size_t format_number
 FUNCARG((text, number, digits),
 	char      *text    /* output text (include 0) */
 ARGSEP  unsigned long number   /* number to convert */

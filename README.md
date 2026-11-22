@@ -81,6 +81,27 @@ Run `./xmris-sdl -help` for the supported options.
 The SDL frontend uses the bundled 18-pixel X11 Courier bitmap font and command-line settings.
 The X11 game and the xmred garden editor use the existing imake build and X resources.
 
+### Windows SDL3 game
+
+Extract the Windows zip for your processor and run `xmris.exe` from the
+extracted folder. Keep `SDL3.dll` and the four garden files beside it.
+Arrow keys move, Space starts or throws, and F11 toggles fullscreen.
+Preferences and personal scores are saved in the user's SDL preference
+directory (normally `%APPDATA%\xmris`), in `config` and `score`.
+
+To cross-compile on Linux, install make and a native C compiler for the
+sprite generator. Put the bin directory of the UCRT edition of LLVM-MinGW
+on PATH and unpack the SDL3 VC development zip. It includes both Windows
+import libraries. Set SDL_DIR to its extracted directory, for example:
+
+```sh
+make -f Makefile.windows ARCH=aarch64 SDL_DIR=/opt/SDL3-3.4.20
+make -f Makefile.windows ARCH=x86_64 SDL_DIR=/opt/SDL3-3.4.20
+```
+
+Each build lands in `build/windows-$ARCH/`. On ARM64 Linux with native
+Wine, run `wine build/windows-aarch64/xmris.exe -scale fit`.
+
 ### Building with X11
 
 #### X11 Prerequisites

@@ -882,7 +882,7 @@ extern VOIDFUNC new_board FUNCARGVOID
     static char text[] = "Garden 000";
     int       length;
     
-    length = 7 + itoa(text + 7, (unsigned long)global.screen, 0);
+    length = 7 + format_number(text + 7, (unsigned long)global.screen, 0);
     video_opaque_text(display.back, GCN(GC_TEXT),
 	PIXELX(8, (int)font.width * 2),
 	PIXELY(-1, CELL_HEIGHT / 2 + font.center), text, length);
@@ -1018,7 +1018,15 @@ ARGSEP  char CONST *parent
       
       length = strlen(name);
       {
-        char CONST *slash = *name != '/' && parent ? strrchr(parent, '/') : NULL;
+        int relative = *name != '/';
+#ifdef _WIN32
+        relative = relative && *name != '\\' && !(name[0] && name[1] == ':');
+#endif
+        char CONST *slash = relative && parent ? strrchr(parent, '/') : NULL;
+#ifdef _WIN32
+        const char *backslash = relative && parent ? strrchr(parent, '\\') : NULL;
+        if(backslash && (!slash || backslash > slash)) slash = backslash;
+#endif
         size_t offset = slash ? (size_t)(slash - parent + 1) : 0;
 
         filename = malloc(offset + length + FILE_SUFFIX_LEN + 1);
@@ -1036,9 +1044,9 @@ ARGSEP  char CONST *parent
                 filename[offset + length] = 0;
                 stream = fopen(filename, "r");
               }
-            if(!stream && *name != '/')
+            if(!stream && relative)
               stream = open_user_garden(name, &filename);
-            if(!stream && *name != '/')
+            if(!stream && relative)
               {
                 char *resource = garden_resource(name, NULL);
                 if(!resource)

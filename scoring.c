@@ -2,13 +2,20 @@
 #define _GNU_SOURCE /* for setresuid / setresgid */
 #include "xmris.h"
 /*{{{  other includes*/
+#ifdef _WIN32
+#include "win-files.h"
+#else
 #include <pwd.h>
+#endif
 #include <fcntl.h>
 #include <limits.h>
 #include <sys/stat.h>
 /*}}}*/
 /*{{{  file locking*/
-#ifndef SYSV
+#ifdef _WIN32
+#define lock_file(stream) win_lock(stream, 1)
+#define unlock_file(stream) win_lock(stream, 0)
+#elif !defined(SYSV)
 #ifdef linux
 #include <sys/file.h>
 #endif
@@ -73,7 +80,11 @@ ARGSEP  time_t    then
 {
   struct tm today, played;
 
+#ifdef _WIN32
+  if(localtime_s(&today, &now) || localtime_s(&played, &then))
+#else
   if(!localtime_r(&now, &today) || !localtime_r(&then, &played))
+#endif
     return 1;
   if(today.tm_year == played.tm_year && today.tm_yday == played.tm_yday)
     return 0;
@@ -173,6 +184,7 @@ ARGSEP  unsigned long msec
   return;
 }
 /*}}}*/
+#ifndef _WIN32
 static FILE *open_score_file(const char *path, int flags, mode_t mode)
 {
   int fd = open(path, O_RDWR | O_NONBLOCK | O_CLOEXEC | flags, mode);
@@ -189,6 +201,7 @@ static FILE *open_score_file(const char *path, int flags, mode_t mode)
   return stream;
 }
 
+#endif
 /*{{{  void init_scores_early()*/
 extern VOIDFUNC init_scores_early FUNCARGVOID
 /*
@@ -196,6 +209,9 @@ extern VOIDFUNC init_scores_early FUNCARGVOID
  * sgid rights
  */
 {
+#ifdef _WIN32
+  score_file = NULL;
+#else
   /* Figure out who we really are. */
   gid_t realgid = getgid();
   uid_t realuid = getuid();
@@ -217,6 +233,7 @@ extern VOIDFUNC init_scores_early FUNCARGVOID
       perror("Could not drop setuid privileges.  Aborting.");
       exit(1);
     }
+#endif
 }
 /*}}}*/
 /*{{{  void init_scores()*/
@@ -227,12 +244,17 @@ extern VOIDFUNC init_scores FUNCARGVOID
  */
 {
   char CONST *user;
-  char CONST *home;
+#ifndef _WIN32
+  char CONST *home = NULL;
+#endif
   char      *reallife;
   
   user = NULL;
-  home = NULL;
+
   reallife = NULL;
+#ifdef _WIN32
+  user = getenv("USERNAME");
+#else
   /*{{{  read passwd information*/
   {
     struct passwd *ptr;
@@ -299,6 +321,7 @@ extern VOIDFUNC init_scores FUNCARGVOID
       }
   }
   /*}}}*/
+#endif
   scoring.mine.score = 0;
   /*{{{  set username*/
   {
@@ -329,6 +352,17 @@ extern VOIDFUNC init_scores FUNCARGVOID
   /*}}}*/
   /*{{{  personal file*/
   {
+#ifdef _WIN32
+    personal_file = win_pref_file("score");
+    if(personal_file) {
+      int fd = open(personal_file, O_CREAT | O_RDWR | O_BINARY, 0600);
+      if(fd >= 0) {
+        personal_stream = fdopen(fd, "r+b");
+        if(!personal_stream) close(fd);
+      }
+      if(!personal_stream) { free(personal_file); personal_file = NULL; }
+    }
+#else
     if(!home)
       home = getenv("HOME");
     if(home)
@@ -350,6 +384,7 @@ extern VOIDFUNC init_scores FUNCARGVOID
 	      }
 	  }
       }
+#endif
   }
   /*}}}*/
   if(data.expire || data.format || data.remove)
@@ -526,6 +561,7 @@ FUNCARG((insert),
   }
   /*}}}*/
   /* expire person? */
+#ifndef _WIN32
   if(getuid() != 0)
     {
       if(data.remove)
@@ -632,6 +668,7 @@ FUNCARG((insert),
 	  data.remove = NULL;
 	}
     }
+#endif
   /*{{{  expire date?*/
   if(data.expire)
   {

@@ -555,7 +555,7 @@ extern VOIDFUNC add_score PROTOARG((unsigned, int, int));
 extern VOIDFUNC calc_distances PROTOARG((VOIDARG));
 extern VOIDFUNC calc_extra_home PROTOARG((unsigned));
 extern unsigned chaotic PROTOARG((VOIDARG));
-extern size_t itoa PROTOARG((char *, unsigned long, unsigned));
+extern size_t format_number PROTOARG((char *, unsigned long, unsigned));
 #ifndef XMRIS_SDL
 extern int main PROTOARG((int, char CONST **));
 #endif
