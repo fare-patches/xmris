@@ -105,7 +105,8 @@ Use `adb -s SERIAL` if several devices are connected.
 
 Tap either **Start** zone. The board sits at the top. The touch zones and Pause row fill the
 remaining usable area below it, adapting to the phone’s proportions.
-Hold a direction or slide between directions. Lift to stop, or touch Stop
+Hold a direction or slide between directions. Pressing a second direction
+takes over immediately, even while the first is held. Lift to stop, or touch Stop
 in the center or either lower corner. Tap either upper corner with another
 finger to throw. Pause (Options on the title screen) has its own row below
 the pad. A hardware keyboard works alongside the touch controls.
