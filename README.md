@@ -1,12 +1,13 @@
 # XMRIS 4.1.2 in 2026
 
 xmris (1992-1995) by Nathan Sidwell is a remarkably faithful Unix clone of
-Mr. Do!, a 1982 game for 8-bit consoles by Kazutoshi Ueda.
-https://en.wikipedia.org/wiki/Mr._Do!
-https://www.retrogames.cz/play_273-SNES.php
-https://www.arcadearchives.com/en/title/aca-410/
-https://www.youtube.com/watch?v=hv2B-p1p8OQ
-https://www.planetemu.net/en/rom/mame-roms-merged/mrdo
+Mr. Do!, a 1982 game for 8-bit consoles by Kazutoshi Ueda:
+
+  - [Wikipedia page](https://en.wikipedia.org/wiki/Mr._Do!)
+  - [Playable SNES version](https://www.retrogames.cz/play_273-SNES.php)
+  - [2026 HAMSTER reissue for Nintendo Switch 2 / Nintendo Switch / PlayStation 5 / PlayStation 4 / XBOX Series X|S](https://www.arcadearchives.com/en/title/aca-410/)
+  - [Demo video of gameplay](https://www.youtube.com/watch?v=hv2B-p1p8OQ)
+  - [Original Z80 arcade ROMs for MAME](https://www.planetemu.net/en/rom/mame-roms-merged/mrdo)
 
 I (Faré Rideau) am amazed at how much patience Nathan had in precisely
 re-creating the behavior of the original game, and
@@ -18,23 +19,6 @@ dying and gaining a life at the same time, etc.),
 that Nathan perfectly reproduced.
 
 2026 revival and SDL port maintained by François-René (Faré) Rideau.
-
-## What's new in 4.1.2
-
-* Android adds full-screen swipe steering, touch menus, and pause-to-end confirmation.
-* SDL supports gamepads and joysticks. Windows builds include SDL and the distributed gardens.
-* macOS and iOS have experimental app-bundle builds and an Apple CI workflow.
-
-## What's new in 4.1.1
-
-* The Linux SDL3 frontend shares the X11 game's rules, gardens, scores, and music.
-  Press F11 for fullscreen. Integer scaling is the default. Use
-  `-scale fit` for fractional scaling that preserves the aspect ratio.
-* Press F1 at the title screen in either frontend to change sound effects,
-  music, diamond difficulty, or controls. Both frontends share saved preferences.
-  The Controls screen shows current bindings and can restore the defaults.
-* SDL uses the classic X11 Courier bitmap font. Both games identify themselves
-  as `xmris` in the audio mixer.
 
 ## Building and running XMRIS
 
@@ -282,6 +266,8 @@ when the shared file is unavailable.
 
 In 2026, I used AIs to add these features that were missing in 1992.
 
+### Display: Scaling and Centering
+
 The game now automatically uses the largest whole-number pixel scale
 that fits its window, and stays centered as you resize.
 You can use an X resource `Xmris.scale: 3` or `Xmris.scale: auto`
@@ -292,9 +278,14 @@ This feature was not needed in 1992, when a 436×539 window
 (including 1 pixel border each side) was actually bigger
 than most people's displays used to be.
 
+The SDL variant can also scale to the whole screen, though
+I personally prefer an integer scale.
+
 The game will also center its display within the window if the user
 or window manager oversizes it. This was also not a problem in 1992,
 but it is one for me using stumpwm in 2026.
+
+### Sound Effects
 
 The original X version lacked the classic Mr Do! sound
 (do re mi fa sol la si do) as you eat cherries,
@@ -307,15 +298,19 @@ Use `-sound` to enable audio for a single session.
 For effects and fanfares without the looping soundtrack,
 use `-nomusic` or `Xmris.music: false`.
 
-`Xmris.diamondDifficulty` controls the chance that an eligible split apple
-reveals a diamond. The default, `easy`, gives a 1 in 512 chance. Use `hard`
-for 1 in 2048. Both allow another diamond after collecting one. The historical
-`classic` setting gives a 1 in 256 chance and allows one collection per game.
-
 The chase music speeds up by 50% when the nearest enemy's distance falls to
 80 arcade pixels or less, and slows down again at 113 or more (16 pixels per
 cell). Between those thresholds it keeps its tempo. xmris measures tunnel
 distance for ordinary monsters and direct separation for digging monsters.
+
+### Game Logic
+
+`Xmris.diamondDifficulty` controls the chance that an eligible split apple
+reveals a diamond. The default, `easy`, gives a 1 in 512 chance. Use `hard`
+for 1 in 2048. These settings reproduce the two possible arcade settings
+of Mr. Do!, and both allow another diamond after collecting one.
+The historical `classic` setting of 1992 xmris gives a 1 in 256 chance
+but allows only one collection per game.
 
 In the arcade, the ball starts nine pixels ahead of the player, so a throw
 can clear a thin wall. xmris supports the same trick, but checks how far the
@@ -325,12 +320,15 @@ I also restored some behavior from the arcade game: there is a .4 second
 grace period after eating a cherry to continue a streak, and the last
 cherry in the streak is 500 points total, not 550 (with 500 plus regular 50).
 
+Apart from that, it looks like Nathan had very precisely re-created the game.
+
 ## Provenance
 
 This repository was initialized with the contents of
 [the xmris 4.0.5 tarball (2008) from sourceforge](https://sourceforge.net/projects/xmris/files/xmris/4.05/),
 plus [patches from rpmfusion](https://github.com/rpmfusion/xmris/)
 by Hans de Goede <hdegoede@redhat.com> (2010-2011) (also include a rpm spec and icons).
+Some historic tarballs and USENET posts were used to record earlier history.
 
 ## Troubleshooting
 
@@ -348,9 +346,6 @@ Solution: install and configure the good old fonts.
 ## TODO
 
 If you want to make this game better, have an AI add the following features:
-* [x] Integer factor window scaling.
-* [x] Adding the do re mi fa sol la si do sounds as you eat cherries as in Mr Do!
-* [x] Fullscreen scaling (using xmris-sdl)
 * [ ] Porting to other platforms beside X11.
 * [ ] Running in a TEE from a deterministic build so as to maintain
       a cheat-resistant global high score chart
