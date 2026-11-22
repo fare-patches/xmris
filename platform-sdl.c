@@ -267,9 +267,6 @@ int main(int argc,char **argv)
       scale=SDL_max(1,SDL_min(bounds.w/WINDOW_WIDTH,bounds.h/WINDOW_HEIGHT));
   }
   window=sdl_video_open(scale,fullscreen,mode);
-#ifdef __ANDROID__
-  phone_init();
-#endif
   if (data.sound) sound_open();
 #if !defined(_WIN32) && !defined(__ANDROID__)
   sigprocmask(SIG_SETMASK,&previous,NULL);
